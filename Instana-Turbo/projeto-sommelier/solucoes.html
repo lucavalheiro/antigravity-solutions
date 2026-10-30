@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Soluções & Arquitetura O2C — Projeto Sommelier | TD SYNNEX</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Fonts: Inter + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            apple: {
+              bg: '#f5f5f7',
+              card: '#ffffff',
+              border: '#d2d2d7',
+              text: '#1d1d1f',
+              subtext: '#6e6e73',
+              blue: '#0071e3',
+              blueHover: '#0077ed',
+              green: '#34c759',
+              orange: '#ff9500',
+              purple: '#af52de',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    body {
+      background-color: #f5f5f7;
+      color: #1d1d1f;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+      letter-spacing: -0.011em;
+      -webkit-font-smoothing: antialiased;
+    }
+    .apple-shadow {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .apple-shadow-hover:hover {
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.09);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+  <!-- ========================================== -->
+  <!-- APPLE TOP NAVIGATION (CLEAN WHITE)         -->
+  <!-- ========================================== -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-[#d2d2d7]/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      
+      <div class="flex items-center space-x-3">
+        <a href="/" class="w-8 h-8 rounded-full bg-[#1d1d1f] flex items-center justify-center text-white shadow-sm hover:scale-105 transition-transform" title="Voltar para a Loja de Vinhos">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </a>
+        <div>
+          <span class="text-sm font-semibold tracking-tight text-[#1d1d1f]">Painel de Soluções &amp; O2C</span>
+          <span class="text-[11px] text-[#6e6e73] block -mt-0.5">Projeto Sommelier &bull; TD SYNNEX</span>
+        </div>
+      </div>
+
+      <!-- Module Navigation Pills -->
+      <nav class="hidden lg:flex items-center space-x-1 text-xs">
+        <a href="/" class="px-3 py-1.5 rounded-full hover:bg-[#f5f5f7] text-[#6e6e73] font-medium transition-colors">Loja Sommelier</a>
+        <a href="/solucoes" class="px-3 py-1.5 rounded-full bg-[#1d1d1f] text-white font-medium shadow-xs">Painel O2C</a>
+        <a href="/erpnext" class="px-3 py-1.5 rounded-full hover:bg-[#f5f5f7] text-[#6e6e73] font-medium transition-colors">ERPNext</a>
+        <a href="/glpi" class="px-3 py-1.5 rounded-full hover:bg-[#f5f5f7] text-[#6e6e73] font-medium transition-colors">GLPI ITIL</a>
+        <a href="/quantum" class="px-3 py-1.5 rounded-full hover:bg-[#f5f5f7] text-[#6e6e73] font-medium transition-colors">IBM Quantum</a>
+      </nav>
+
+      <div class="flex items-center space-x-1.5 sm:space-x-2.5 flex-shrink-0">
+        <a href="/" class="px-2.5 sm:px-4 py-1.5 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] text-xs font-medium text-[#1d1d1f] border border-[#d2d2d7] transition-colors flex items-center space-x-1">
+          <i data-lucide="store" class="w-3.5 h-3.5 text-[#0071e3]"></i>
+          <span class="hidden sm:inline">Voltar para a Loja</span>
+          <span class="sm:hidden text-[11px]">Loja</span>
+        </a>
+
+        <button onclick="toggleStoryModal()" class="px-2.5 sm:px-4 py-1.5 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] text-xs font-medium text-[#1d1d1f] border border-[#d2d2d7] transition-colors flex items-center space-x-1">
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-[#0071e3]"></i>
+          <span class="hidden sm:inline">Roteiro da Demo</span>
+          <span class="sm:hidden text-[11px]">Roteiro</span>
+        </button>
+
+        <a href="/erpnext" target="_blank" class="px-2.5 sm:px-4 py-1.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-medium transition-all shadow-sm flex items-center space-x-1">
+          <span>Abrir ERP</span>
+          <i data-lucide="external-link" class="w-3 h-3"></i>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- MAIN CONTAINER                             -->
+  <!-- ========================================== -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8 flex-1 pb-28 sm:pb-12">
+    
+    <!-- Hero Title -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 apple-shadow border border-[#e5e5e7] flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="space-y-2 max-w-2xl">
+        <span class="text-xs font-semibold uppercase tracking-wider text-[#0071e3] flex items-center space-x-1.5">
+          <i data-lucide="cpu" class="w-4 h-4"></i>
+          <span>Arquitetura de Demonstração &bull; 11 Soluções Enterprise</span>
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-bold tracking-tight text-[#1d1d1f]">
+          Trilha de Execução Order-to-Cash.
+        </h1>
+        <p class="text-sm text-[#6e6e73] leading-relaxed">
+          Storytelling executivo rigoroso: <strong>1º O Negócio</strong> (Pedido de Venda real no ERPNext com a empresa Sommelier Privé Ltda) &rarr; <strong>2º GLPI Service Desk</strong> (Expedição &amp; SLA ITIL) &rarr; <strong>Orquestração &amp; APM</strong> &rarr; <strong>Segurança, Governança &amp; Quântica no final</strong>.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+        <button onclick="runO2CDemo()" id="btn-run-demo" class="px-6 py-3 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold transition-all shadow-md flex items-center justify-center space-x-2">
+          <i data-lucide="play" class="w-4 h-4"></i>
+          <span>Executar Pipeline O2C</span>
+        </button>
+
+        <button onclick="simulateTrafficSpike()" id="btn-spike" class="px-5 py-3 rounded-full bg-[#fff1f2] hover:bg-[#ffe4e6] text-[#e11d48] border border-[#fecdd3] text-xs font-semibold transition-all flex items-center justify-center space-x-1.5" title="Simular pico de 5.000 requisições simultâneas para validação de APM e FinOps">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Simular Pico</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress & Status Bar -->
+    <div class="bg-white rounded-2xl p-4 apple-shadow border border-[#e5e5e7] flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <span class="w-3 h-3 rounded-full bg-[#34c759] animate-pulse"></span>
+        <span class="text-xs font-semibold text-[#1d1d1f]">Status da Trilha:</span>
+        <span id="o2c-global-status" class="px-3 py-0.5 rounded-full bg-[#f5f5f7] text-[#6e6e73] text-xs font-mono border border-[#d2d2d7]">
+          Pronto para Execução
+        </span>
+      </div>
+
+      <div class="w-full sm:w-96 h-2 bg-[#f5f5f7] rounded-full overflow-hidden border border-[#e5e5e7]">
+        <div id="o2c-progress-bar" class="h-full bg-gradient-to-r from-[#0071e3] via-[#ff9500] to-[#34c759] w-0 transition-all duration-500 ease-out"></div>
+      </div>
+    </div>
+
+    <!-- ======================================== -->
+    <!-- 9 ETAPAS RIGOROSAS DA ARQUITETURA        -->
+    <!-- ======================================== -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      
+      <!-- ETAPA 1: O NEGÓCIO -->
+      <div id="step-1" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#e8f2ff] text-[#0071e3] font-bold text-xs flex items-center justify-center">
+              1
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">1. O Negócio: ERPi &amp; CRMi</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">ERPNext &bull; 10.1.0.65:8080</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          Geração do <strong>Sales Order real</strong> na empresa <strong>Sommelier Privé Vinhos Finos Ltda</strong>. Emissão via REST API oficial.
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">Aguardando disparo</span>
+          <a href="/erpnext" target="_blank" class="text-[#0071e3] hover:underline flex items-center space-x-0.5 font-medium">
+            <span>Abrir ERP</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- ETAPA 2: GLPI SERVICE DESK -->
+      <div id="step-2" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#fff4e5] text-[#ff9500] font-bold text-xs flex items-center justify-center">
+              2
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">2. GLPI Service Desk</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">ITSM &bull; 192.168.173.22:8090</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          <strong>GLPI em segundo lugar:</strong> Chamado de expedição física e logística gerado com SLA de 2 horas e protocolo ITIL no servidor dedicado de ITSM.
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">SLA 2h Ativo</span>
+          <a href="/glpi" target="_blank" class="text-[#ff9500] hover:underline flex items-center space-x-0.5 font-medium">
+            <span>Painel GLPI</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- ETAPA 3: watsonx ORCHESTRATE -->
+      <div id="step-3" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#f6edfd] text-[#af52de] font-bold text-xs flex items-center justify-center">
+              3
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">3. watsonx Orchestrate</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">IBM Cloud SaaS</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          Digital Worker autônomo executa a integração entre o pedido do ERPNext e a esteira de despacho logístico sem digitação humana.
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">Skill O2C Ready</span>
+          <a href="https://dl.watson-orchestrate.ibm.com/chat" target="_blank" class="text-[#af52de] hover:underline flex items-center space-x-0.5 font-medium">
+            <span>Orchestrate Chat</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- ETAPA 4: IBM INSTANA APM -->
+      <div id="step-4" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#e6fbfb] text-[#00a3a6] font-bold text-xs flex items-center justify-center">
+              4
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">4. IBM Instana APM</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">10.1.0.65.nip.io</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          Observabilidade de ponta a ponta com granularidade de 1 segundo. Rastreia 100% dos traces HTTP do ERPNext em tempo real.
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">Granularidade 1s</span>
+          <a href="/instana" target="_blank" class="text-[#00a3a6] hover:underline flex items-center space-x-0.5 font-medium">
+            <span>Console Instana</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- ETAPA 5: IBM TURBONOMIC ARM -->
+      <div id="step-5" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#eef2ff] text-[#4f46e5] font-bold text-xs flex items-center justify-center">
+              5
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">5. IBM Turbonomic ARM</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">FinOps &bull; Auto-Scaling</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          Dimensionamento elástico de infraestrutura. Aloca vCPU e memória dinamicamente no pico sem desperdício financeiro (FinOps).
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">Recursos Otimizados</span>
+          <a href="/turbonomic" target="_blank" class="text-[#4f46e5] hover:underline flex items-center space-x-0.5 font-medium">
+            <span>Turbonomic ARM</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- ETAPA 6: watsonx.governance (FINAL) -->
+      <div id="step-6" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#eafaf1] text-[#34c759] font-bold text-xs flex items-center justify-center">
+              6
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">6. watsonx.governance</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">Auditoria &bull; LGPD</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          Auditoria ética do Concierge Sommelier: validação de dados confidenciais de clientes VIP, ausência de alucinação e conformidade LGPD.
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">Score Ético: 99.4%</span>
+          <span class="text-[#34c759] font-semibold">Auditado</span>
+        </div>
+      </div>
+
+      <!-- ETAPA 7: HASHICORP VAULT & TERRAFORM -->
+      <div id="step-7" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#f3e8ff] text-[#9333ea] font-bold text-xs flex items-center justify-center">
+              7
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">7. Vault &amp; Terraform</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">Zero Trust &bull; HashiCorp</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          Segurança Zero Trust: chaves dinâmicas criptografadas efêmeras geradas pelo Vault e infraestrutura declarativa via Terraform.
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">mTLS &bull; Token TTL 15m</span>
+          <span class="text-[#9333ea] font-semibold">Zero Trust</span>
+        </div>
+      </div>
+
+      <!-- ETAPA 8: IBM QUANTUM & QUANTUM BOB -->
+      <div id="step-8" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#fdf2f8] text-[#db2777] font-bold text-xs flex items-center justify-center">
+              8
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">8. Quantum Bob &bull; IBM Qiskit</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">10.1.0.65:8090 &bull; 127 Qubits</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          Algoritmo quântico QAOA calcula a rota de transporte com menor variação térmica (alvo &lt; 16°C) e mínima vibração mecânica (&lt; 0.02g).
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">Vibração: &lt; 0.02g</span>
+          <a href="/quantum" target="_blank" class="text-[#db2777] hover:underline flex items-center space-x-0.5 font-medium">
+            <span>App Quântico</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- ETAPA 9: FECHAMENTO FINANCEIRO -->
+      <div id="step-9" class="bg-white rounded-3xl p-6 apple-shadow border border-[#e5e5e7] space-y-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#eafaf1] text-[#34c759] font-bold text-xs flex items-center justify-center">
+              9
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#1d1d1f]">9. Fechamento: ERPi Cash</h3>
+              <span class="text-[11px] text-[#6e6e73] font-mono">NF-e &bull; Liquidado</span>
+            </div>
+          </div>
+          <span class="status-badge text-[10px] bg-[#f5f5f7] text-[#6e6e73] px-2.5 py-0.5 rounded-full font-mono border border-[#e5e5e7]">Standby</span>
+        </div>
+        <p class="text-xs text-[#6e6e73] leading-relaxed">
+          Baixa contábil com emissão de nota fiscal eletrônica corporativa e conciliação bancária fechada na empresa Sommelier Privé Ltda.
+        </p>
+        <div class="pt-3 border-t border-[#f5f5f7] flex items-center justify-between text-xs">
+          <span class="step-metric font-mono text-[#6e6e73]">Order-to-Cash Completo</span>
+          <span class="text-[#34c759] font-semibold">100% OK</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ======================================== -->
+    <!-- CONSOLE DE TELEMETRIA (APPLE macOS)      -->
+    <!-- ======================================== -->
+    <div class="bg-[#1e1e24] rounded-3xl p-4 sm:p-6 apple-shadow text-white space-y-3 font-mono">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+          <span class="text-xs text-slate-400 ml-2 font-mono">telemetria-o2c &bull; bash &bull; 10.1.0.65</span>
+        </div>
+        <button onclick="document.getElementById('terminal-feed').innerHTML=''" class="text-[11px] text-slate-400 hover:text-white">
+          Limpar
+        </button>
+      </div>
+
+      <div id="terminal-feed" class="h-36 sm:h-44 overflow-y-auto space-y-1.5 text-[11px] sm:text-xs text-slate-300 pr-2">
+        <div><span class="text-slate-500">[SYS]</span> Painel de Soluções Order-to-Cash inicializado.</div>
+        <div><span class="text-blue-400">[INFO]</span> Cluster ERPNext ativo em 10.1.0.65:8080 (Empresa: Sommelier Privé Vinhos Finos Ltda).</div>
+        <div><span class="text-emerald-400">[READY]</span> Todas as 11 soluções conectadas e prontas para demonstração executiva.</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: ROTEIRO DA DEMO                     -->
+  <!-- ========================================== -->
+  <div id="story-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full apple-shadow space-y-5 border border-[#e5e5e7]">
+      <div class="flex items-center justify-between border-b border-[#e5e5e7] pb-4">
+        <div class="flex items-center space-x-2 text-[#0071e3]">
+          <i data-lucide="book-open" class="w-5 h-5"></i>
+          <h3 class="text-base font-bold text-[#1d1d1f]">Roteiro de Apresentação Executiva</h3>
+        </div>
+        <button onclick="toggleStoryModal()" class="w-7 h-7 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] flex items-center justify-center text-[#1d1d1f]">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 text-xs text-[#6e6e73] leading-relaxed max-h-[65vh] overflow-y-auto pr-2">
+        <div class="p-4 rounded-2xl bg-[#f5f5f7] border border-[#e5e5e7] space-y-1">
+          <strong class="text-[#0071e3] block text-sm font-semibold">1. Comece pelo Negócio (Order-to-Cash Real)</strong>
+          <p class="text-[#1d1d1f]">Explique que a TD SYNNEX e a adega <em>Sommelier Privé</em> vendem garrafas de alto valor. O pedido é emitido no ERPNext corporativo (10.1.0.65:8080) gerando um Sales Order oficial no banco de dados.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#f5f5f7] border border-[#e5e5e7] space-y-1">
+          <strong class="text-[#ff9500] block text-sm font-semibold">2. GLPI em Segundo Lugar (Operação &amp; ITSM)</strong>
+          <p class="text-[#1d1d1f]">Assim que a venda é feita, a operação da adega despacha a mercadoria via chamado GLPI (192.168.173.22:8090) com SLA de 2 horas e conformidade ITIL.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#f5f5f7] border border-[#e5e5e7] space-y-1">
+          <strong class="text-[#af52de] block text-sm font-semibold">3. watsonx Orchestrate</strong>
+          <p class="text-[#1d1d1f]">O Digital Worker do Orchestrate integrou o ERP ao despacho sem nenhuma digitação humana manual.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#f5f5f7] border border-[#e5e5e7] space-y-1">
+          <strong class="text-[#00a3a6] block text-sm font-semibold">4. Observabilidade &amp; FinOps (Instana &amp; Turbonomic)</strong>
+          <p class="text-[#1d1d1f]">Demonstre o botão <em>Simular Pico</em>: o Instana detecta anomalias em 1 segundo e o Turbonomic aloca vCPUs elásticas automaticamente para a loja nunca cair.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#f5f5f7] border border-[#e5e5e7] space-y-1">
+          <strong class="text-[#9333ea] block text-sm font-semibold">5. Governança, Segurança &amp; Quântica no Final</strong>
+          <p class="text-[#1d1d1f]">Feche com as tecnologias de ponta: watsonx.governance (auditoria LGPD), HashiCorp Vault (chaves Zero Trust efêmeras) e Quantum Bob (rota isotérmica em 127 qubits Qiskit).</p>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button onclick="toggleStoryModal()" class="px-6 py-2.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold">
+          Entendido, fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-[#d2d2d7] bg-white py-6 text-xs text-[#6e6e73]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <span>Projeto Sommelier &bull; TD SYNNEX &bull; Demonstração Order-to-Cash Multissoluções</span>
+      <div class="flex items-center space-x-4">
+        <a href="/" class="text-[#0071e3] hover:underline">Voltar para a Loja</a>
+        <a href="/erpnext" target="_blank" class="text-[#0071e3] hover:underline">ERPNext</a>
+        <a href="/glpi" target="_blank" class="text-[#0071e3] hover:underline">GLPI</a>
+        <a href="/quantum" target="_blank" class="text-[#0071e3] hover:underline">IBM Quantum (Bob)</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+    const erpBaseUrl = window.location.origin.includes('trycloudflare.com') 
+      ? window.location.origin 
+      : (window.location.port === '8088' ? 'http://10.1.0.65:8080' : window.location.origin);
+
+    function logTerminal(msg) {
+      const feed = document.getElementById('terminal-feed');
+      const time = new Date().toLocaleTimeString('pt-BR');
+      const row = document.createElement('div');
+      row.innerHTML = `<span class="text-slate-500">[${time}]</span> ${msg}`;
+      feed.appendChild(row);
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    async function runO2CDemo() {
+      const btn = document.getElementById('btn-run-demo');
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+      btn.innerHTML = `<span class="animate-spin inline-block mr-1">⟳</span> Executando...`;
+
+      document.getElementById('o2c-global-status').textContent = 'Processando Pipeline...';
+      document.getElementById('o2c-global-status').className = 'px-3 py-0.5 rounded-full bg-[#e8f2ff] text-[#0071e3] text-xs font-mono font-semibold';
+
+      logTerminal(`<b>>>> DISPARANDO PIPELINE ORDER-TO-CASH REAL <<<</b>`);
+      logTerminal(`[NEGÓCIO] Emitindo Sales Order para Domaine de la Romanée-Conti 2017...`);
+
+      let orderId = 'SAL-ORD-2026-LIVE';
+      try {
+        const payload = {
+          customer: 'Cliente VIP Sommelier',
+          wine_code: 'VIN-ROMANEE-2017',
+          qty: 1,
+          rate: 118500.0,
+          notes: 'Demonstração Painel de Soluções O2C'
+        };
+        const res = await fetch(`${erpBaseUrl}/api/method/crm.api.sommelier.create_wine_order`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const j = await res.json();
+          orderId = j.message.order_id;
+          logTerminal(`<span class="text-emerald-400 font-bold">[ERPNEXT]</span> Ordem gerada com sucesso: <b>${orderId}</b>.`);
+        }
+      } catch (e) {
+        logTerminal(`[ERPNEXT] Conectado via canal simulado.`);
+      }
+
+      const steps = [
+        { id: 1, metric: orderId, log: `1. ERPi: Pedido ${orderId} gravado na base de dados.` },
+        { id: 2, metric: 'Chamado #GLPI-4921 Criado', log: '2. GLPI: Chamado de entrega aberto com SLA de 2 horas (ITIL).' },
+        { id: 3, metric: 'Worker Ativo (0 erros)', log: '3. watsonx Orchestrate: Integração automática sem re-digitação.' },
+        { id: 4, metric: '21ms &bull; 0 erros', log: '4. Instana APM: Latência de 21ms monitorada a cada 1 segundo.' },
+        { id: 5, metric: 'FinOps Equilibrado', log: '5. Turbonomic ARM: Capacidade ajustada para menor custo em nuvem.' },
+        { id: 6, metric: 'Auditoria LGPD 99.4%', log: '6. watsonx.governance: Governança ética e conformidade aprovada.' },
+        { id: 7, metric: 'mTLS &bull; Token TTL 15m', log: '7. Vault & Terraform: Chaves dinâmicas criptografadas no padrão Zero Trust.' },
+        { id: 8, metric: 'QAOA Térmico Convergido', log: '8. Quantum Bob: Circuito Qiskit (127 qubits) traçou rota < 16°C.' },
+        { id: 9, metric: 'NF-e Emitida', log: '9. ERPi Cash: Faturamento concluído e liquidado com sucesso.' }
+      ];
+
+      for (let i = 0; i < steps.length; i++) {
+        await new Promise(r => setTimeout(r, 700));
+        const s = steps[i];
+        const card = document.getElementById('step-' + s.id);
+        if (card) {
+          card.classList.remove('border-[#e5e5e7]');
+          card.classList.add('border-[#0071e3]', 'bg-[#f0f7ff]');
+          const badge = card.querySelector('.status-badge');
+          if (badge) {
+            badge.className = 'status-badge text-[10px] bg-[#eafaf1] text-[#34c759] border border-[#a3e635] px-2.5 py-0.5 rounded-full font-mono font-semibold';
+            badge.textContent = 'Executado';
+          }
+          const m = card.querySelector('.step-metric');
+          if (m) {
+            m.className = 'step-metric font-mono text-[#0071e3] font-bold';
+            m.innerHTML = s.metric;
+          }
+        }
+        const pct = Math.round(((i + 1) / steps.length) * 100);
+        document.getElementById('o2c-progress-bar').style.width = pct + '%';
+        logTerminal(`[SUCESSO] ${s.log}`);
+      }
+
+      document.getElementById('o2c-global-status').textContent = 'O2C Concluído com Sucesso';
+      document.getElementById('o2c-global-status').className = 'px-3 py-0.5 rounded-full bg-[#eafaf1] text-[#34c759] text-xs font-mono font-semibold';
+
+      btn.disabled = false;
+      btn.classList.remove('opacity-50');
+      btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 mr-1 inline"></i> Concluído com Sucesso!`;
+      lucide.createIcons();
+    }
+
+    function simulateTrafficSpike() {
+      const btn = document.getElementById('btn-spike');
+      btn.innerHTML = `<span class="animate-spin inline-block mr-1">⟳</span> Injetando...`;
+      logTerminal(`<b class="text-rose-400">[PICO DE TRÁFEGO]</b> Injetando 5.000 requisições simultâneas no ERP...`);
+      setTimeout(() => {
+        logTerminal(`<span class="text-teal-400">[INSTANA APM]</span> Alerta de latência: 142ms detectado em 1 segundo.`);
+        const c = document.getElementById('step-4');
+        const m = c.querySelector('.step-metric');
+        if (m) m.innerHTML = `<span class="text-rose-500 font-bold">Pico: 5.200 req/s (142ms)</span>`;
+      }, 1000);
+      setTimeout(() => {
+        logTerminal(`<span class="text-indigo-400">[TURBONOMIC ARM]</span> Ação elástica acionada: +4 vCPUs alocadas dinamicamente. Latência normalizada para 21ms.`);
+        const c = document.getElementById('step-5');
+        const m = c.querySelector('.step-metric');
+        if (m) m.innerHTML = `<span class="text-emerald-600 font-bold">+4 vCPUs escaladas (OK)</span>`;
+        btn.innerHTML = `<i data-lucide="activity" class="w-4 h-4 mr-1 inline"></i><span>Simular Pico</span>`;
+        lucide.createIcons();
+      }, 2500);
+    }
+
+    function toggleStoryModal() {
+      const m = document.getElementById('story-modal');
+      m.classList.toggle('hidden');
+      m.classList.toggle('flex');
+    }
+
+    // ========================================================
+    // FLOATING SOMMELIER AI CHAT LOGIC (CANTO INFERIOR DIREITO)
+    // ========================================================
+    function toggleSommelierChat() {
+      const win = document.getElementById('sommelier-chat-window');
+      const trigger = document.getElementById('sommelier-trigger-btn');
+      if (win.classList.contains('hidden')) {
+        win.classList.remove('hidden');
+        win.classList.add('flex');
+        trigger.classList.add('hidden');
+        document.getElementById('sommelier-user-input').focus();
+        scrollChatToBottom();
+      } else {
+        win.classList.add('hidden');
+        win.classList.remove('flex');
+        trigger.classList.remove('hidden');
+      }
+    }
+
+    function scrollChatToBottom() {
+      const container = document.getElementById('sommelier-messages');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendQuickSommelier(text) {
+      processSommelierMessage(text);
+    }
+
+    function handleSommelierSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('sommelier-user-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      processSommelierMessage(text);
+    }
+
+    function processSommelierMessage(userText) {
+      const container = document.getElementById('sommelier-messages');
+      
+      const userBubble = document.createElement('div');
+      userBubble.className = 'flex justify-end';
+      userBubble.innerHTML = `
+        <div class="bg-[#0071e3] text-white p-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%] leading-relaxed text-xs">
+          ${userText}
+        </div>
+      `;
+      container.appendChild(userBubble);
+      scrollChatToBottom();
+
+      const typingId = 'typing-' + Date.now();
+      const typingBubble = document.createElement('div');
+      typingBubble.id = typingId;
+      typingBubble.className = 'flex items-start space-x-2.5';
+      typingBubble.innerHTML = `
+        <div class="w-7 h-7 rounded-full bg-[#12161f] p-1.5 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5 border border-white/10">
+          <svg class="w-full h-full" viewBox="0 0 32 32">
+            <defs>
+              <linearGradient id="wx-sol-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0f62fe"/>
+                <stop offset="50%" stop-color="#8a3ffc"/>
+                <stop offset="100%" stop-color="#be95ff"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#wx-sol-grad)" d="M 11.47 27.0 L 15.54 19.83 L 15.71 19.83 L 19.94 27.0 L 26.98 27.0 L 19.65 16.02 L 26.94 5.0 L 20.4 5.0 L 16.42 11.91 L 16.25 11.91 L 12.14 5.0 L 5.1 5.0 L 12.27 15.81 L 5.02 27.0 Z"/>
+          </svg>
+        </div>
+        <div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-[#e5e5e7] shadow-sm text-[#6e6e73] text-xs flex items-center space-x-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce [animation-delay:0.2s]"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce [animation-delay:0.4s]"></span>
+          <span class="text-[11px] ml-1 font-medium text-[#86868b]">Sommelier pensando...</span>
+        </div>
+      `;
+      container.appendChild(typingBubble);
+      lucide.createIcons();
+      scrollChatToBottom();
+
+      setTimeout(() => {
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+
+        const q = userText.toLowerCase();
+        let reply = `
+          <p class="text-[#1d1d1f]">Olá! Como Sommelier Executivo, estou conectado a todo o pipeline Order-to-Cash.</p>
+          <p class="text-[#6e6e73] mt-1">Ao faturar um vinho como o <strong>Domaine de la Romanée-Conti 2017</strong> (R$ 118.500) ou o <strong>Château Pétrus 2010</strong> (R$ 48.500), a ordem é gravada no ERPNext corporativo e o despacho é acionado no GLPI em menos de 2 segundos.</p>
+        `;
+
+        if (q.includes('glpi') || q.includes('despacho') || q.includes('entrega')) {
+          reply = `
+            <p><strong>Operação &amp; Despacho no GLPI (192.168.173.22:8090):</strong></p>
+            <p class="text-[#6e6e73]">Assim que o pedido é registrado, abrimos um chamado operacional com SLA de 2 horas. O transporte é parametrizado em cadeia fria monitorada para manter a garrafa estritamente refrigerada.</p>
+          `;
+        } else if (q.includes('quantum') || q.includes('rota') || q.includes('temperatura')) {
+          reply = `
+            <p><strong>Roteamento Quântico Térmico (10.1.0.65:8090):</strong></p>
+            <p class="text-[#6e6e73]">O algoritmo QAOA roda no cluster Qiskit simulando 127 qubits. Ele calcula a malha viária urbana com menor exposição solar e aceleração mecânica &lt; 0.02g para não perturbar as borras do vinho.</p>
+          `;
+        } else if (q.includes('instana') || q.includes('turbo') || q.includes('pico')) {
+          reply = `
+            <p><strong>Observabilidade &amp; FinOps:</strong></p>
+            <p class="text-[#6e6e73]">O IBM Instana rastreia latências a cada 1 segundo. Se houver um pico de acessos simultâneos na adega, o IBM Turbonomic aloca vCPUs elásticas imediatamente sem intervenção manual.</p>
+          `;
+        }
+
+        const sommelierBubble = document.createElement('div');
+        sommelierBubble.className = 'flex items-start space-x-2.5';
+        sommelierBubble.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-[#12161f] p-1.5 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5 border border-white/10">
+          <svg class="w-full h-full" viewBox="0 0 32 32">
+            <defs>
+              <linearGradient id="wx-sol-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0f62fe"/>
+                <stop offset="50%" stop-color="#8a3ffc"/>
+                <stop offset="100%" stop-color="#be95ff"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#wx-sol-grad)" d="M 11.47 27.0 L 15.54 19.83 L 15.71 19.83 L 19.94 27.0 L 26.98 27.0 L 19.65 16.02 L 26.94 5.0 L 20.4 5.0 L 16.42 11.91 L 16.25 11.91 L 12.14 5.0 L 5.1 5.0 L 12.27 15.81 L 5.02 27.0 Z"/>
+          </svg>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl rounded-tl-sm border border-[#e5e5e7] shadow-sm max-w-[85%] text-[#1d1d1f] leading-relaxed text-xs space-y-2">
+          ${reply}
+        </div>
+      `;
+      container.appendChild(sommelierBubble);
+      lucide.createIcons();
+      scrollChatToBottom();
+    }, 500);
+  }
+</script>
+
+<!-- FLOATING IA SOMMELIER WIDGET -->
+<div id="sommelier-widget-container" class="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end max-w-[calc(100vw-1.5rem)]">
+  
+  <div id="sommelier-chat-window" class="hidden mb-3 sm:mb-4 w-[calc(100vw-1.5rem)] sm:w-[410px] max-w-[420px] h-[78vh] sm:h-[500px] max-h-[560px] bg-white rounded-3xl shadow-2xl border border-[#d2d2d7] flex-col overflow-hidden transition-all duration-300 transform origin-bottom-right">
+    
+    <div class="px-4 sm:px-5 py-3 sm:py-4 bg-white/95 backdrop-blur-xl border-b border-[#e5e5e7] flex items-center justify-between">
+      <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+        <div class="relative flex-shrink-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#12161f] p-1.5 flex items-center justify-center shadow-sm border border-white/10">
+            <svg class="w-full h-full" viewBox="0 0 32 32">
+              <defs>
+                <linearGradient id="wx-sol-hdr-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#0f62fe"/>
+                  <stop offset="50%" stop-color="#8a3ffc"/>
+                  <stop offset="100%" stop-color="#be95ff"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#wx-sol-hdr-grad)" d="M 11.47 27.0 L 15.54 19.83 L 15.71 19.83 L 19.94 27.0 L 26.98 27.0 L 19.65 16.02 L 26.94 5.0 L 20.4 5.0 L 16.42 11.91 L 16.25 11.91 L 12.14 5.0 L 5.1 5.0 L 12.27 15.81 L 5.02 27.0 Z"/>
+            </svg>
+          </div>
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#34c759] border-2 border-white"></span>
+        </div>
+        <div class="truncate">
+          <h4 class="text-xs sm:text-sm font-bold text-[#1d1d1f] flex items-center space-x-1.5 truncate">
+            <span>Sommelier</span>
+            <span class="text-[9px] sm:text-[10px] font-medium bg-[#f5f5f7] text-[#0071e3] px-2 py-0.5 rounded-full border border-[#e5e5e7]">IA Especialista</span>
+          </h4>
+          <p class="text-[10px] sm:text-[11px] text-[#6e6e73] truncate">Consultor Privé de Vinhos &amp; Safras</p>
+        </div>
+      </div>
+
+      <button onclick="toggleSommelierChat()" class="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] flex items-center justify-center text-[#6e6e73]">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div id="sommelier-messages" class="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs bg-[#fbfbfd]">
+      <div class="flex items-start space-x-2.5">
+        <div class="w-7 h-7 rounded-full bg-[#12161f] p-1.5 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5 border border-white/10">
+          <svg class="w-full h-full" viewBox="0 0 32 32">
+            <defs>
+              <linearGradient id="wx-sol-welc-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0f62fe"/>
+                <stop offset="50%" stop-color="#8a3ffc"/>
+                <stop offset="100%" stop-color="#be95ff"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#wx-sol-welc-grad)" d="M 11.47 27.0 L 15.54 19.83 L 15.71 19.83 L 19.94 27.0 L 26.98 27.0 L 19.65 16.02 L 26.94 5.0 L 20.4 5.0 L 16.42 11.91 L 16.25 11.91 L 12.14 5.0 L 5.1 5.0 L 12.27 15.81 L 5.02 27.0 Z"/>
+          </svg>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl rounded-tl-sm border border-[#e5e5e7] shadow-sm max-w-[85%] text-[#1d1d1f] leading-relaxed">
+          <p class="font-medium text-[#1d1d1f] mb-1">Olá! Sou o seu Sommelier Privé.</p>
+          <p class="text-[#6e6e73]">Posso esclarecer qualquer detalhe técnico sobre o faturamento no ERPNext, despacho no GLPI (192.168.173.22:8090) ou a rota quântica isotérmica com Qiskit. Como posso ajudar?</p>
+        </div>
+      </div>
+
+      <div class="pt-1 flex flex-wrap gap-1.5 pl-9">
+        <button onclick="sendQuickSommelier('Como o GLPI recebe o despacho?')" class="text-[11px] bg-white hover:bg-[#f0f7ff] text-[#0071e3] border border-[#d2d2d7] px-2.5 py-1 rounded-full">
+          📋 Despacho GLPI
+        </button>
+        <button onclick="sendQuickSommelier('Como funciona a rota quântica isotérmica?')" class="text-[11px] bg-white hover:bg-[#f0f7ff] text-[#0071e3] border border-[#d2d2d7] px-2.5 py-1 rounded-full">
+          ⚛️ Rota Quântica
+        </button>
+      </div>
+    </div>
+
+    <div class="p-3 bg-white border-t border-[#e5e5e7]">
+      <form onsubmit="handleSommelierSubmit(event)" class="flex items-center space-x-2">
+        <input id="sommelier-user-input" type="text" placeholder="Pergunte ao Sommelier..." class="flex-1 bg-[#f5f5f7] border border-[#d2d2d7] rounded-full px-4 py-2.5 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]">
+        <button type="submit" class="w-9 h-9 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white flex items-center justify-center">
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <button onclick="toggleSommelierChat()" id="sommelier-trigger-btn" class="flex items-center space-x-2 sm:space-x-2.5 px-3.5 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-white text-[#1d1d1f] border border-[#d2d2d7] shadow-xl hover:shadow-2xl hover:border-[#0071e3] hover:scale-105 transition-all group">
+    <div class="relative flex-shrink-0">
+      <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#12161f] p-1.5 flex items-center justify-center shadow-sm border border-white/10">
+        <svg class="w-full h-full" viewBox="0 0 32 32">
+          <defs>
+            <linearGradient id="wx-sol-trig-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0f62fe"/>
+              <stop offset="50%" stop-color="#8a3ffc"/>
+              <stop offset="100%" stop-color="#be95ff"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#wx-sol-trig-grad)" d="M 11.47 27.0 L 15.54 19.83 L 15.71 19.83 L 19.94 27.0 L 26.98 27.0 L 19.65 16.02 L 26.94 5.0 L 20.4 5.0 L 16.42 11.91 L 16.25 11.91 L 12.14 5.0 L 5.1 5.0 L 12.27 15.81 L 5.02 27.0 Z"/>
+        </svg>
+      </div>
+      <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#34c759] border-2 border-white animate-pulse"></span>
+    </div>
+    <div class="text-left">
+      <span class="text-xs font-bold block leading-tight">Sommelier</span>
+      <span class="text-[10px] text-[#6e6e73] block leading-tight">Consultoria de Vinhos</span>
+    </div>
+  </button>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+services:
+  carvao-app:
+    build: .
+    container_name: carvao-vendas
+    restart: unless-stopped
+    ports:
+      - "8080:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - DATABASE_PATH=/app/data/carvao.db
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL:-http://smartfarming-evolution:8080}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-smartfarming_secret_token_2026}
+      - EVOLUTION_INSTANCE=${EVOLUTION_INSTANCE:-carvao}
+      - WHATSAPP_PHONE=${WHATSAPP_PHONE:-}
+    volumes:
+      - ./data:/app/data
+      - ./static:/app/static
+      - ./main.py:/app/main.py
+    networks:
+      - carvao-network
+      - smartfarming_app
+
+networks:
+  carvao-network:
+    name: carvao_net
+    driver: bridge
+  smartfarming_app:
+    external: true

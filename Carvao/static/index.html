@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Carvão Mattos - Gestão de Vendas, Pedidos & WhatsApp IA</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Marked.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes pulse-subtle { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .pulse-glow { animation: pulse-subtle 3s infinite ease-in-out; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col md:flex-row pb-24 md:pb-0">
+
+  <!-- ==================== SIDEBAR DESKTOP ==================== -->
+  <aside class="hidden md:flex flex-col w-64 bg-slate-900 border-r border-slate-800 p-5 space-y-6 shrink-0">
+    <!-- Logo e Marca -->
+    <div class="flex items-center space-x-3">
+      <div class="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-md">
+        <img src="/static/logo.png" alt="Carvão Mattos" class="w-full h-full object-contain">
+      </div>
+      <div>
+        <h1 class="font-black text-base text-white leading-tight">Carvão <span class="text-amber-500">Mattos</span></h1>
+        <p class="text-[11px] text-slate-400 font-medium">Gestão & Vendas</p>
+      </div>
+    </div>
+
+    <!-- Navegação -->
+    <nav class="space-y-1.5 flex-1">
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/20">
+        <i class="fa-solid fa-chart-pie text-base"></i>
+        <span>Visão Geral</span>
+      </button>
+
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-btn w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800/60">
+        <div class="flex items-center space-x-3">
+          <i class="fa-solid fa-boxes-packing text-base text-amber-500"></i>
+          <span>Gestão de Pedidos</span>
+        </div>
+        <span id="nav-orders-badge" class="hidden px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500 text-slate-950">0</span>
+      </button>
+
+      <button onclick="switchTab('new-tx')" id="nav-new-tx" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800/60">
+        <i class="fa-solid fa-circle-plus text-base"></i>
+        <span>Lançar Venda/Carga</span>
+      </button>
+
+      <button onclick="switchTab('history')" id="nav-history" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800/60">
+        <i class="fa-solid fa-receipt text-base"></i>
+        <span>Romaneios & Vendas</span>
+      </button>
+
+      <button onclick="switchTab('customers')" id="nav-customers" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800/60">
+        <i class="fa-solid fa-users text-base"></i>
+        <span>Clientes</span>
+      </button>
+
+      <button onclick="switchTab('suppliers')" id="nav-suppliers" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800/60">
+        <i class="fa-solid fa-truck-field text-base"></i>
+        <span>Fornecedores</span>
+      </button>
+
+      <button onclick="switchTab('expenses')" id="nav-expenses" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800/60">
+        <i class="fa-solid fa-route text-base"></i>
+        <span>Fretes & Despesas</span>
+      </button>
+    </nav>
+
+    <!-- Status do Docker & Config Gemini -->
+    <div class="glass p-3 rounded-2xl text-xs space-y-2">
+            <div class="flex items-center justify-between text-slate-400 cursor-pointer hover:bg-slate-800/50 p-1 rounded-lg transition" onclick="openWhatsAppModal()">
+        <span class="flex items-center"><i class="fa-brands fa-whatsapp text-emerald-400 mr-1.5 text-sm"></i> WhatsApp</span>
+        <span id="whatsapp-sidebar-badge" class="font-bold text-slate-400 text-[11px]">...</span>
+      </div>
+      <button onclick="openWhatsAppModal()" class="w-full py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 rounded-lg text-center font-medium transition flex items-center justify-center space-x-1.5 border border-emerald-500/30">
+        <i class="fa-brands fa-whatsapp text-sm"></i>
+        <span>Conectar WhatsApp</span>
+      </button>
+<div class="flex items-center justify-between text-slate-400">
+        <span>Docker Container</span>
+        <span class="inline-flex items-center text-emerald-400 font-bold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> Ativo
+        </span>
+      </div>
+      <div class="flex items-center justify-between text-slate-400">
+        <span>Mattinhos IA</span>
+        <span id="gemini-status-badge" class="font-bold text-slate-400">...</span>
+      </div>
+      <button onclick="openConfigModal()" class="w-full mt-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-center font-medium transition flex items-center justify-center space-x-1.5 border border-slate-700">
+        <i class="fa-solid fa-key text-[10px]"></i>
+        <span>Configurar Gemini Key</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ==================== TOPBAR MOBILE ==================== -->
+  <header class="md:hidden flex items-center justify-between p-3.5 bg-slate-900 border-b border-slate-800 sticky top-0 z-30">
+    <div class="flex items-center space-x-2.5">
+      <div class="w-9 h-9 rounded-lg bg-white p-0.5 flex items-center justify-center shrink-0">
+        <img src="/static/logo.png" alt="Carvão Mattos" class="w-full h-full object-contain">
+      </div>
+      <h1 class="font-black text-base text-white">Carvão <span class="text-amber-500">Mattos</span></h1>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button onclick="openWhatsAppModal()" id="m-whatsapp-top-btn" class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center" title="Conectar WhatsApp">
+        <i class="fa-brands fa-whatsapp text-base"></i>
+      </button>
+      <button onclick="openConfigModal()" class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center">
+        <i class="fa-solid fa-gear text-xs"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
+  <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-y-auto">
+
+    <!-- ========== ABA 1: DASHBOARD ========== -->
+    <div id="tab-dashboard" class="tab-content space-y-6">
+      
+      <!-- Cabeçalho -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black tracking-tight text-white">Painel Operacional</h2>
+          <p class="text-sm text-slate-400">Controle completo de estoque, faturamento e fretes da Carvão Mattos</p>
+        </div>
+              <button onclick="switchTab('orders')" id="nav-orders" class="nav-btn w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800/60">
+        <div class="flex items-center space-x-3">
+          <i class="fa-solid fa-boxes-packing text-base text-amber-500"></i>
+          <span>Gestão de Pedidos</span>
+        </div>
+        <span id="nav-orders-badge" class="hidden px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500 text-slate-950">0</span>
+      </button>
+
+      <button onclick="switchTab('new-tx')" class="inline-flex items-center justify-center space-x-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-4 rounded-xl shadow-lg shadow-amber-500/20 transition active:scale-95 text-sm">
+          <i class="fa-solid fa-plus"></i>
+          <span>Lançar Venda / Carga</span>
+        </button>
+      </div>
+
+      <!-- CARDS DE MÉTRICAS (KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 md:gap-5">
+        <div class="glass p-4 rounded-2xl relative overflow-hidden">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Faturamento Bruto</p>
+          <h3 id="stat-revenue" class="text-xl md:text-2xl font-black text-white mt-1">R$ 0,00</h3>
+          <p class="text-[11px] text-amber-400/90 mt-1 font-medium"><i class="fa-solid fa-arrow-up-right-dots mr-1"></i> Vendas registradas</p>
+        </div>
+
+        <div class="glass p-4 rounded-2xl relative overflow-hidden">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Custos de Cargas</p>
+          <h3 id="stat-cost" class="text-xl md:text-2xl font-black text-rose-400 mt-1">R$ 0,00</h3>
+          <p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-handshake mr-1"></i> Fornecedores</p>
+        </div>
+
+        <div class="glass p-4 rounded-2xl relative overflow-hidden border-emerald-500/30 bg-emerald-950/10">
+          <p class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Sobra Líquida Real</p>
+          <h3 id="stat-profit" class="text-xl md:text-2xl font-black text-emerald-400 mt-1">R$ 0,00</h3>
+          <p class="text-[11px] text-emerald-300 mt-1 font-medium"><i class="fa-solid fa-check-double mr-1"></i> Lucro apurado</p>
+        </div>
+
+        <div class="glass p-4 rounded-2xl relative overflow-hidden">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Volume Vendido</p>
+          <h3 id="stat-kg" class="text-xl md:text-2xl font-black text-cyan-400 mt-1">0 kg</h3>
+          <p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-weight-hanging mr-1"></i> Sacaria expedida</p>
+        </div>
+      </div>
+
+      <!-- ESTOQUE ATUAL & GRÁFICO -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div class="lg:col-span-2 glass p-5 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-base text-white flex items-center">
+              <i class="fa-solid fa-boxes-stacked text-amber-500 mr-2"></i> Estoque Atual de Sacos
+            </h3>
+            <span class="text-xs text-slate-400">Clique para ajustar</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="stock-cards-container">
+            <!-- Cards gerados via JS -->
+          </div>
+
+          <!-- Insumos / Embalagens vazias -->
+          <div class="pt-3 border-t border-slate-800">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Insumos & Sacos Vazios:</h4>
+            <div id="packaging-cards-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <!-- Embalagens -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico Mix de Vendas -->
+        <div class="glass p-5 rounded-2xl flex flex-col justify-between">
+          <h3 class="font-bold text-base text-white flex items-center mb-4">
+            <i class="fa-solid fa-chart-donut text-amber-500 mr-2"></i> Mix de Vendas (Quilos)
+          </h3>
+          <div class="relative w-full h-52 flex items-center justify-center">
+            <canvas id="salesPieChart"></canvas>
+          </div>
+          <p class="text-xs text-center text-slate-400 mt-2">10kg • 6kg • 3kg • 2kg</p>
+        </div>
+      </div>
+
+      <!-- DESTAQUE DO CADERNO: ROMANEIO GIOVANI -->
+      <div class="glass p-5 rounded-2xl border-amber-500/30 bg-gradient-to-br from-slate-900 to-amber-950/20 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-lg shrink-0">
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-white text-base">Última Carga / Romaneio (Caderno de Vendas)</h3>
+              <p class="text-xs text-amber-400 font-medium">Digitalizado com sucesso da foto original</p>
+            </div>
+          </div>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 self-start sm:self-auto">
+            <i class="fa-solid fa-circle-check mr-1.5"></i> Carga Concluída & Auditada
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+          <div>
+            <p class="text-xs text-slate-400">Total Faturado</p>
+            <p class="font-bold text-white text-base">R$ 21.928,00</p>
+            <p class="text-[11px] text-slate-400">6.080 quilos</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400">Custo Giovani</p>
+            <p class="font-bold text-rose-400 text-base">R$ 15.200,00</p>
+            <p class="text-[11px] text-slate-400">Carga comprada</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400">Sobra Bruta</p>
+            <p class="font-bold text-amber-400 text-base">R$ 6.728,00</p>
+            <p class="text-[11px] text-slate-400">Margem bruta</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400">Sobra Líquida Real</p>
+            <p class="font-bold text-emerald-400 text-base">R$ 6.069,73</p>
+            <p class="text-[11px] text-slate-400">Após pedágio & sacos</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== ABA 2: NOVO ROMANEIO / VENDA ========== -->
+    <div id="tab-new-tx" class="tab-content hidden max-w-3xl mx-auto space-y-6">
+      <div>
+        <h2 class="text-2xl font-black tracking-tight text-white">Lançar Nova Carga / Venda de Carvão</h2>
+        <p class="text-sm text-slate-400">Informe a sacaria vendida, custos do fornecedor e fretes/despesas</p>
+      </div>
+
+      <form id="tx-form" onsubmit="saveTransaction(event)" class="glass p-5 md:p-7 rounded-2xl space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Fornecedor / Responsável</label>
+            <input type="text" id="tx-partner" placeholder="Ex: Giovani" value="Giovani" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-amber-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Custo da Carga (R$)</label>
+            <input type="number" step="0.01" id="tx-partner-cost" placeholder="Ex: 15200.00" oninput="calculateTotals()" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-amber-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Descrição da Operação</label>
+          <input type="text" id="tx-desc" placeholder="Ex: Carga de Carvão e Acerto de Vendas" value="Acerto de Carga de Carvão" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-amber-500 focus:outline-none">
+        </div>
+
+        <!-- Grade de Sacaria -->
+        <div class="space-y-3 pt-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-amber-400">
+            <i class="fa-solid fa-boxes-stacked mr-1"></i> Sacos Comercializados:
+          </label>
+
+          <div class="space-y-2">
+            <!-- 10 KG -->
+            <div class="grid grid-cols-12 gap-2 items-center bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-xs">
+              <div class="col-span-4 sm:col-span-3 font-bold text-white flex items-center">
+                <span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Saco 10 kg
+              </div>
+              <div class="col-span-3 sm:col-span-3">
+                <input type="number" id="units-10k" placeholder="Qtd Un." oninput="calculateTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+              </div>
+              <div class="col-span-2 sm:col-span-3">
+                <input type="number" step="0.10" id="price-kg-10k" value="3.60" oninput="calculateTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+              </div>
+              <div class="col-span-3 sm:col-span-3 text-right font-black text-amber-400 text-sm" id="subtotal-10k">R$ 0,00</div>
+            </div>
+
+            <!-- 6 KG -->
+            <div class="grid grid-cols-12 gap-2 items-center bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-xs">
+              <div class="col-span-4 sm:col-span-3 font-bold text-white flex items-center">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span> Saco 6 kg
+              </div>
+              <div class="col-span-3 sm:col-span-3">
+                <input type="number" id="units-6k" placeholder="Qtd Un." oninput="calculateTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+              </div>
+              <div class="col-span-2 sm:col-span-3">
+                <input type="number" step="0.10" id="price-kg-6k" value="3.60" oninput="calculateTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+              </div>
+              <div class="col-span-3 sm:col-span-3 text-right font-black text-amber-400 text-sm" id="subtotal-6k">R$ 0,00</div>
+            </div>
+
+            <!-- 3 KG -->
+            <div class="grid grid-cols-12 gap-2 items-center bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-xs">
+              <div class="col-span-4 sm:col-span-3 font-bold text-white flex items-center">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 mr-2"></span> Saco 3 kg
+              </div>
+              <div class="col-span-3 sm:col-span-3">
+                <input type="number" id="units-3k" placeholder="Qtd Un." oninput="calculateTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+              </div>
+              <div class="col-span-2 sm:col-span-3">
+                <input type="number" step="0.10" id="price-kg-3k" value="3.60" oninput="calculateTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+              </div>
+              <div class="col-span-3 sm:col-span-3 text-right font-black text-amber-400 text-sm" id="subtotal-3k">R$ 0,00</div>
+            </div>
+
+            <!-- 2 KG -->
+            <div class="grid grid-cols-12 gap-2 items-center bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-xs">
+              <div class="col-span-4 sm:col-span-3 font-bold text-white flex items-center">
+                <span class="w-2 h-2 rounded-full bg-purple-400 mr-2"></span> Saco 2 kg
+              </div>
+              <div class="col-span-3 sm:col-span-3">
+                <input type="number" id="units-2k" placeholder="Qtd Un." oninput="calculateTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+              </div>
+              <div class="col-span-2 sm:col-span-3">
+                <input type="number" step="0.10" id="price-kg-2k" value="3.80" oninput="calculateTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+              </div>
+              <div class="col-span-3 sm:col-span-3 text-right font-black text-amber-400 text-sm" id="subtotal-2k">R$ 0,00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Despesas e Fretes na Carga -->
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <label class="block text-xs font-bold uppercase tracking-wider text-rose-400">
+              <i class="fa-solid fa-receipt mr-1"></i> Frete, Pedágio & Despesas:
+            </label>
+            <button type="button" onclick="addExpenseRow()" class="text-xs text-amber-400 font-bold hover:underline">
+              + Adicionar Linha de Despesa
+            </button>
+          </div>
+          <div id="expenses-container" class="space-y-2"></div>
+        </div>
+
+        <!-- Totais da Carga -->
+        <div class="glass p-4 rounded-xl space-y-2 border-amber-500/20 bg-slate-900/80">
+          <div class="flex justify-between text-xs text-slate-300">
+            <span>Total Quilos:</span><span id="form-total-kg" class="font-bold text-white">0 kg</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-300">
+            <span>Faturamento Bruto:</span><span id="form-gross-total" class="font-bold text-white">R$ 0,00</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-300">
+            <span>(-) Custo Carga:</span><span id="form-partner-cost" class="font-bold text-rose-400">R$ 0,00</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-300">
+            <span>(-) Despesas/Fretes:</span><span id="form-expenses-total" class="font-bold text-rose-400">R$ 0,00</span>
+          </div>
+          <div class="pt-2 border-t border-slate-800 flex justify-between text-base font-black">
+            <span class="text-emerald-400">Sobra Líquida Estimada:</span><span id="form-net-profit" class="text-emerald-400">R$ 0,00</span>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 px-4 rounded-xl shadow-lg shadow-amber-500/20 transition active:scale-98 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-floppy-disk text-lg"></i>
+          <span>Salvar no Sistema</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- ========== ABA 3: HISTÓRICO & ROMANEIOS (COM DELETE) ========== -->
+    <div id="tab-history" class="tab-content hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-black tracking-tight text-white">Romaneios & Vendas</h2>
+          <p class="text-sm text-slate-400">Controle completo com opção de estorno e exclusão</p>
+        </div>
+      </div>
+      <div id="tx-history-list" class="space-y-4"></div>
+    </div>
+
+    <!-- ========== ABA 4: CLIENTES (CRUD COMPLETO) ========== -->
+    <div id="tab-customers" class="tab-content hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-black tracking-tight text-white">Gestão de Clientes</h2>
+          <p class="text-sm text-slate-400">Restaurantes, churrascarias, mercados e distribuidoras</p>
+        </div>
+        <button onclick="openCustomerModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center space-x-2 self-start sm:self-auto">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Novo Cliente</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="customers-grid"></div>
+    </div>
+
+    <!-- ========== ABA 5: FORNECEDORES (CRUD COMPLETO) ========== -->
+    <div id="tab-suppliers" class="tab-content hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-black tracking-tight text-white">Gestão de Fornecedores</h2>
+          <p class="text-sm text-slate-400">Produtores de carvão, carvoarias e parceiros de carga</p>
+        </div>
+        <button onclick="openSupplierModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center space-x-2 self-start sm:self-auto">
+          <i class="fa-solid fa-plus"></i>
+          <span>Novo Fornecedor</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="suppliers-grid"></div>
+    </div>
+
+    <!-- ========== ABA 6: FRETES E DESPESAS (CRUD COMPLETO) ========== -->
+    <div id="tab-expenses" class="tab-content hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-black tracking-tight text-white">Fretes & Despesas Operacionais</h2>
+          <p class="text-sm text-slate-400">Controle de fretes de caminhão, pedágios, sacaria e combustível</p>
+        </div>
+        <button onclick="openExpenseModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center space-x-2 self-start sm:self-auto">
+          <i class="fa-solid fa-receipt"></i>
+          <span>Lançar Frete/Despesa</span>
+        </button>
+      </div>
+
+      <div class="glass p-5 rounded-2xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[11px]">
+              <tr>
+                <th class="py-2.5 px-3">Data</th>
+                <th class="py-2.5 px-3">Categoria</th>
+                <th class="py-2.5 px-3">Descrição</th>
+                <th class="py-2.5 px-3">Responsável</th>
+                <th class="py-2.5 px-3 text-right">Valor</th>
+                <th class="py-2.5 px-3 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="expenses-table-body" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========== ABA: GESTÃO DE PEDIDOS & FILA INTELIGENTE ========== -->
+    <div id="tab-orders" class="tab-content hidden space-y-6">
+      
+      <!-- Topo de Pedidos -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black tracking-tight text-white flex items-center">
+            <i class="fa-solid fa-boxes-packing text-amber-500 mr-2.5"></i> Gestão & Fila de Pedidos
+          </h2>
+          <p class="text-sm text-slate-400">Gestão e Fila de Pedidos com IA Mattinhos</p>
+        </div>
+        <div class="flex items-center space-x-2.5 self-start sm:self-auto">
+          <button onclick="openWhatsAppModal()" class="px-3.5 py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 font-bold text-xs flex items-center space-x-2 transition shadow-lg shadow-emerald-500/10">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span id="orders-whatsapp-btn-text">WhatsApp (Opcional)</span>
+          </button>
+          <button onclick="openNewOrderModal()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center space-x-2 transition shadow-lg shadow-amber-500/20">
+            <i class="fa-solid fa-plus"></i>
+            <span>+ Novo Pedido</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Métricas / Fila de Pedidos -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
+        <div class="glass p-3.5 rounded-2xl border-amber-500/30 bg-amber-500/5 cursor-pointer" onclick="filterOrders('PENDENTE')">
+          <div class="flex items-center justify-between text-xs text-amber-400 font-bold">
+            <span>🟡 Na Fila</span>
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <h3 id="stat-orders-pending" class="text-2xl font-black text-white mt-1">0</h3>
+          <p class="text-[11px] text-slate-400">Aguardando separação</p>
+        </div>
+
+        <div class="glass p-3.5 rounded-2xl border-blue-500/30 bg-blue-500/5 cursor-pointer" onclick="filterOrders('CONFIRMADO')">
+          <div class="flex items-center justify-between text-xs text-blue-400 font-bold">
+            <span>🔵 Confirmados</span>
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h3 id="stat-orders-confirmed" class="text-2xl font-black text-white mt-1">0</h3>
+          <p class="text-[11px] text-slate-400">Aprovados</p>
+        </div>
+
+        <div class="glass p-3.5 rounded-2xl border-orange-500/30 bg-orange-500/5 cursor-pointer" onclick="filterOrders('EM_SEPARACAO')">
+          <div class="flex items-center justify-between text-xs text-orange-400 font-bold">
+            <span>🟠 Em Separação</span>
+            <i class="fa-solid fa-dolly"></i>
+          </div>
+          <h3 id="stat-orders-preparing" class="text-2xl font-black text-white mt-1">0</h3>
+          <p class="text-[11px] text-slate-400">Galpão / sacaria</p>
+        </div>
+
+        <div class="glass p-3.5 rounded-2xl border-purple-500/30 bg-purple-500/5 cursor-pointer" onclick="filterOrders('SAIU_PARA_ENTREGA')">
+          <div class="flex items-center justify-between text-xs text-purple-400 font-bold">
+            <span>🚚 Em Rota</span>
+            <i class="fa-solid fa-truck-fast"></i>
+          </div>
+          <h3 id="stat-orders-delivery" class="text-2xl font-black text-white mt-1">0</h3>
+          <p class="text-[11px] text-slate-400">Com motorista</p>
+        </div>
+
+        <div class="glass p-3.5 rounded-2xl border-emerald-500/30 bg-emerald-500/5 cursor-pointer" onclick="filterOrders('ENTREGUE')">
+          <div class="flex items-center justify-between text-xs text-emerald-400 font-bold">
+            <span>✅ Entregues</span>
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h3 id="stat-orders-delivered" class="text-2xl font-black text-white mt-1">0</h3>
+          <p class="text-[11px] text-slate-400">Finalizados</p>
+        </div>
+      </div>
+
+      <!-- Barra de Filtros e Busca -->
+      <div class="glass p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+        <!-- Filtros Rápidos -->
+        <div class="flex items-center space-x-1.5 overflow-x-auto w-full sm:w-auto no-scrollbar py-1">
+          <button onclick="filterOrders('TODOS')" class="order-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-amber-500 text-slate-950" data-filter="TODOS">Todos</button>
+          <button onclick="filterOrders('PENDENTE')" class="order-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800" data-filter="PENDENTE">Pendentes</button>
+          <button onclick="filterOrders('EM_SEPARACAO')" class="order-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800" data-filter="EM_SEPARACAO">Em Separação</button>
+          <button onclick="filterOrders('SAIU_PARA_ENTREGA')" class="order-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800" data-filter="SAIU_PARA_ENTREGA">A Caminho</button>
+          <button onclick="filterOrders('ENTREGUE')" class="order-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800" data-filter="ENTREGUE">Entregues</button>
+        </div>
+
+        <!-- Campo de Pesquisa -->
+        <div class="relative w-full sm:w-64">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+          <input type="text" id="order-search-input" oninput="debounceSearchOrders()" placeholder="Buscar cliente, tel ou #PED..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-white text-xs focus:border-amber-500 focus:outline-none">
+        </div>
+      </div>
+
+      <!-- Lista / Grid de Pedidos -->
+      <div id="orders-list-container" class="space-y-4">
+        <!-- Injetado dinamicamente -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== WIDGET EMBEDDED IA: MATTINHOS (CANTO INFERIOR DIREITO) ==================== -->
+  <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+    
+    <!-- POPUP DO CHAT MATTINHOS (EXPANSÍVEL) -->
+    <div id="mattinhos-chat-box" class="hidden mb-3 w-[360px] sm:w-[400px] h-[520px] max-h-[85vh] glass bg-slate-900/95 rounded-3xl border border-amber-500/30 shadow-2xl flex flex-col overflow-hidden transition-all duration-300">
+      
+      <!-- Topo do Chat -->
+      <div class="p-3.5 bg-gradient-to-r from-slate-900 via-slate-850 to-amber-950/40 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-white p-1 border-2 border-amber-500 shrink-0 flex items-center justify-center shadow-lg">
+            <img src="/static/logo.png" alt="Mattinhos Avatar" class="w-full h-full object-contain">
+          </div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <h3 class="font-black text-white text-sm">Mattinhos</h3>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="bg-amber-500/20 text-amber-300 text-[9px] px-1.5 py-0.5 rounded-full border border-amber-500/30 font-semibold flex items-center space-x-1">
+                <i class="fa-solid fa-microphone text-[8px] text-rose-400"></i>
+                <i class="fa-solid fa-eye text-[8px] text-emerald-400"></i>
+                <span>Voz & OCR</span>
+              </span>
+            </div>
+            <p class="text-[10px] text-amber-400/90 font-medium">Controle por Voz, OCR de Notas & Mercado</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <button id="tts-toggle-btn" onclick="toggleTts()" title="Ativar fala do Mattinhos por áudio" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center transition">
+            <i class="fa-solid fa-volume-high text-xs"></i>
+          </button>
+          <button onclick="toggleMattinhos()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sugestões de Perguntas Rápidas (Pills) -->
+      <div class="p-2 bg-slate-950/60 border-b border-slate-800/60 flex items-center space-x-1.5 overflow-x-auto no-scrollbar text-[11px]">
+        <button onclick="sendQuickPrompt('Pesquise o preço médio do saco de carvão de 10kg e 2kg no mercado hoje e compare com nossos preços')" class="bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-amber-500/40 font-semibold transition">
+          🌐 Preços de Mercado
+        </button>
+        <button onclick="sendQuickPrompt('Quem são os maiores concorrentes e marcas de carvão vegetal no Brasil e seus preços?')" class="bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-amber-500/40 font-semibold transition">
+          🔍 Concorrentes & Marcas
+        </button>
+        <button onclick="toggleVoiceInput()" class="bg-rose-950/50 hover:bg-rose-900/70 text-rose-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-rose-500/40 font-semibold transition flex items-center space-x-1">
+          <i class="fa-solid fa-microphone text-[10px]"></i>
+          <span>Falar por Voz</span>
+        </button>
+        <button onclick="sendQuickPrompt('Qual o lucro da carga do Giovani?')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700">
+          💰 Sobra do Giovani
+        </button>
+        <button onclick="sendQuickPrompt('Quanto carvão temos em estoque?')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700">
+          📦 Estoque de sacos
+        </button>
+      </div>
+
+      <!-- Histórico de Mensagens -->
+      <div id="chat-messages" class="flex-1 p-3.5 overflow-y-auto space-y-3 text-xs">
+        <div class="flex items-start space-x-2">
+          <div class="w-7 h-7 rounded-full bg-white p-0.5 border border-amber-500 shrink-0">
+            <img src="/static/logo.png" alt="Avatar" class="w-full h-full object-contain">
+          </div>
+          <div class="bg-slate-800/80 p-3 rounded-2xl rounded-tl-none text-slate-200 leading-relaxed border border-slate-700/60 max-w-[85%]">
+            Fala chefe! Eu sou o <strong>Mattinhos</strong>! 🔥<br>
+            Estou conectado no sistema da <strong>Carvão Mattos</strong> com <strong>Comandos por Voz 🎙️</strong>, <strong>Leitura OCR de Imagens 📸</strong> e <strong>Pesquisa na Internet 🌐</strong>!<br><br>
+            Você pode falar diretamente comigo no microfone ou mandar foto de cadernos e notas fiscais para eu contabilizar tudo!
+          </div>
+        </div>
+      </div>
+
+      <!-- Input de Pergunta & Anexo de Foto & Voz -->
+      <div class="p-2.5 bg-slate-950 border-t border-slate-800 flex flex-col space-y-2">
+        <!-- Preview da Imagem Selecionada com OCR -->
+        <div id="ai-image-preview-bar" class="hidden flex items-center justify-between bg-slate-900 border border-emerald-500/40 p-1.5 rounded-xl text-xs">
+          <div class="flex items-center space-x-2 overflow-hidden">
+            <img id="ai-preview-img" src="" class="w-9 h-9 rounded-lg object-cover border border-slate-700">
+            <div class="flex flex-col truncate">
+              <span class="text-[11px] text-emerald-400 font-bold truncate flex items-center space-x-1">
+                <i class="fa-solid fa-file-invoice"></i>
+                <span>Foto Anexada (OCR Ativado)</span>
+              </span>
+              <span class="text-[9px] text-slate-400">Auditoria linha por linha & lançamento automático</span>
+            </div>
+          </div>
+          <button type="button" onclick="clearSelectedImage()" class="w-6 h-6 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- Indicador de Gravando / Ouvindo Voz -->
+        <div id="ai-voice-indicator" class="hidden flex items-center justify-between bg-rose-950/70 border border-rose-500/50 px-3 py-1.5 rounded-xl text-xs text-rose-300 animate-pulse">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-microphone text-rose-400 animate-bounce"></i>
+            <span class="font-bold text-[11px]">Ouvindo você... Fale seu comando agora!</span>
+          </div>
+          <button type="button" onclick="stopVoiceRecognition()" class="text-rose-200 hover:text-white text-[10px] font-bold px-2 py-0.5 rounded bg-rose-900/80">
+            Parar
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Botão Anexar Foto / Câmera (OCR) -->
+          <input type="file" id="ai-image-file" accept="image/*" class="hidden" onchange="handleImageSelected(event)">
+          <button type="button" onclick="document.getElementById('ai-image-file').click()" title="Tirar foto ou anexar folha/recibo (OCR)" class="w-9 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 flex items-center justify-center transition shrink-0 border border-slate-700">
+            <i class="fa-solid fa-camera text-xs"></i>
+          </button>
+
+          <!-- Botão Microfone / Comando por Voz -->
+          <button type="button" id="ai-voice-btn" onclick="toggleVoiceInput()" title="Falar comando por voz para o Mattinhos" class="w-9 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-400 hover:text-rose-300 flex items-center justify-center transition shrink-0 border border-slate-700">
+            <i class="fa-solid fa-microphone text-xs"></i>
+          </button>
+
+          <input type="text" id="ai-input" onkeydown="if(event.key==='Enter') sendAiMessage()" placeholder="Fale ou pergunte ao Mattinhos..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:border-amber-500 focus:outline-none">
+          <button onclick="sendAiMessage()" id="ai-send-btn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold w-9 h-8 rounded-xl flex items-center justify-center transition shrink-0">
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTÃO FLUTUANTE LAUNCHER (AVATAR MATTINHOS) -->
+    <button onclick="toggleMattinhos()" id="mattinhos-launcher" class="w-14 h-14 rounded-full bg-slate-900 border-2 border-amber-500 shadow-2xl flex items-center justify-center cursor-pointer pulse-glow group relative hover:scale-105 active:scale-95 transition">
+      <div class="w-11 h-11 rounded-full bg-white p-1 flex items-center justify-center">
+        <img src="/static/logo.png" alt="Mattinhos Logo" class="w-full h-full object-contain">
+      </div>
+      <!-- Indicador online -->
+      <span class="absolute top-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full"></span>
+      <!-- Balãozinho explicativo -->
+      <div class="hidden sm:block absolute right-16 bg-slate-900 text-amber-400 font-bold text-xs px-3 py-1.5 rounded-xl border border-slate-700 shadow-xl whitespace-nowrap pointer-events-none group-hover:opacity-100 opacity-90 transition">
+        IA Mattinhos 🔥
+      </div>
+    </button>
+
+  </div>
+
+  <!-- ==================== NAVBAR MOBILE (INFERIOR FIXA) ==================== -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 flex justify-around p-2 z-30">
+    <button onclick="switchTab('dashboard')" id="m-nav-dashboard" class="flex flex-col items-center text-amber-500">
+      <i class="fa-solid fa-chart-pie text-base"></i>
+      <span class="text-[9px] font-bold mt-0.5">Geral</span>
+    </button>
+          <button onclick="switchTab('orders')" id="nav-orders" class="nav-btn w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800/60">
+        <div class="flex items-center space-x-3">
+          <i class="fa-solid fa-boxes-packing text-base text-amber-500"></i>
+          <span>Gestão de Pedidos</span>
+        </div>
+        <span id="nav-orders-badge" class="hidden px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500 text-slate-950">0</span>
+      </button>
+
+          <button onclick="switchTab('orders')" id="m-nav-orders" class="flex flex-col items-center text-slate-400 relative">
+      <i class="fa-solid fa-boxes-packing text-base"></i>
+      <span class="text-[9px] font-bold mt-0.5">Pedidos</span>
+      <span id="m-orders-dot" class="hidden absolute top-0 right-2 w-2 h-2 rounded-full bg-amber-500"></span>
+    </button>
+    <button onclick="switchTab('new-tx')" id="m-nav-new-tx" class="flex flex-col items-center text-slate-400">
+      <i class="fa-solid fa-circle-plus text-base"></i>
+      <span class="text-[9px] font-bold mt-0.5">Lançar</span>
+    </button>
+    <button onclick="switchTab('history')" id="m-nav-history" class="flex flex-col items-center text-slate-400">
+      <i class="fa-solid fa-receipt text-base"></i>
+      <span class="text-[9px] font-bold mt-0.5">Vendas</span>
+    </button>
+    <button onclick="switchTab('customers')" id="m-nav-customers" class="flex flex-col items-center text-slate-400">
+      <i class="fa-solid fa-users text-base"></i>
+      <span class="text-[9px] font-bold mt-0.5">Clientes</span>
+    </button>
+    <button onclick="switchTab('expenses')" id="m-nav-expenses" class="flex flex-col items-center text-slate-400">
+      <i class="fa-solid fa-route text-base"></i>
+      <span class="text-[9px] font-bold mt-0.5">Fretes</span>
+    </button>
+  </nav>
+
+  <!-- ==================== MODAIS DE CADASTRO ==================== -->
+
+  <!-- MODAL: CLIENTE -->
+  <div id="customer-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="glass bg-slate-900 max-w-md w-full p-6 rounded-2xl border border-slate-700 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-base">Novo Cliente</h3>
+        <button onclick="closeCustomerModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="saveCustomer(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Nome do Cliente / Empresa</label>
+          <input type="text" id="cust-name" required placeholder="Ex: Churrascaria Brasa Nobre" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Tipo</label>
+            <select id="cust-type" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+              <option value="RESTAURANTE">Restaurante / Churrascaria</option>
+              <option value="MERCADO">Supermercado</option>
+              <option value="DISTRIBUIDORA">Distribuidora</option>
+              <option value="VAREJO">Consumidor Balcão</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Telefone / WhatsApp</label>
+            <input type="text" id="cust-phone" placeholder="(11) 9...." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Cidade / Região</label>
+          <input type="text" id="cust-city" placeholder="Ex: São Paulo" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Observações (sacos preferidos, entrega)</label>
+          <input type="text" id="cust-notes" placeholder="Ex: Pega 50 sacos de 10kg toda sexta" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeCustomerModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-amber-500 text-slate-950 rounded-xl font-black">Salvar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: FORNECEDOR -->
+  <div id="supplier-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="glass bg-slate-900 max-w-md w-full p-6 rounded-2xl border border-slate-700 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-base">Novo Fornecedor</h3>
+        <button onclick="closeSupplierModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="saveSupplier(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Nome do Fornecedor / Carvoaria</label>
+          <input type="text" id="supp-name" required placeholder="Ex: Giovani Carvão" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Telefone</label>
+            <input type="text" id="supp-phone" placeholder="(11) 9...." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Cidade / Estado</label>
+            <input type="text" id="supp-city" placeholder="Ex: Região Produtora" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Observações da Carga</label>
+          <input type="text" id="supp-notes" placeholder="Ex: Cargas quinzenais fechadas de 6 a 10 toneladas" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeSupplierModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-amber-500 text-slate-950 rounded-xl font-black">Salvar Fornecedor</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: FRETE / DESPESA -->
+  <div id="expense-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="glass bg-slate-900 max-w-md w-full p-6 rounded-2xl border border-slate-700 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-base">Lançar Frete ou Despesa</h3>
+        <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="saveStandaloneExpense(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Categoria</label>
+            <select id="exp-cat" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+              <option value="FRETE">Frete / Transporte</option>
+              <option value="PEDAGIO">Pedágio</option>
+              <option value="EMBALAGEM">Embalagem (Sacos Vazios)</option>
+              <option value="COMBUSTIVEL">Combustível</option>
+              <option value="MANUTENCAO">Manutenção</option>
+              <option value="OUTROS">Outros</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Valor (R$)</label>
+            <input type="number" step="0.01" id="exp-val" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Descrição</label>
+          <input type="text" id="exp-desc" required placeholder="Ex: Frete entrega zona leste ou Pedágio rodovia" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Responsável / Motorista</label>
+          <input type="text" id="exp-resp" placeholder="Ex: Giovani / Depósito" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeExpenseModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-amber-500 text-slate-950 rounded-xl font-black">Salvar Despesa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIGURAÇÃO GEMINI -->
+  <div id="config-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="glass bg-slate-900 max-w-md w-full p-6 rounded-2xl border border-slate-700 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-white text-base flex items-center">
+          <i class="fa-solid fa-key text-amber-500 mr-2"></i> Chave da API Gemini
+        </h3>
+        <button onclick="closeConfigModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-slate-400">
+        Insira sua chave gratuita para alimentar as respostas do <strong>Mattinhos</strong>.
+      </p>
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">GEMINI_API_KEY</label>
+        <input type="password" id="gemini-key-input" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-xs">
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="inline-block mt-1.5 text-[11px] text-amber-400 hover:underline">
+          <i class="fa-solid fa-external-link mr-1"></i> Gerar chave gratuita no Google AI Studio
+        </a>
+      </div>
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="closeConfigModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-bold">Cancelar</button>
+        <button onclick="saveGeminiKey()" class="px-4 py-2 bg-amber-500 text-slate-950 rounded-xl text-xs font-black">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- MODAL: NOVO PEDIDO -->
+  <div id="order-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="glass bg-slate-900 max-w-lg w-full p-6 rounded-2xl border border-slate-700 space-y-4 my-8">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">📦</span>
+          <h3 class="font-bold text-white text-base">Novo Pedido de Carvão</h3>
+        </div>
+        <button onclick="closeNewOrderModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="saveOrderForm(event)" class="space-y-4 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Nome do Cliente / Estabelecimento</label>
+            <input type="text" id="ord-cust-name" required placeholder="Ex: Churrascaria Boi Preto" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Telefone / Contato (Opcional)</label>
+            <input type="text" id="ord-cust-phone" placeholder="Ex: 11987654321" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Endereço de Entrega Completo</label>
+          <input type="text" id="ord-delivery-address" placeholder="Ex: Av. Paulista, 1000 - Bela Vista, SP" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+        </div>
+
+        <!-- Itens do Pedido -->
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center">
+              <i class="fa-solid fa-bag-shopping text-amber-500 mr-1.5"></i> Sacaria Solicitada
+            </h4>
+            <span class="text-[11px] text-slate-400">Preços padrão de venda</span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-2 text-[11px] font-bold text-slate-400 border-b border-slate-800 pb-1">
+            <span class="col-span-5">Tipo do Saco</span>
+            <span class="col-span-3 text-center">Quantidade</span>
+            <span class="col-span-4 text-right">Subtotal</span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-2 items-center">
+            <span class="col-span-5 text-white font-medium">Saco 10 kg (R$ 36,00 un)</span>
+            <input type="number" min="0" value="0" id="ord-u-10k" oninput="calcOrderFormTotals()" class="col-span-3 bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-white">
+            <span id="ord-sub-10k" class="col-span-4 text-right font-bold text-amber-400">R$ 0,00</span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-2 items-center">
+            <span class="col-span-5 text-white font-medium">Saco 6 kg (R$ 21,60 un)</span>
+            <input type="number" min="0" value="0" id="ord-u-6k" oninput="calcOrderFormTotals()" class="col-span-3 bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-white">
+            <span id="ord-sub-6k" class="col-span-4 text-right font-bold text-amber-400">R$ 0,00</span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-2 items-center">
+            <span class="col-span-5 text-white font-medium">Saco 3 kg (R$ 10,80 un)</span>
+            <input type="number" min="0" value="0" id="ord-u-3k" oninput="calcOrderFormTotals()" class="col-span-3 bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-white">
+            <span id="ord-sub-3k" class="col-span-4 text-right font-bold text-amber-400">R$ 0,00</span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-2 items-center">
+            <span class="col-span-5 text-white font-medium">Saco 2 kg (R$ 7,60 un)</span>
+            <input type="number" min="0" value="0" id="ord-u-2k" oninput="calcOrderFormTotals()" class="col-span-3 bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-white">
+            <span id="ord-sub-2k" class="col-span-4 text-right font-bold text-amber-400">R$ 0,00</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Taxa de Entrega / Frete (R$)</label>
+            <input type="number" step="0.01" id="ord-delivery-fee" value="0.00" oninput="calcOrderFormTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Observações / Horário de Entrega</label>
+            <input type="text" id="ord-notes" placeholder="Ex: Entregar pela manhã" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+          </div>
+        </div>
+
+        <!-- Resumo -->
+        <div class="bg-amber-500/10 p-3 rounded-xl border border-amber-500/30 flex items-center justify-between">
+          <div>
+            <p class="text-[11px] text-amber-300 font-medium">Peso Total: <strong id="ord-summary-kg">0 kg</strong></p>
+            <p class="text-[10px] text-slate-400">Status inicial: PENDENTE (Fila)</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] text-slate-400">Total do Pedido</span>
+            <h4 id="ord-summary-total" class="text-lg font-black text-amber-400">R$ 0,00</h4>
+          </div>
+        </div>
+
+        <!-- Opção WhatsApp -->
+        <label class="flex items-center space-x-2 cursor-pointer bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+          <input type="checkbox" id="ord-notify-wa" class="rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-0">
+          <span class="text-slate-300">Notificar cliente via WhatsApp (se conectado)</span>
+        </label>
+
+        <div class="flex justify-end space-x-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeNewOrderModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancelar</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 text-slate-950 rounded-xl font-black flex items-center space-x-1.5">
+            <i class="fa-solid fa-check"></i>
+            <span>Salvar e Enfileirar</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONEXÃO WHATSAPP & QR CODE -->
+  <div id="whatsapp-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="glass bg-slate-900 max-w-md w-full p-6 rounded-2xl border border-emerald-500/30 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div class="flex items-center space-x-2">
+          <i class="fa-brands fa-whatsapp text-emerald-400 text-xl"></i>
+          <h3 class="font-bold text-white text-base">WhatsApp da Empresa</h3>
+        </div>
+        <button onclick="closeWhatsAppModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
+        <span class="text-slate-400">Canal: <strong class="text-white">WhatsApp Oficial</strong></span>
+        <span id="wa-modal-state-badge" class="px-2 py-0.5 rounded-full font-bold bg-slate-800 text-slate-400">Verificando...</span>
+      </div>
+
+      <!-- Container do QR Code -->
+      <div id="wa-qr-container" class="bg-white p-3 rounded-xl flex items-center justify-center min-h-[240px] shadow-inner">
+        <div class="text-center text-slate-700 text-xs font-semibold space-y-2">
+          <i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-500"></i>
+          <p>Carregando QR Code da Evolution API...</p>
+        </div>
+      </div>
+
+      <!-- Código de Pareamento -->
+      <div id="wa-pairing-box" class="hidden bg-slate-950 p-3 rounded-xl border border-amber-500/30 text-center">
+        <p class="text-[11px] text-slate-400 mb-1">Código de Pareamento por Telefone:</p>
+        <div class="flex items-center justify-center space-x-2">
+          <span id="wa-pairing-code" class="text-2xl font-mono font-black text-amber-400 tracking-wider">--------</span>
+          <button onclick="copyPairingCode()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs" title="Copiar"><i class="fa-solid fa-copy"></i></button>
+        </div>
+      </div>
+
+      <!-- Teste de Envio Rápido -->
+      <div class="pt-2 border-t border-slate-800 space-y-2 text-xs">
+        <p class="font-bold text-slate-300">Testar envio de mensagem pelo WhatsApp:</p>
+        <div class="flex space-x-2">
+          <input type="text" id="wa-test-phone" placeholder="55119..." value="" class="w-1/3 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-white text-xs">
+          <input type="text" id="wa-test-msg" placeholder="Mensagem de teste..." value="Olá! Teste de WhatsApp Carvão Mattos." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-white text-xs">
+          <button onclick="sendTestWhatsApp()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center space-x-1">
+            <i class="fa-solid fa-paper-plane text-[10px]"></i>
+            <span>Enviar</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button onclick="refreshWhatsAppQR()" class="text-xs text-emerald-400 hover:underline flex items-center space-x-1">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>Atualizar QR Code</span>
+        </button>
+        <button onclick="closeWhatsAppModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-xs font-bold">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+    let myPieChart = null;
+
+    // Toggle Mattinhos IA Chat
+    function toggleMattinhos() {
+      const box = document.getElementById('mattinhos-chat-box');
+      box.classList.toggle('hidden');
+      if (!box.classList.contains('hidden')) {
+        document.getElementById('ai-input').focus();
+      }
+    }
+
+
+    // ==================== GESTÃO DE PEDIDOS (FILA & STATUS) ====================
+    let allOrdersData = [];
+    let currentOrderFilter = 'TODOS';
+    let searchDebounceTimer = null;
+    let whatsappPollInterval = null;
+
+    async function loadOrders() {
+      try {
+        const res = await fetch('/api/orders');
+        allOrdersData = await res.json();
+        renderOrdersList();
+        updateOrderBadges();
+      } catch (err) {
+        console.error('Erro ao carregar pedidos:', err);
+      }
+    }
+
+    function filterOrders(filter) {
+      currentOrderFilter = filter;
+      document.querySelectorAll('.order-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-filter') === filter) {
+          btn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800');
+          btn.classList.add('bg-amber-500', 'text-slate-950', 'font-bold');
+        } else {
+          btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800');
+          btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-bold');
+        }
+      });
+      renderOrdersList();
+    }
+
+    function debounceSearchOrders() {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        renderOrdersList();
+      }, 250);
+    }
+
+    function updateOrderBadges() {
+      let pending = 0, confirmed = 0, preparing = 0, delivery = 0, delivered = 0;
+      allOrdersData.forEach(o => {
+        if (o.status === 'PENDENTE') pending++;
+        else if (o.status === 'CONFIRMADO') confirmed++;
+        else if (o.status === 'EM_SEPARACAO') preparing++;
+        else if (o.status === 'SAIU_PARA_ENTREGA') delivery++;
+        else if (o.status === 'ENTREGUE') delivered++;
+      });
+
+      document.getElementById('stat-orders-pending').textContent = pending;
+      document.getElementById('stat-orders-confirmed').textContent = confirmed;
+      document.getElementById('stat-orders-preparing').textContent = preparing;
+      document.getElementById('stat-orders-delivery').textContent = delivery;
+      document.getElementById('stat-orders-delivered').textContent = delivered;
+
+      const navBadge = document.getElementById('nav-orders-badge');
+      if (navBadge) {
+        if (pending > 0) {
+          navBadge.textContent = pending;
+          navBadge.classList.remove('hidden');
+        } else {
+          navBadge.classList.add('hidden');
+        }
+      }
+
+      const mDot = document.getElementById('m-orders-dot');
+      if (mDot) {
+        if (pending > 0) mDot.classList.remove('hidden');
+        else mDot.classList.add('hidden');
+      }
+    }
+
+    function renderOrdersList() {
+      const container = document.getElementById('orders-list-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const search = (document.getElementById('order-search-input')?.value || '').toLowerCase().trim();
+
+      const filtered = allOrdersData.filter(o => {
+        const matchesFilter = (currentOrderFilter === 'TODOS') || (o.status === currentOrderFilter);
+        const matchesSearch = !search || 
+          (o.code && o.code.toLowerCase().includes(search)) ||
+          (o.customer_name && o.customer_name.toLowerCase().includes(search)) ||
+          (o.customer_phone && o.customer_phone.includes(search));
+        return matchesFilter && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="glass p-10 rounded-2xl text-center space-y-3">
+            <i class="fa-solid fa-boxes-packing text-4xl text-slate-600"></i>
+            <h4 class="font-bold text-white text-base">Nenhum pedido encontrado</h4>
+            <p class="text-xs text-slate-400">Clique em "+ Novo Pedido" ou receba pedidos automáticos via WhatsApp e IA Mattinhos!</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(o => {
+        let statusBadge = '';
+        if (o.status === 'PENDENTE') statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 border border-amber-500/30">🟡 PENDENTE</span>';
+        else if (o.status === 'CONFIRMADO') statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-400 border border-blue-500/30">🔵 CONFIRMADO</span>';
+        else if (o.status === 'EM_SEPARACAO') statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-black bg-orange-500/20 text-orange-400 border border-orange-500/30">🟠 EM SEPARAÇÃO</span>';
+        else if (o.status === 'SAIU_PARA_ENTREGA') statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-400 border border-purple-500/30">🚚 SAIU P/ ENTREGA</span>';
+        else if (o.status === 'ENTREGUE') statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">✅ ENTREGUE</span>';
+        else statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-black bg-slate-800 text-slate-400">${o.status}</span>`;
+
+        let originBadge = o.source === 'WHATSAPP' 
+          ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"><i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp</span>'
+          : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">Sistema</span>';
+
+        let itemsChips = '';
+        (o.items || []).forEach(it => {
+          itemsChips += `
+            <span class="inline-flex items-center px-2 py-1 rounded-lg bg-slate-950/80 border border-slate-800 text-[11px] text-slate-200">
+              <strong class="text-amber-400 mr-1">${it.units}x</strong> ${it.product_name}
+            </span>
+          `;
+        });
+
+        const waLink = o.customer_phone ? `https://wa.me/${o.customer_phone.replace(/\D/g, '')}` : '#';
+
+        // Botões de ação rápida de transição de status
+        let actionButtons = '';
+        if (o.status === 'PENDENTE') {
+          actionButtons += `<button onclick="updateOrderStatus(${o.id}, 'CONFIRMADO')" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center space-x-1"><span>Confirmar</span></button>`;
+          actionButtons += `<button onclick="updateOrderStatus(${o.id}, 'EM_SEPARACAO')" class="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center space-x-1"><span>Mover p/ Separação</span></button>`;
+        } else if (o.status === 'CONFIRMADO') {
+          actionButtons += `<button onclick="updateOrderStatus(${o.id}, 'EM_SEPARACAO')" class="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center space-x-1"><span>Mover p/ Separação</span></button>`;
+          actionButtons += `<button onclick="updateOrderStatus(${o.id}, 'SAIU_PARA_ENTREGA')" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center space-x-1"><span>Despachar 🚚</span></button>`;
+        } else if (o.status === 'EM_SEPARACAO') {
+          actionButtons += `<button onclick="updateOrderStatus(${o.id}, 'SAIU_PARA_ENTREGA')" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center space-x-1"><span>Despachar 🚚</span></button>`;
+        } else if (o.status === 'SAIU_PARA_ENTREGA') {
+          actionButtons += `<button onclick="promptDeliverOrder(${o.id})" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center space-x-1"><span>Marcar Entregue ✅</span></button>`;
+        }
+
+        container.innerHTML += `
+          <div class="glass p-5 rounded-2xl space-y-4 border border-slate-800 hover:border-slate-700 transition">
+            <!-- Cabeçalho do Card -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+              <div class="flex items-center space-x-2.5">
+                <span class="font-mono font-black text-white text-base text-amber-400">${o.code}</span>
+                ${originBadge}
+                <span class="text-xs text-slate-400">• ${o.created_at}</span>
+              </div>
+              <div class="flex items-center space-x-3">
+                ${statusBadge}
+                <button onclick="deleteOrder(${o.id})" class="text-slate-500 hover:text-rose-400 p-1" title="Excluir Pedido">
+                  <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dados do Cliente e Endereço -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <span class="text-slate-400 block mb-0.5">Cliente:</span>
+                <p class="font-bold text-white text-sm">${o.customer_name}</p>
+                ${o.customer_phone ? `<a href="${waLink}" target="_blank" class="inline-flex items-center text-emerald-400 hover:underline mt-0.5"><i class="fa-brands fa-whatsapp mr-1"></i> ${o.customer_phone}</a>` : '<span class="text-slate-500">Sem telefone</span>'}
+              </div>
+
+              <div>
+                <span class="text-slate-400 block mb-0.5">Endereço de Entrega:</span>
+                <p class="text-slate-200 font-medium">${o.delivery_address || 'Retirada no depósito'}</p>
+                ${o.notes ? `<p class="text-[11px] text-amber-400/90 italic mt-0.5">Obs: ${o.notes}</p>` : ''}
+              </div>
+
+              <div class="sm:text-right">
+                <span class="text-slate-400 block mb-0.5">Total & Quilos:</span>
+                <p class="text-lg font-black text-amber-400">${formatBRL(o.net_total)}</p>
+                <p class="text-[11px] text-slate-400">${(o.total_kg || 0).toLocaleString('pt-BR')} kg de carvão</p>
+              </div>
+            </div>
+
+            <!-- Chips de Itens -->
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              ${itemsChips}
+            </div>
+
+            <!-- Rodapé e Ações -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-800/80">
+              <div class="flex items-center space-x-2">
+                ${actionButtons}
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <select onchange="updateOrderStatus(${o.id}, this.value)" class="bg-slate-950 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none">
+                  <option value="" disabled selected>Alterar Status...</option>
+                  <option value="PENDENTE">🟡 PENDENTE</option>
+                  <option value="CONFIRMADO">🔵 CONFIRMADO</option>
+                  <option value="EM_SEPARACAO">🟠 EM SEPARAÇÃO</option>
+                  <option value="SAIU_PARA_ENTREGA">🚚 SAIU P/ ENTREGA</option>
+                  <option value="ENTREGUE">✅ ENTREGUE</option>
+                  <option value="CANCELADO">❌ CANCELADO</option>
+                </select>
+
+                ${o.customer_phone ? `
+                <button onclick="promptSendCustomWhatsApp(${o.id}, '${o.customer_phone}', '${o.code}')" class="px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold flex items-center space-x-1" title="Enviar Mensagem WhatsApp">
+                  <i class="fa-brands fa-whatsapp text-sm"></i>
+                  <span>Notificar</span>
+                </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    async function updateOrderStatus(orderId, newStatus, deductStock = false) {
+      try {
+        const res = await fetch(`/api/orders/${orderId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: newStatus,
+            notify_whatsapp: true,
+            deduct_stock_if_delivered: deductStock
+          })
+        });
+        if (res.ok) {
+          loadOrders();
+          loadDashboard();
+        }
+      } catch (err) {
+        alert('Erro ao atualizar status: ' + err.message);
+      }
+    }
+
+    function promptDeliverOrder(orderId) {
+      const deduct = confirm("Marcar pedido como ENTREGUE ✅?\n\nDeseja também dar BAIXA AUTOMÁTICA no estoque dos sacos desse pedido?");
+      updateOrderStatus(orderId, 'ENTREGUE', deduct);
+    }
+
+    async function promptSendCustomWhatsApp(orderId, phone, code) {
+      const msg = prompt(`Enviar WhatsApp para ${phone} (Pedido ${code}):`, `Olá! Estamos com seu pedido ${code} em andamento na Carvão Mattos.`);
+      if (msg) {
+        await fetch('/api/whatsapp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: phone, message: msg })
+        });
+        alert('Mensagem enviada com sucesso!');
+      }
+    }
+
+    async function deleteOrder(id) {
+      if (!confirm(`Deseja excluir o pedido #${id}?`)) return;
+      await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+      loadOrders();
+      loadDashboard();
+    }
+
+    // --- MODAL DE NOVO PEDIDO ---
+    function openNewOrderModal() {
+      document.getElementById('order-modal').classList.remove('hidden');
+      calcOrderFormTotals();
+    }
+
+    function closeNewOrderModal() {
+      document.getElementById('order-modal').classList.add('hidden');
+    }
+
+    function calcOrderFormTotals() {
+      const u10 = parseInt(document.getElementById('ord-u-10k').value) || 0;
+      const u6 = parseInt(document.getElementById('ord-u-6k').value) || 0;
+      const u3 = parseInt(document.getElementById('ord-u-3k').value) || 0;
+      const u2 = parseInt(document.getElementById('ord-u-2k').value) || 0;
+      const fee = parseFloat(document.getElementById('ord-delivery-fee').value) || 0;
+
+      const sub10 = u10 * 36.00;
+      const sub6 = u6 * 21.60;
+      const sub3 = u3 * 10.80;
+      const sub2 = u2 * 7.60;
+
+      document.getElementById('ord-sub-10k').textContent = formatBRL(sub10);
+      document.getElementById('ord-sub-6k').textContent = formatBRL(sub6);
+      document.getElementById('ord-sub-3k').textContent = formatBRL(sub3);
+      document.getElementById('ord-sub-2k').textContent = formatBRL(sub2);
+
+      const totalKg = (u10 * 10) + (u6 * 6) + (u3 * 3) + (u2 * 2);
+      const totalVal = sub10 + sub6 + sub3 + sub2 + fee;
+
+      document.getElementById('ord-summary-kg').textContent = totalKg + ' kg';
+      document.getElementById('ord-summary-total').textContent = formatBRL(totalVal);
+    }
+
+    async function saveOrderForm(e) {
+      e.preventDefault();
+      const items = [];
+      const u10 = parseInt(document.getElementById('ord-u-10k').value) || 0;
+      if (u10 > 0) items.push({ product_name: "Saco 10 kg", bag_weight_kg: 10, units: u10, price_per_unit: 36, subtotal: u10 * 36 });
+
+      const u6 = parseInt(document.getElementById('ord-u-6k').value) || 0;
+      if (u6 > 0) items.push({ product_name: "Saco 6 kg", bag_weight_kg: 6, units: u6, price_per_unit: 21.6, subtotal: u6 * 21.6 });
+
+      const u3 = parseInt(document.getElementById('ord-u-3k').value) || 0;
+      if (u3 > 0) items.push({ product_name: "Saco 3 kg", bag_weight_kg: 3, units: u3, price_per_unit: 10.8, subtotal: u3 * 10.8 });
+
+      const u2 = parseInt(document.getElementById('ord-u-2k').value) || 0;
+      if (u2 > 0) items.push({ product_name: "Saco 2 kg", bag_weight_kg: 2, units: u2, price_per_unit: 7.6, subtotal: u2 * 7.6 });
+
+      if (items.length === 0) {
+        alert('Por favor, informe a quantidade de pelo menos um tipo de saco de carvão!');
+        return;
+      }
+
+      const payload = {
+        customer_name: document.getElementById('ord-cust-name').value,
+        customer_phone: document.getElementById('ord-cust-phone').value,
+        delivery_address: document.getElementById('ord-delivery-address').value,
+        items: items,
+        delivery_fee: parseFloat(document.getElementById('ord-delivery-fee').value) || 0,
+        notes: document.getElementById('ord-notes').value,
+        source: "SISTEMA",
+        notify_whatsapp: document.getElementById('ord-notify-wa').checked
+      };
+
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          closeNewOrderModal();
+          loadOrders();
+          loadDashboard();
+        }
+      } catch (err) {
+        alert('Erro ao salvar pedido: ' + err.message);
+      }
+    }
+
+    // ==================== WHATSAPP & QR CODE (EVOLUTION API) ====================
+    async function checkWhatsAppStatus() {
+      try {
+        const res = await fetch('/api/whatsapp/status');
+        const data = await res.json();
+        const state = data.state || 'disconnected';
+
+        const sBadge = document.getElementById('whatsapp-sidebar-badge');
+        const oBtnText = document.getElementById('orders-whatsapp-btn-text');
+        const modalBadge = document.getElementById('wa-modal-state-badge');
+
+        if (state === 'open') {
+          if (sBadge) sBadge.innerHTML = '<span class="text-emerald-400">Online ✓</span>';
+          if (oBtnText) oBtnText.textContent = 'WhatsApp Online ✓';
+          if (modalBadge) {
+            modalBadge.textContent = 'Conectado ✓';
+            modalBadge.className = 'px-2 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+          }
+        } else if (state === 'connecting') {
+          if (sBadge) sBadge.innerHTML = '<span class="text-amber-400">Pareando...</span>';
+          if (oBtnText) oBtnText.textContent = 'Conectar Whats';
+          if (modalBadge) {
+            modalBadge.textContent = 'Aguardando Leitura';
+            modalBadge.className = 'px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30';
+          }
+        } else {
+          if (sBadge) sBadge.innerHTML = '<span class="text-slate-400">Desconectado</span>';
+          if (oBtnText) oBtnText.textContent = 'Conectar Whats';
+          if (modalBadge) {
+            modalBadge.textContent = 'Desconectado';
+            modalBadge.className = 'px-2 py-0.5 rounded-full font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+          }
+        }
+      } catch (err) {
+        console.error('Erro status whatsapp:', err);
+      }
+    }
+
+    async function openWhatsAppModal() {
+      document.getElementById('whatsapp-modal').classList.remove('hidden');
+      checkWhatsAppStatus();
+      refreshWhatsAppQR();
+
+      if (!whatsappPollInterval) {
+        whatsappPollInterval = setInterval(() => {
+          if (!document.getElementById('whatsapp-modal').classList.contains('hidden')) {
+            refreshWhatsAppQR();
+            checkWhatsAppStatus();
+          }
+        }, 5000);
+      }
+    }
+
+    function closeWhatsAppModal() {
+      document.getElementById('whatsapp-modal').classList.add('hidden');
+      if (whatsappPollInterval) {
+        clearInterval(whatsappPollInterval);
+        whatsappPollInterval = null;
+      }
+    }
+
+    async function refreshWhatsAppQR() {
+      try {
+        const res = await fetch('/api/whatsapp/connect');
+        const data = await res.json();
+        const container = document.getElementById('wa-qr-container');
+
+        if (data.base64) {
+          const src = data.base64.startsWith('data:') ? data.base64 : `data:image/png;base64,${data.base64}`;
+          container.innerHTML = `<img src="${src}" alt="QR Code WhatsApp" class="w-60 h-60 object-contain">`;
+        }
+
+        const pairingBox = document.getElementById('wa-pairing-box');
+        const pairingCode = document.getElementById('wa-pairing-code');
+        if (data.pairingCode) {
+          pairingCode.textContent = data.pairingCode;
+          pairingBox.classList.remove('hidden');
+        } else {
+          pairingBox.classList.add('hidden');
+        }
+      } catch (err) {
+        console.error('Erro ao atualizar QR Code:', err);
+      }
+    }
+
+    function copyPairingCode() {
+      const code = document.getElementById('wa-pairing-code').textContent;
+      navigator.clipboard.writeText(code);
+      alert('Código copiado: ' + code);
+    }
+
+    async function sendTestWhatsApp() {
+      const phone = document.getElementById('wa-test-phone').value;
+      const msg = document.getElementById('wa-test-msg').value;
+      if (!phone || !msg) return alert('Informe o telefone e mensagem');
+      
+      const res = await fetch('/api/whatsapp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phone, message: msg })
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert('Erro ao enviar: ' + data.error);
+      } else {
+        alert('Mensagem enviada com sucesso!');
+      }
+    }
+
+
+    // Alternar Abas
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeEl = document.getElementById('tab-' + tabId);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      // Botões Desktop
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-bold', 'shadow-lg');
+        btn.classList.add('text-slate-400');
+      });
+      const activeNav = document.getElementById('nav-' + tabId);
+      if (activeNav) {
+        activeNav.classList.add('bg-amber-500', 'text-slate-950', 'font-bold', 'shadow-lg');
+        activeNav.classList.remove('text-slate-400');
+      }
+
+      // Botões Mobile
+      ['dashboard', 'new-tx', 'history', 'customers', 'expenses', 'orders'].forEach(t => {
+        const mBtn = document.getElementById('m-nav-' + t);
+        if (mBtn) {
+          if (t === tabId) {
+            mBtn.classList.remove('text-slate-400');
+            mBtn.classList.add('text-amber-500');
+          } else {
+            mBtn.classList.remove('text-amber-500');
+            mBtn.classList.add('text-slate-400');
+          }
+        }
+      });
+
+      if (tabId === 'dashboard') loadDashboard();
+      if (tabId === 'orders') loadOrders();
+      if (tabId === 'history') loadHistory();
+      if (tabId === 'customers') loadCustomers();
+      if (tabId === 'suppliers') loadSuppliers();
+      if (tabId === 'expenses') loadExpenses();
+    }
+
+    function formatBRL(val) {
+      return (val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // ========== DASHBOARD ==========
+    async function loadDashboard() {
+      try {
+        const res = await fetch('/api/dashboard');
+        const data = await res.json();
+
+        document.getElementById('stat-revenue').textContent = formatBRL(data.stats.total_revenue);
+        document.getElementById('stat-cost').textContent = formatBRL(data.stats.total_load_costs);
+        document.getElementById('stat-profit').textContent = formatBRL(data.stats.total_profit);
+        document.getElementById('stat-kg').textContent = (data.stats.total_kg_sold || 0).toLocaleString('pt-BR') + ' kg';
+
+        const gBadge = document.getElementById('gemini-status-badge');
+        gBadge.innerHTML = data.gemini_configured ? '<span class="text-emerald-400">Ativo ✓</span>' : '<span class="text-amber-400">Pendente</span>';
+
+        // Cards Estoque
+        const stockContainer = document.getElementById('stock-cards-container');
+        stockContainer.innerHTML = '';
+        data.products.forEach(p => {
+          stockContainer.innerHTML += `
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 relative group cursor-pointer" onclick="promptAdjustStock(${p.id}, '${p.name}', ${p.stock_units})">
+              <p class="text-xs text-slate-400 font-medium">${p.name}</p>
+              <h4 class="text-lg font-black text-white mt-0.5">${p.stock_units} un</h4>
+              <p class="text-[11px] text-amber-400/90 font-medium">${(p.stock_kg || 0).toLocaleString('pt-BR')} kg</p>
+              <span class="absolute top-2 right-2 text-[10px] text-slate-500 group-hover:text-amber-400 transition">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </span>
+            </div>
+          `;
+        });
+
+        // Cards Embalagens
+        const pkgContainer = document.getElementById('packaging-cards-container');
+        pkgContainer.innerHTML = '';
+        data.packagings.forEach(pkg => {
+          pkgContainer.innerHTML += `
+            <div class="bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between text-xs cursor-pointer" onclick="promptAdjustStock(${pkg.id}, '${pkg.name}', ${pkg.stock_units})">
+              <span class="text-slate-300">${pkg.name}</span>
+              <span class="font-bold text-white">${pkg.stock_units} un</span>
+            </div>
+          `;
+        });
+
+        renderPieChart();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderPieChart() {
+      const ctx = document.getElementById('salesPieChart').getContext('2d');
+      if (myPieChart) myPieChart.destroy();
+      myPieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Saco 10k (5.400 kg)', 'Saco 6k (180 kg)', 'Saco 3k (300 kg)', 'Saco 2k (200 kg)'],
+          datasets: [{
+            data: [5400, 180, 300, 200],
+            backgroundColor: ['#f59e0b', '#10b981', '#06b6d4', '#a855f7'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } },
+          cutout: '70%'
+        }
+      });
+    }
+
+    async function promptAdjustStock(id, name, current) {
+      const val = prompt(`Ajustar estoque para: ${name}\nQuantidade atual em unidades:`, current);
+      if (val !== null && val !== '') {
+        const units = parseInt(val);
+        if (!isNaN(units) && units >= 0) {
+          await fetch('/api/products/adjust', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, stock_units: units })
+          });
+          loadDashboard();
+        }
+      }
+    }
+
+    // ========== NOVO ROMANEIO / DESPESAS DINÂMICAS ==========
+    let expenseCount = 0;
+    function addExpenseRow(desc = '', amount = '', cat = 'FRETE') {
+      const container = document.getElementById('expenses-container');
+      const id = 'exp-' + (++expenseCount);
+      const row = document.createElement('div');
+      row.id = id;
+      row.className = 'grid grid-cols-12 gap-2 items-center bg-slate-900/40 p-2 rounded-xl border border-slate-800 text-xs';
+      row.innerHTML = `
+        <div class="col-span-3 sm:col-span-3">
+          <select class="exp-cat w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+            <option value="FRETE" ${cat==='FRETE'?'selected':''}>Frete</option>
+            <option value="PEDAGIO" ${cat==='PEDAGIO'?'selected':''}>Pedágio</option>
+            <option value="EMBALAGEM" ${cat==='EMBALAGEM'?'selected':''}>Embalagem</option>
+            <option value="OUTROS" ${cat==='OUTROS'?'selected':''}>Outros</option>
+          </select>
+        </div>
+        <div class="col-span-5 sm:col-span-5">
+          <input type="text" placeholder="Descrição da despesa..." value="${desc}" class="exp-desc w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+        </div>
+        <div class="col-span-3 sm:col-span-3">
+          <input type="number" step="0.01" placeholder="R$" value="${amount}" oninput="calculateTotals()" class="exp-amount w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+        </div>
+        <div class="col-span-1 text-center">
+          <button type="button" onclick="document.getElementById('${id}').remove(); calculateTotals();" class="text-rose-400 hover:text-rose-300">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      `;
+      container.appendChild(row);
+      calculateTotals();
+    }
+
+    function calculateTotals() {
+      const u10 = parseFloat(document.getElementById('units-10k').value) || 0;
+      const p10 = parseFloat(document.getElementById('price-kg-10k').value) || 0;
+      const sub10 = u10 * 10 * p10;
+      document.getElementById('subtotal-10k').textContent = formatBRL(sub10);
+
+      const u6 = parseFloat(document.getElementById('units-6k').value) || 0;
+      const p6 = parseFloat(document.getElementById('price-kg-6k').value) || 0;
+      const sub6 = u6 * 6 * p6;
+      document.getElementById('subtotal-6k').textContent = formatBRL(sub6);
+
+      const u3 = parseFloat(document.getElementById('units-3k').value) || 0;
+      const p3 = parseFloat(document.getElementById('price-kg-3k').value) || 0;
+      const sub3 = u3 * 3 * p3;
+      document.getElementById('subtotal-3k').textContent = formatBRL(sub3);
+
+      const u2 = parseFloat(document.getElementById('units-2k').value) || 0;
+      const p2 = parseFloat(document.getElementById('price-kg-2k').value) || 0;
+      const sub2 = u2 * 2 * p2;
+      document.getElementById('subtotal-2k').textContent = formatBRL(sub2);
+
+      const totalKg = (u10 * 10) + (u6 * 6) + (u3 * 3) + (u2 * 2);
+      const grossTotal = sub10 + sub6 + sub3 + sub2;
+      const partnerCost = parseFloat(document.getElementById('tx-partner-cost').value) || 0;
+
+      let expensesTotal = 0;
+      document.querySelectorAll('.exp-amount').forEach(inp => {
+        expensesTotal += parseFloat(inp.value) || 0;
+      });
+
+      const netProfit = (grossTotal - partnerCost) - expensesTotal;
+
+      document.getElementById('form-total-kg').textContent = totalKg.toLocaleString('pt-BR') + ' kg';
+      document.getElementById('form-gross-total').textContent = formatBRL(grossTotal);
+      document.getElementById('form-partner-cost').textContent = formatBRL(partnerCost);
+      document.getElementById('form-expenses-total').textContent = formatBRL(expensesTotal);
+      document.getElementById('form-net-profit').textContent = formatBRL(netProfit);
+    }
+
+    async function saveTransaction(e) {
+      e.preventDefault();
+      const items = [];
+      const u10 = parseFloat(document.getElementById('units-10k').value) || 0;
+      if (u10 > 0) items.push({ product_name: "Saco 10 kg", bag_weight_kg: 10, units: u10, price_per_kg: 3.60, unit_price: 36, subtotal: u10 * 36 });
+
+      const u6 = parseFloat(document.getElementById('units-6k').value) || 0;
+      if (u6 > 0) items.push({ product_name: "Saco 6 kg", bag_weight_kg: 6, units: u6, price_per_kg: 3.60, unit_price: 21.6, subtotal: u6 * 21.6 });
+
+      const u3 = parseFloat(document.getElementById('units-3k').value) || 0;
+      if (u3 > 0) items.push({ product_name: "Saco 3 kg", bag_weight_kg: 3, units: u3, price_per_kg: 3.60, unit_price: 10.8, subtotal: u3 * 10.8 });
+
+      const u2 = parseFloat(document.getElementById('units-2k').value) || 0;
+      if (u2 > 0) items.push({ product_name: "Saco 2 kg", bag_weight_kg: 2, units: u2, price_per_kg: 3.80, unit_price: 7.6, subtotal: u2 * 7.6 });
+
+      const expenses = [];
+      document.querySelectorAll('#expenses-container > div').forEach(row => {
+        const cat = row.querySelector('.exp-cat').value;
+        const desc = row.querySelector('.exp-desc').value.trim();
+        const amt = parseFloat(row.querySelector('.exp-amount').value) || 0;
+        if (desc && amt > 0) expenses.push({ category: cat, description: desc, amount: amt, responsible: 'Operação' });
+      });
+
+      const payload = {
+        type: "VENDA_CARGA",
+        partner_name: document.getElementById('tx-partner').value,
+        partner_cost: parseFloat(document.getElementById('tx-partner-cost').value) || 0,
+        description: document.getElementById('tx-desc').value,
+        items: items,
+        expenses: expenses,
+        notes: "Lançamento via painel"
+      };
+
+      const res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert('Carga lançada e estoque atualizado com sucesso!');
+        switchTab('history');
+      }
+    }
+
+    // ========== HISTÓRICO & EXCLUSÃO (DELETE) ==========
+    async function loadHistory() {
+      const res = await fetch('/api/transactions');
+      const txs = await res.json();
+      const container = document.getElementById('tx-history-list');
+      container.innerHTML = '';
+
+      txs.forEach(tx => {
+        let itemsHtml = '';
+        (tx.items || []).forEach(it => {
+          itemsHtml += `
+            <div class="flex justify-between text-xs py-1 border-b border-slate-800/60">
+              <span class="text-slate-300"><strong>${it.units} un</strong> × ${it.product_name} (${it.total_kg} kg)</span>
+              <span class="font-bold text-white">${formatBRL(it.subtotal)}</span>
+            </div>
+          `;
+        });
+
+        let expHtml = '';
+        (tx.expenses || []).forEach(exp => {
+          expHtml += `<div class="flex justify-between text-xs py-0.5 text-rose-300"><span>• [${exp.category}] ${exp.description}</span><span>${formatBRL(exp.amount)}</span></div>`;
+        });
+
+        container.innerHTML += `
+          <div class="glass p-5 rounded-2xl space-y-4 relative group">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">${tx.code || 'ROM'}</span>
+                  <h4 class="font-bold text-white text-base">${tx.description}</h4>
+                </div>
+                <p class="text-xs text-slate-400 mt-0.5">Fornecedor / Responsável: <strong>${tx.partner_name}</strong> • ${tx.date}</p>
+              </div>
+              <div class="flex items-center space-x-4">
+                <div class="text-right">
+                  <p class="text-xs text-slate-400">Sobra Líquida Real</p>
+                  <p class="text-xl font-black text-emerald-400">${formatBRL(tx.net_profit)}</p>
+                </div>
+                <button onclick="deleteTransaction(${tx.id})" title="Excluir Romaneio e Estornar Estoque" class="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/30 text-rose-400 border border-rose-500/20 transition">
+                  <i class="fa-solid fa-trash-can text-sm"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Sacaria -->
+            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 space-y-1">
+              ${itemsHtml}
+              <div class="flex justify-between text-xs font-bold pt-1.5 text-amber-400">
+                <span>Total Faturado (${tx.total_kg} kg):</span>
+                <span>${formatBRL(tx.gross_total)}</span>
+              </div>
+            </div>
+
+            <!-- Custo e Despesas -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-800">
+                <span class="text-slate-400">Custo da Carga:</span>
+                <p class="font-bold text-rose-400 text-sm mt-0.5">${formatBRL(tx.partner_cost)}</p>
+              </div>
+              <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-800">
+                <span class="text-slate-400">Despesas / Fretes:</span>
+                <p class="font-bold text-rose-400 text-sm mt-0.5">${formatBRL(tx.expenses_total)}</p>
+                <div class="mt-1 space-y-0.5">${expHtml}</div>
+              </div>
+            </div>
+            ${tx.notes ? `<p class="text-xs text-slate-400 italic bg-slate-900/30 p-2 rounded-lg">${tx.notes}</p>` : ''}
+          </div>
+        `;
+      });
+    }
+
+    async function deleteTransaction(id) {
+      if (!confirm(`Tem certeza que deseja excluir o romaneio #${id}?\nO estoque dos sacos será automaticamente estornado!`)) return;
+      const res = await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert('Romaneio excluído e estoque estornado!');
+        loadHistory();
+        loadDashboard();
+      }
+    }
+
+    // ========== CLIENTES ==========
+    async function loadCustomers() {
+      const res = await fetch('/api/customers');
+      const custs = await res.json();
+      const grid = document.getElementById('customers-grid');
+      grid.innerHTML = '';
+      custs.forEach(c => {
+        grid.innerHTML += `
+          <div class="glass p-4 rounded-2xl border border-slate-800 space-y-2 relative">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400">${c.type}</span>
+                <h4 class="font-bold text-white text-base mt-1">${c.name}</h4>
+              </div>
+              <button onclick="deleteCustomer(${c.id})" class="text-slate-500 hover:text-rose-400 p-1">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+            <p class="text-xs text-slate-300"><i class="fa-solid fa-phone text-amber-500 mr-1.5"></i> ${c.phone || '-'}</p>
+            <p class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-slate-500 mr-1.5"></i> ${c.city || '-'}</p>
+            ${c.notes ? `<p class="text-xs text-slate-400 italic pt-1 border-t border-slate-800/80">${c.notes}</p>` : ''}
+          </div>
+        `;
+      });
+    }
+
+    function openCustomerModal() { document.getElementById('customer-modal').classList.remove('hidden'); }
+    function closeCustomerModal() { document.getElementById('customer-modal').classList.add('hidden'); }
+    async function saveCustomer(e) {
+      e.preventDefault();
+      await fetch('/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('cust-name').value,
+          type: document.getElementById('cust-type').value,
+          phone: document.getElementById('cust-phone').value,
+          city: document.getElementById('cust-city').value,
+          notes: document.getElementById('cust-notes').value
+        })
+      });
+      closeCustomerModal();
+      loadCustomers();
+    }
+    async function deleteCustomer(id) {
+      if (confirm('Deseja excluir este cliente?')) {
+        await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+        loadCustomers();
+      }
+    }
+
+    // ========== FORNECEDORES ==========
+    async function loadSuppliers() {
+      const res = await fetch('/api/suppliers');
+      const supps = await res.json();
+      const grid = document.getElementById('suppliers-grid');
+      grid.innerHTML = '';
+      supps.forEach(s => {
+        grid.innerHTML += `
+          <div class="glass p-4 rounded-2xl border border-slate-800 space-y-2">
+            <div class="flex justify-between items-start">
+              <h4 class="font-bold text-white text-base">${s.name}</h4>
+              <button onclick="deleteSupplier(${s.id})" class="text-slate-500 hover:text-rose-400 p-1">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+            <p class="text-xs text-slate-300"><i class="fa-solid fa-phone text-amber-500 mr-1.5"></i> ${s.phone || '-'}</p>
+            <p class="text-xs text-slate-400"><i class="fa-solid fa-city text-slate-500 mr-1.5"></i> ${s.city || '-'}</p>
+            ${s.notes ? `<p class="text-xs text-slate-400 italic pt-1 border-t border-slate-800">${s.notes}</p>` : ''}
+          </div>
+        `;
+      });
+    }
+    function openSupplierModal() { document.getElementById('supplier-modal').classList.remove('hidden'); }
+    function closeSupplierModal() { document.getElementById('supplier-modal').classList.add('hidden'); }
+    async function saveSupplier(e) {
+      e.preventDefault();
+      await fetch('/api/suppliers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('supp-name').value,
+          phone: document.getElementById('supp-phone').value,
+          city: document.getElementById('supp-city').value,
+          notes: document.getElementById('supp-notes').value
+        })
+      });
+      closeSupplierModal();
+      loadSuppliers();
+    }
+    async function deleteSupplier(id) {
+      if (confirm('Deseja excluir este fornecedor?')) {
+        await fetch(`/api/suppliers/${id}`, { method: 'DELETE' });
+        loadSuppliers();
+      }
+    }
+
+    // ========== FRETES & DESPESAS ==========
+    async function loadExpenses() {
+      const res = await fetch('/api/expenses');
+      const exps = await res.json();
+      const body = document.getElementById('expenses-table-body');
+      body.innerHTML = '';
+      exps.forEach(e => {
+        body.innerHTML += `
+          <tr class="hover:bg-slate-900/50 transition">
+            <td class="py-2.5 px-3">${e.date}</td>
+            <td class="py-2.5 px-3 font-semibold text-amber-400">${e.category}</td>
+            <td class="py-2.5 px-3">${e.description}</td>
+            <td class="py-2.5 px-3 text-slate-400">${e.responsible || '-'}</td>
+            <td class="py-2.5 px-3 text-right font-bold text-rose-400">${formatBRL(e.amount)}</td>
+            <td class="py-2.5 px-3 text-center">
+              <button onclick="deleteExpense(${e.id})" class="text-slate-500 hover:text-rose-400">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+    function openExpenseModal() { document.getElementById('expense-modal').classList.remove('hidden'); }
+    function closeExpenseModal() { document.getElementById('expense-modal').classList.add('hidden'); }
+    async function saveStandaloneExpense(e) {
+      e.preventDefault();
+      await fetch('/api/expenses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: document.getElementById('exp-cat').value,
+          amount: parseFloat(document.getElementById('exp-val').value),
+          description: document.getElementById('exp-desc').value,
+          responsible: document.getElementById('exp-resp').value
+        })
+      });
+      closeExpenseModal();
+      loadExpenses();
+    }
+    async function deleteExpense(id) {
+      if (confirm('Deseja excluir esta despesa/frete?')) {
+        await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
+        loadExpenses();
+      }
+    }
+
+    // ========== IA: MATTINHOS (VOZ, OCR & CHAT MULTIMODAL) ==========
+    let currentSelectedImage = null;
+    let isRecordingVoice = false;
+    let speechRecognition = null;
+    let ttsEnabled = false;
+
+    // --- RECONHECIMENTO DE VOZ (SPEECH-TO-TEXT) ---
+    function initSpeechRecognition() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        alert('Seu navegador não tem suporte direto à Web Speech API. Use o Google Chrome ou Microsoft Edge para comandos de voz!');
+        return null;
+      }
+      const rec = new SpeechRec();
+      rec.lang = 'pt-BR';
+      rec.continuous = false;
+      rec.interimResults = true;
+
+      rec.onstart = function() {
+        isRecordingVoice = true;
+        const btn = document.getElementById('ai-voice-btn');
+        btn.classList.remove('bg-slate-800', 'text-rose-400');
+        btn.classList.add('bg-rose-600', 'text-white', 'animate-pulse');
+        document.getElementById('ai-voice-indicator').classList.remove('hidden');
+        document.getElementById('ai-input').placeholder = 'Ouvindo... Pode falar agora!';
+      };
+
+      rec.onresult = function(event) {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        document.getElementById('ai-input').value = transcript;
+      };
+
+      rec.onerror = function(event) {
+        console.warn('Erro de voz:', event.error);
+        stopVoiceRecognition();
+      };
+
+      rec.onend = function() {
+        stopVoiceRecognition();
+        const txt = document.getElementById('ai-input').value.trim();
+        if (txt) {
+          // Auto-envio imediato do comando após o usuário terminar de falar
+          setTimeout(() => {
+            sendAiMessage();
+          }, 500);
+        }
+      };
+
+      return rec;
+    }
+
+    function toggleVoiceInput() {
+      if (isRecordingVoice) {
+        stopVoiceRecognition();
+      } else {
+        if (!speechRecognition) {
+          speechRecognition = initSpeechRecognition();
+        }
+        if (speechRecognition) {
+          try {
+            speechRecognition.start();
+          } catch (e) {
+            speechRecognition.stop();
+            setTimeout(() => speechRecognition.start(), 200);
+          }
+        }
+      }
+    }
+
+    function stopVoiceRecognition() {
+      isRecordingVoice = false;
+      if (speechRecognition) {
+        try { speechRecognition.stop(); } catch(e) {}
+      }
+      const btn = document.getElementById('ai-voice-btn');
+      if (btn) {
+        btn.classList.add('bg-slate-800', 'text-rose-400');
+        btn.classList.remove('bg-rose-600', 'text-white', 'animate-pulse');
+      }
+      const ind = document.getElementById('ai-voice-indicator');
+      if (ind) ind.classList.add('hidden');
+      const input = document.getElementById('ai-input');
+      if (input) input.placeholder = 'Fale ou pergunte ao Mattinhos...';
+    }
+
+    // --- SÍNTESE DE VOZ (TEXT-TO-SPEECH) ---
+    function toggleTts() {
+      ttsEnabled = !ttsEnabled;
+      const btn = document.getElementById('tts-toggle-btn');
+      if (ttsEnabled) {
+        btn.classList.add('text-amber-400', 'bg-amber-500/20');
+        btn.classList.remove('text-slate-400', 'bg-slate-800');
+        speakText('Voz do Mattinhos ativada! Pode me perguntar por voz ou mandar foto de caderno!');
+      } else {
+        btn.classList.remove('text-amber-400', 'bg-amber-500/20');
+        btn.classList.add('text-slate-400', 'bg-slate-800');
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      }
+    }
+
+    function speakText(rawText) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      // Limpar marcações de tabela, markdown, URLs e tool calls para leitura fluida
+      let clean = rawText
+        .replace(/```[\s\S]*?```/g, '')
+        .replace(/\|[^\n]+\|/g, '')
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+        .replace(/[#*_~`>=-]/g, '')
+        .replace(/https?:\/\/\S+/g, '')
+        .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
+        .trim();
+
+      if (!clean) return;
+
+      const utter = new SpeechSynthesisUtterance(clean);
+      utter.lang = 'pt-BR';
+      utter.rate = 1.05;
+      utter.pitch = 1.0;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function handleImageSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentSelectedImage = evt.target.result;
+        document.getElementById('ai-preview-img').src = currentSelectedImage;
+        document.getElementById('ai-image-preview-bar').classList.remove('hidden');
+        document.getElementById('ai-input').focus();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearSelectedImage() {
+      currentSelectedImage = null;
+      document.getElementById('ai-image-file').value = '';
+      document.getElementById('ai-image-preview-bar').classList.add('hidden');
+    }
+
+    async function sendAiMessage() {
+      const input = document.getElementById('ai-input');
+      const text = input.value.trim();
+      const imageToSend = currentSelectedImage;
+
+      if (!text && !imageToSend) return;
+
+      const chatContainer = document.getElementById('chat-messages');
+
+      // HTML da imagem anexada se houver
+      let imgHtml = '';
+      if (imageToSend) {
+        imgHtml = `
+          <div class="relative mb-2">
+            <img src="${imageToSend}" class="rounded-xl max-h-40 border border-slate-700 object-contain">
+            <span class="absolute bottom-1 right-1 bg-slate-900/90 text-emerald-400 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-500/30">
+              <i class="fa-solid fa-eye"></i> OCR
+            </span>
+          </div>
+        `;
+      }
+
+      // Adiciona mensagem do usuário
+      chatContainer.innerHTML += `
+        <div class="flex items-start justify-end space-x-2">
+          <div class="bg-amber-500 text-slate-950 font-medium p-2.5 rounded-2xl rounded-tr-none text-xs leading-relaxed max-w-[85%]">
+            ${imgHtml}
+            ${text ? `<div>${text}</div>` : ''}
+          </div>
+        </div>
+      `;
+      input.value = '';
+      clearSelectedImage();
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      const loadingId = 'loading-' + Date.now();
+      let statusMsg = 'Mattinhos analisando o sistema...';
+      if (imageToSend) {
+        statusMsg = 'Mattinhos lendo a imagem com OCR, calculando totais e lançando... 📸';
+      } else if (text && (/pesquis|preço|preco|mercado|concorrent|cotaç|cotac|madeira|quanto tá|quanto ta|marcas|atacad/i.test(text))) {
+        statusMsg = 'Mattinhos pesquisando a internet em tempo real e analisando o mercado... 🌐';
+      }
+
+      chatContainer.innerHTML += `
+        <div id="${loadingId}" class="flex items-start space-x-2">
+          <div class="w-7 h-7 rounded-full bg-white p-0.5 border border-amber-500 shrink-0">
+            <img src="/static/logo.png" alt="Avatar" class="w-full h-full object-contain">
+          </div>
+          <div class="bg-slate-800/80 p-2.5 rounded-2xl rounded-tl-none text-slate-400 text-xs flex items-center space-x-2">
+            <i class="fa-solid fa-circle-notch fa-spin text-amber-500"></i>
+            <span>${statusMsg}</span>
+          </div>
+        </div>
+      `;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      try {
+        const res = await fetch('/api/ai/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, image: imageToSend })
+        });
+        const data = await res.json();
+        document.getElementById(loadingId).remove();
+
+        const renderedReply = marked.parse(data.reply || 'Sem resposta');
+        const replyId = 'reply-' + Date.now();
+        window[replyId] = data.reply || '';
+
+        chatContainer.innerHTML += `
+          <div class="flex items-start space-x-2">
+            <div class="w-7 h-7 rounded-full bg-white p-0.5 border border-amber-500 shrink-0">
+              <img src="/static/logo.png" alt="Avatar" class="w-full h-full object-contain">
+            </div>
+            <div class="bg-slate-800/80 p-3 rounded-2xl rounded-tl-none text-slate-200 text-xs leading-relaxed border border-slate-700/60 max-w-[85%] prose prose-invert prose-xs">
+              <div class="flex items-center justify-between border-b border-slate-700/60 pb-1 mb-2">
+                <span class="text-[10px] text-amber-400 font-bold"><i class="fa-solid fa-robot mr-1"></i> Mattinhos</span>
+                <button onclick="speakText(window['${replyId}'])" title="Ouvir em áudio" class="text-slate-400 hover:text-amber-400 text-[11px] flex items-center space-x-1">
+                  <i class="fa-solid fa-volume-high"></i>
+                  <span class="text-[9px]">Ouvir</span>
+                </button>
+              </div>
+              ${renderedReply}
+            </div>
+          </div>
+        `;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // Se TTS estiver ativado, lê a resposta automaticamente
+        if (ttsEnabled && data.reply) {
+          speakText(data.reply);
+        }
+
+        // Se o Mattinhos executou alguma ação no banco de dados, atualiza as telas em tempo real!
+        if (data.actions_executed && data.actions_executed > 0) {
+          loadDashboard();
+          loadHistory();
+          loadCustomers();
+          loadSuppliers();
+          loadExpenses();
+        }
+
+      } catch (err) {
+        document.getElementById(loadingId).remove();
+        chatContainer.innerHTML += `<div class="text-rose-400 text-[11px] p-2 text-center">Erro: ${err}</div>`;
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      if (document.getElementById('mattinhos-chat-box').classList.contains('hidden')) {
+        toggleMattinhos();
+      }
+      document.getElementById('ai-input').value = promptText;
+      sendAiMessage();
+    }
+
+    // Modal Gemini
+    function openConfigModal() { document.getElementById('config-modal').classList.remove('hidden'); }
+    function closeConfigModal() { document.getElementById('config-modal').classList.add('hidden'); }
+    async function saveGeminiKey() {
+      const key = document.getElementById('gemini-key-input').value.trim();
+      if (!key) return alert('Insira uma chave válida.');
+      await fetch('/api/config/key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api_key: key })
+      });
+      alert('Chave salva!');
+      closeConfigModal();
+      loadDashboard();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      addExpenseRow('Compra de Sacos Vazios 2 kg', '218.27', 'EMBALAGEM');
+      addExpenseRow('Pedágio Ida', '20.00', 'PEDAGIO');
+      addExpenseRow('Pedágio Volta', '15.00', 'PEDAGIO');
+      addExpenseRow('Acerto Giovani (Sacos 10k)', '385.00', 'FRETE');
+      loadDashboard();
+    });
+  </script>
+</body>
+</html>

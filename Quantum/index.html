@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IBM Quantum QPU Dashboard & Mission Control | QAI</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Marked.js for Markdown Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;600;700;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            quantum: {
+              950: '#05070d',
+              900: '#090d16',
+              850: '#0d1322',
+              800: '#131b2e',
+              700: '#1b253f',
+              border: '#1e2942',
+              cyan: '#00f2fe',
+              blue: '#4facfe',
+              purple: '#8a2be2',
+              neon: '#0df'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+            orbitron: ['Orbitron', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #05070d;
+      color: #e2e8f0;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(138, 43, 226, 0.05) 0%, transparent 45%);
+    }
+    .glass-panel {
+      background: rgba(13, 19, 34, 0.82);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(30, 41, 66, 0.85);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+    }
+    .pulse-dot {
+      animation: pulseAnimation 2s infinite;
+    }
+    @keyframes pulseAnimation {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .pulse-cyan {
+      animation: pulseCyanAnimation 2s infinite;
+    }
+    @keyframes pulseCyanAnimation {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+    }
+
+    /* Markdown Styling in QAI Chat */
+    .prose-qai {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+    .prose-qai p {
+      margin-bottom: 0.5rem;
+    }
+    .prose-qai p:last-child {
+      margin-bottom: 0;
+    }
+    .prose-qai h1, .prose-qai h2, .prose-qai h3, .prose-qai h4 {
+      color: #f1f5f9;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      margin-top: 0.75rem;
+      margin-bottom: 0.35rem;
+    }
+    .prose-qai h3 { font-size: 0.875rem; }
+    .prose-qai strong {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    .prose-qai code:not(pre code) {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      background: rgba(30, 41, 66, 0.8);
+      color: #00f2fe;
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.25rem;
+      border: 1px solid rgba(0, 242, 254, 0.2);
+    }
+    .prose-qai ul, .prose-qai ol {
+      margin-left: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    .prose-qai li {
+      margin-bottom: 0.25rem;
+    }
+    .prose-qai blockquote {
+      border-left: 3px solid #8a2be2;
+      background: rgba(138, 43, 226, 0.08);
+      padding: 0.4rem 0.6rem;
+      border-radius: 0 0.375rem 0.375rem 0;
+      margin: 0.5rem 0;
+      font-style: italic;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(9, 13, 22, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(30, 41, 66, 0.8);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 242, 254, 0.4);
+    }
+
+    /* Flash highlight animation for editor */
+    @keyframes flashHighlight {
+      0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.8); border-color: #00f2fe; }
+      50% { box-shadow: 0 0 25px 3px rgba(0, 242, 254, 0.6); border-color: #00f2fe; }
+      100% { box-shadow: none; border-color: #1e2942; }
+    }
+    .flash-editor {
+      animation: flashHighlight 1.5s ease-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased text-slate-200">
+
+  <!-- Top Navigation Bar -->
+  <header class="glass-panel border-b border-quantum-border sticky top-0 z-30 px-6 py-3.5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Logo & System Badge -->
+      <div class="flex items-center space-x-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
+          <i data-lucide="atom" class="w-6 h-6 text-white animate-spin" style="animation-duration: 20s;"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-orbitron font-bold text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400">
+              IBM QUANTUM SYSTEM
+            </span>
+            <span class="text-xs font-mono uppercase px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-400 border border-cyan-800/50">
+              Qiskit Aer v0.15
+            </span>
+          </div>
+          <p class="text-xs text-slate-400" id="nav-subtitle">
+            <span data-i18n="nav.processor_label">Emulated Processor:</span> <span class="text-slate-200 font-medium">IBM Brisbane (127 Qubits Heavy-Hex)</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Telemetry Status: Language Switcher + QAI Pill + Simulator Status -->
+      <div class="flex items-center space-x-2.5 md:space-x-3.5">
+        
+        <!-- Language Switcher (EN / ES / PT) -->
+        <div class="flex items-center bg-quantum-900 border border-quantum-border rounded-lg p-0.5 text-xs font-mono shadow-inner">
+          <button onclick="setLanguage('en')" id="lang-btn-en" title="English" class="px-2.5 py-1 rounded transition text-slate-400 hover:text-white flex items-center space-x-1 cursor-pointer">
+            <span class="text-sm leading-none">🇺🇸</span>
+            <span class="font-bold">EN</span>
+          </button>
+          <button onclick="setLanguage('es')" id="lang-btn-es" title="Español" class="px-2.5 py-1 rounded transition text-slate-400 hover:text-white flex items-center space-x-1 cursor-pointer">
+            <span class="text-sm leading-none">🇪🇸</span>
+            <span class="font-bold">ES</span>
+          </button>
+          <button onclick="setLanguage('pt')" id="lang-btn-pt" title="Português" class="px-2.5 py-1 rounded transition text-slate-400 hover:text-white flex items-center space-x-1 cursor-pointer">
+            <span class="text-sm leading-none">🇧🇷</span>
+            <span class="font-bold">PT</span>
+          </button>
+        </div>
+
+        <!-- QAI Header Pill (Click opens bottom-right chat widget) -->
+        <button onclick="toggleQaiChat(true)" class="flex items-center space-x-2.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-950/90 via-quantum-800 to-cyan-950/90 hover:from-purple-900 hover:to-cyan-900 border border-purple-500/40 hover:border-cyan-400 transition shadow-lg shadow-purple-500/20 group cursor-pointer">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
+          </span>
+          <div class="text-left">
+            <div class="flex items-center space-x-1.5">
+              <span class="font-orbitron font-bold text-xs text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300">QAI</span>
+              <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-purple-900/80 text-purple-200 border border-purple-700/60 font-semibold">IBM Granite</span>
+            </div>
+            <p class="text-[10px] text-slate-400 font-mono" data-i18n="nav.qai_pill_sub">Ubuntu L4 GPU • Online</p>
+          </div>
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400 ml-1 group-hover:rotate-12 transition"></i>
+        </button>
+
+        <!-- Backend Health -->
+        <div class="hidden lg:flex items-center space-x-3 bg-quantum-900/90 border border-quantum-border px-3.5 py-1.5 rounded-lg">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 pulse-dot" id="status-indicator"></div>
+          <div class="text-xs">
+            <span class="text-slate-400" data-i18n="nav.sim_label">Simulator:</span>
+            <span class="font-mono text-cyan-300 ml-1 font-semibold" id="backend-ip">10.1.0.65:8090</span>
+          </div>
+          <span class="text-xs px-1.5 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded font-mono" id="server-status">ONLINE</span>
+        </div>
+
+        <button onclick="checkServerHealth()" class="text-xs flex items-center space-x-1.5 text-slate-300 hover:text-cyan-400 transition bg-quantum-800 hover:bg-quantum-700 px-3 py-1.5 rounded-lg border border-quantum-border cursor-pointer">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span data-i18n="nav.refresh_btn">Refresh</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-7xl mx-auto px-6 py-6 flex-1 w-full space-y-6">
+
+    <!-- Section 1: Cryogenic Telemetry & QPU Key Performance Indicators (KPIs) -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      
+      <!-- KPI 1: Dilution Fridge Temp -->
+      <div class="glass-panel p-4 rounded-xl relative overflow-hidden group">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-slate-400 font-medium" data-i18n="kpi.temp_title">Cryogenic Temp.</span>
+          <i data-lucide="thermometer-snowflake" class="w-4 h-4 text-cyan-400"></i>
+        </div>
+        <div class="text-2xl font-orbitron font-bold text-cyan-300">14.8 <span class="text-sm font-sans font-normal text-slate-400">mK</span></div>
+        <p class="text-[11px] text-emerald-400 mt-1 flex items-center">
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span>
+          <span data-i18n="kpi.temp_sub">Stable (-273.13 °C)</span>
+        </p>
+        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+      </div>
+
+      <!-- KPI 2: Coherence Time T1 -->
+      <div class="glass-panel p-4 rounded-xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-slate-400 font-medium" data-i18n="kpi.t1_title">Avg. T₁ Relaxation</span>
+          <i data-lucide="activity" class="w-4 h-4 text-purple-400"></i>
+        </div>
+        <div class="text-2xl font-orbitron font-bold text-purple-300">248.5 <span class="text-sm font-sans font-normal text-slate-400">μs</span></div>
+        <p class="text-[11px] text-slate-400 mt-1" data-i18n="kpi.t1_sub">Quantum lifetime</p>
+        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+      </div>
+
+      <!-- KPI 3: Dephasing Time T2 -->
+      <div class="glass-panel p-4 rounded-xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-slate-400 font-medium" data-i18n="kpi.t2_title">Avg. T₂ Dephasing</span>
+          <i data-lucide="waves" class="w-4 h-4 text-blue-400"></i>
+        </div>
+        <div class="text-2xl font-orbitron font-bold text-blue-300">182.3 <span class="text-sm font-sans font-normal text-slate-400">μs</span></div>
+        <p class="text-[11px] text-slate-400 mt-1" data-i18n="kpi.t2_sub">Phase preservation</p>
+        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+      </div>
+
+      <!-- KPI 4: 1-Qubit Gate Fidelity -->
+      <div class="glass-panel p-4 rounded-xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-slate-400 font-medium" data-i18n="kpi.fidelity1_title">1-Qubit Fidelity</span>
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+        </div>
+        <div class="text-2xl font-orbitron font-bold text-emerald-300">99.94 <span class="text-sm font-sans font-normal text-slate-400">%</span></div>
+        <p class="text-[11px] text-emerald-400 mt-1" data-i18n="kpi.fidelity1_sub">SX, X, Rz gates</p>
+        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+      </div>
+
+      <!-- KPI 5: 2-Qubit ECR/CX Fidelity -->
+      <div class="glass-panel p-4 rounded-xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-slate-400 font-medium" data-i18n="kpi.fidelity2_title">2-Qubit Fidelity</span>
+          <i data-lucide="git-merge" class="w-4 h-4 text-amber-400"></i>
+        </div>
+        <div class="text-2xl font-orbitron font-bold text-amber-300">98.85 <span class="text-sm font-sans font-normal text-slate-400">%</span></div>
+        <p class="text-[11px] text-slate-400 mt-1" data-i18n="kpi.fidelity2_sub">ECR / CNOT gates</p>
+        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 to-orange-500"></div>
+      </div>
+
+      <!-- KPI 6: Readout Error -->
+      <div class="glass-panel p-4 rounded-xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-slate-400 font-medium" data-i18n="kpi.readout_title">Readout Error</span>
+          <i data-lucide="scan" class="w-4 h-4 text-rose-400"></i>
+        </div>
+        <div class="text-2xl font-orbitron font-bold text-rose-300">1.15 <span class="text-sm font-sans font-normal text-slate-400">%</span></div>
+        <p class="text-[11px] text-slate-400 mt-1" data-i18n="kpi.readout_sub">Discriminator measurement</p>
+        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-rose-500 to-red-500"></div>
+      </div>
+
+    </div>
+
+    <!-- Section 2: Quantum Circuit Execution Lab & Results Chart (CLEAN DASHBOARD LAYOUT) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+
+      <!-- Left Column: Circuit Controls and QASM Editor (5 cols) -->
+      <div class="lg:col-span-5 glass-panel p-5 rounded-2xl flex flex-col space-y-4">
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="cpu" class="w-5 h-5 text-cyan-400"></i>
+            <h2 class="font-orbitron font-semibold text-sm tracking-wide text-white" data-i18n="lab.title">Circuit Laboratory</h2>
+          </div>
+          <span class="text-xs font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800">
+            OpenQASM 2.0
+          </span>
+        </div>
+
+        <!-- Quick Presets -->
+        <div>
+          <label class="text-xs text-slate-400 block mb-1.5 font-medium" data-i18n="lab.presets_label">Preset Algorithms:</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="loadPreset('bell')" class="preset-btn px-2.5 py-1.5 rounded-lg bg-quantum-800 hover:bg-quantum-700 border border-quantum-border text-xs font-medium text-slate-200 transition text-center hover:border-cyan-500/50 cursor-pointer" data-i18n="lab.preset_bell">
+              Bell State
+            </button>
+            <button onclick="loadPreset('ghz')" class="preset-btn px-2.5 py-1.5 rounded-lg bg-quantum-800 hover:bg-quantum-700 border border-quantum-border text-xs font-medium text-slate-200 transition text-center hover:border-cyan-500/50 cursor-pointer" data-i18n="lab.preset_ghz">
+              GHZ (3 Qubits)
+            </button>
+            <button onclick="loadPreset('grover')" class="preset-btn px-2.5 py-1.5 rounded-lg bg-quantum-800 hover:bg-quantum-700 border border-quantum-border text-xs font-medium text-slate-200 transition text-center hover:border-cyan-500/50 cursor-pointer" data-i18n="lab.preset_grover">
+              Grover Search
+            </button>
+          </div>
+        </div>
+
+        <!-- QAI Copilot Quick Actions Toolbar -->
+        <div class="flex items-center justify-between p-2 rounded-xl bg-gradient-to-r from-purple-950/60 via-quantum-900 to-cyan-950/60 border border-purple-500/30 shadow-md">
+          <div class="flex items-center space-x-2">
+            <div class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow">
+              <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="font-orbitron font-bold text-xs text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">QAI Copilot</span>
+                <span class="text-[9px] font-mono px-1 rounded bg-purple-950 text-purple-200 border border-purple-800">Granite 8B</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-1.5">
+            <button onclick="qaiExplainCircuit()" title="QAI explains current circuit" class="px-2 py-1 rounded-lg bg-quantum-800 hover:bg-quantum-700 text-[11px] font-medium text-cyan-300 border border-quantum-border hover:border-cyan-400/50 flex items-center space-x-1 transition shadow-sm cursor-pointer">
+              <i data-lucide="sparkles" class="w-3 h-3 text-cyan-400"></i>
+              <span data-i18n="lab.copilot_explain">Explain</span>
+            </button>
+            <button onclick="qaiOptimizeCircuit()" title="QAI optimizes circuit for IBM QPUs" class="px-2 py-1 rounded-lg bg-quantum-800 hover:bg-quantum-700 text-[11px] font-medium text-purple-300 border border-quantum-border hover:border-purple-400/50 flex items-center space-x-1 transition shadow-sm cursor-pointer">
+              <i data-lucide="zap" class="w-3 h-3 text-purple-400"></i>
+              <span data-i18n="lab.copilot_optimize">Optimize</span>
+            </button>
+            <button onclick="toggleQaiChat(true)" title="Open QAI chat" class="px-2 py-1 rounded-lg bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-[11px] font-bold text-white shadow transition flex items-center space-x-1 cursor-pointer">
+              <i data-lucide="message-square" class="w-3 h-3"></i>
+              <span data-i18n="lab.copilot_chat">Chat</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- QASM Code Editor -->
+        <div class="flex-1 flex flex-col">
+          <label class="text-xs text-slate-400 block mb-1 font-medium flex justify-between items-center">
+            <span data-i18n="lab.code_label">Circuit Code:</span>
+            <span class="text-[11px] text-slate-500 font-mono" data-i18n="lab.code_sub">Executable QASM 2.0</span>
+          </label>
+          <textarea id="qasm-editor" class="w-full flex-1 min-h-[220px] font-mono text-xs bg-quantum-950 border border-quantum-border rounded-xl p-3 text-cyan-300 focus:outline-none focus:border-cyan-500 transition resize-none selection:bg-cyan-900" spellcheck="false"></textarea>
+        </div>
+
+        <!-- Simulation Parameters -->
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          <div>
+            <label class="text-xs text-slate-400 block mb-1" data-i18n="lab.shots_label">Shots:</label>
+            <select id="sim-shots" class="w-full bg-quantum-900 border border-quantum-border rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+              <option value="512" data-i18n="lab.shots_512">512 shots</option>
+              <option value="1024" data-i18n="lab.shots_1024" selected>1,024 shots</option>
+              <option value="4096" data-i18n="lab.shots_4096">4,096 shots</option>
+              <option value="8192" data-i18n="lab.shots_8192">8,192 shots</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1" data-i18n="lab.noise_label">Noise Model:</label>
+            <select id="sim-noise" class="w-full bg-quantum-900 border border-quantum-border rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+              <option value="none" data-i18n="lab.noise_none">Ideal (No noise)</option>
+              <option value="fake_brisbane" selected>IBM Brisbane (127 Q)</option>
+              <option value="fake_torino">IBM Torino (133 Q)</option>
+              <option value="fake_kyiv">IBM Kyiv (127 Q)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="run-btn" onclick="executeQuantumSimulation()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-orbitron font-bold text-xs tracking-wider transition shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-2 cursor-pointer">
+          <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+          <span data-i18n="lab.run_btn">EXECUTE QUANTUM SIMULATION</span>
+        </button>
+
+      </div>
+
+      <!-- Right Column: Results & Probability Histogram (7 cols) -->
+      <div class="lg:col-span-7 glass-panel p-5 rounded-2xl flex flex-col space-y-4">
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 text-purple-400"></i>
+            <h2 class="font-orbitron font-semibold text-sm tracking-wide text-white" data-i18n="results.title">Quantum Probability Distribution</h2>
+          </div>
+          <div class="flex items-center space-x-3 text-xs">
+            <span class="text-slate-400" data-i18n="results.exec_time_label">Execution Time:</span>
+            <span id="exec-time" class="font-mono text-cyan-400 font-bold">1.2 ms</span>
+          </div>
+        </div>
+
+        <!-- Chart Container -->
+        <div class="relative flex-1 min-h-[240px] bg-quantum-950/70 rounded-xl border border-quantum-border p-3 flex items-center justify-center">
+          <canvas id="quantumChart"></canvas>
+          <div id="chart-loader" class="hidden absolute inset-0 bg-quantum-950/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center space-y-2">
+            <div class="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-xs font-mono text-cyan-400" data-i18n="results.loader_text">Collapsing wave function via Qiskit Aer...</span>
+          </div>
+        </div>
+
+        <!-- Measurement Details Grid -->
+        <div class="grid grid-cols-4 gap-2 text-center" id="measurement-pills">
+          <!-- Dynamic Pills injected here -->
+        </div>
+
+        <!-- QAI Result Interpretation Trigger -->
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-quantum-border/60">
+          <span class="text-[11px] text-slate-400 flex items-center">
+            <i data-lucide="brain" class="w-3.5 h-3.5 text-purple-400 mr-1.5"></i>
+            <span data-i18n="results.qai_trigger_text">Want a physical explanation of these results?</span>
+          </span>
+          <button onclick="qaiInterpretResults()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-quantum-800 hover:bg-quantum-700 border border-purple-500/50 text-[11px] text-purple-300 hover:text-white font-medium transition flex items-center justify-center space-x-1.5 shadow-sm cursor-pointer">
+            <i data-lucide="sparkles" class="w-3 h-3 text-cyan-400"></i>
+            <span data-i18n="results.qai_interpret_btn">Interpret Results with QAI</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Section 3: Live Quantum Job Queue & Execution Activity -->
+    <div class="glass-panel p-5 rounded-2xl space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="list-ordered" class="w-5 h-5 text-cyan-400"></i>
+          <h2 class="font-orbitron font-semibold text-sm tracking-wide text-white" data-i18n="jobs.title">Activity Queue & Job History</h2>
+        </div>
+        <span class="text-xs text-slate-400 flex items-center">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-1.5"></span>
+          <span data-i18n="jobs.scheduler_status">Scheduler Active (Qiskit Runtime)</span>
+        </span>
+      </div>
+
+      <!-- Activity Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="text-slate-400 border-b border-quantum-border uppercase text-[11px]">
+            <tr>
+              <th class="pb-2.5 font-medium" data-i18n="jobs.th_job_id">Job ID</th>
+              <th class="pb-2.5 font-medium" data-i18n="jobs.th_algo">Algorithm</th>
+              <th class="pb-2.5 font-medium" data-i18n="jobs.th_qubits">Qubits</th>
+              <th class="pb-2.5 font-medium" data-i18n="jobs.th_shots">Shots</th>
+              <th class="pb-2.5 font-medium" data-i18n="jobs.th_backend">Backend</th>
+              <th class="pb-2.5 font-medium" data-i18n="jobs.th_latency">Latency</th>
+              <th class="pb-2.5 font-medium text-right" data-i18n="jobs.th_status">Status</th>
+            </tr>
+          </thead>
+          <tbody id="job-history-table" class="divide-y divide-quantum-border/50 text-slate-300">
+            <!-- Dynamic jobs inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 4: 127-Qubit Heavy-Hex Lattice Grid Preview -->
+    <div class="glass-panel p-5 rounded-2xl space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="grid" class="w-5 h-5 text-purple-400"></i>
+          <h2 class="font-orbitron font-semibold text-sm tracking-wide text-white" data-i18n="lattice.title">Physical Processor Topology (IBM Brisbane - 127 Qubits)</h2>
+        </div>
+        <span class="text-xs text-slate-400" id="lattice-subtitle">
+          <span data-i18n="lattice.freq_label">Mean frequency:</span> <strong class="text-slate-200">5.08 GHz</strong> | <span data-i18n="lattice.type_label">Superconducting transmons</span>
+        </span>
+      </div>
+
+      <!-- Lattice Grid Visualizer -->
+      <div class="bg-quantum-950 p-4 rounded-xl border border-quantum-border flex flex-wrap gap-1.5 justify-center max-h-[150px] overflow-y-auto" id="qubit-lattice">
+        <!-- 127 Qubits rendered dynamically -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="glass-panel border-t border-quantum-border px-6 py-3.5 text-center text-xs text-slate-400 flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto w-full">
+    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2 md:mb-0">
+      <span data-i18n="footer.sim_info">Qiskit Aer simulator isolated at <code class="text-cyan-400 font-mono">10.1.0.65:8090</code></span>
+      <span>•</span>
+      <span data-i18n="footer.ai_info">QAI (IBM Granite 8B) accelerated on Ubuntu GPU <code class="text-purple-400 font-mono">192.168.173.22:3000</code></span>
+    </div>
+    <div class="text-slate-500 text-[11px]" data-i18n="footer.copyright">
+      IBM Quantum Dashboard &copy; 2026 • NVIDIA L4 Tensor Core Powered
+    </div>
+  </footer>
+
+  <!-- ============================================================== -->
+  <!-- FLOATING QAI LAUNCHER & DRAWER (STYLE: CRM-I / ERP-I)          -->
+  <!-- ============================================================== -->
+
+  <!-- Floating Launcher Button (Bottom Right) -->
+  <div id="qai-fab-container" class="fixed bottom-6 right-6 z-50">
+    <button onclick="toggleQaiChat()" id="qai-fab-btn" class="relative group flex items-center space-x-2 px-3.5 py-3 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 text-white shadow-2xl shadow-cyan-500/40 hover:scale-105 active:scale-95 transition transform duration-200 border border-cyan-300/50 cursor-pointer">
+      <!-- Glow Ring -->
+      <span class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-400 to-purple-600 opacity-70 blur group-hover:opacity-100 transition duration-300"></span>
+      
+      <!-- Icon & Text -->
+      <div class="relative flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-xl bg-quantum-950/60 border border-cyan-400/40 flex items-center justify-center">
+          <i data-lucide="bot" class="w-5 h-5 text-cyan-300"></i>
+        </div>
+        <div class="text-left pr-1">
+          <div class="flex items-center space-x-1.5">
+            <span class="font-orbitron font-bold text-xs tracking-wider text-white">QAI</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+          </div>
+          <span class="text-[9px] font-mono text-cyan-200">IBM Granite</span>
+        </div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Floating QAI Chat Modal / Drawer (Bottom Right) -->
+  <div id="qai-drawer" class="fixed bottom-24 right-6 z-50 w-[460px] max-w-[calc(100vw-2rem)] h-[620px] max-h-[calc(100vh-7rem)] flex flex-col glass-panel rounded-2xl border border-cyan-500/50 shadow-2xl shadow-cyan-500/30 overflow-hidden transform transition-all duration-300 ease-out translate-y-6 opacity-0 pointer-events-none scale-95">
+    
+    <!-- Drawer Header -->
+    <div class="px-4 py-3 bg-gradient-to-r from-quantum-900 via-quantum-850 to-purple-950/80 border-b border-quantum-border flex items-center justify-between select-none">
+      <div class="flex items-center space-x-3">
+        <div class="relative">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+            <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+          </div>
+          <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-quantum-950 pulse-dot"></span>
+        </div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <h3 class="font-orbitron font-bold text-sm tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300">QAI</h3>
+            <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-purple-900/80 text-purple-200 border border-purple-700/60 font-semibold">Granite 8B</span>
+            <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-700/50">Quantinho</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-mono" data-i18n="qai.gpu_info">NVIDIA L4 GPU • Ubuntu 192.168.173.22</p>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex items-center space-x-1">
+        <button onclick="clearQaiChat()" title="Clear chat" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-quantum-800 transition cursor-pointer" data-i18n-title="qai.clear_title">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+        <button onclick="toggleQaiChat(false)" title="Close / Minimize" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-quantum-800 transition cursor-pointer" data-i18n-title="qai.close_title">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Telemetry Strip -->
+    <div class="px-3.5 py-1.5 bg-quantum-950/90 border-b border-quantum-border/60 flex items-center justify-between text-[10px] font-mono text-slate-400">
+      <div class="flex items-center space-x-1.5 text-emerald-400">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span>Proxy: <strong class="text-slate-200">/api/qai/chat</strong></span>
+      </div>
+      <div class="flex items-center space-x-2 text-cyan-300">
+        <span id="qai-speed-badge">~26.5 tok/s (GPU L4)</span>
+      </div>
+    </div>
+
+    <!-- Quick Prompt Suggestions Carousel -->
+    <div class="p-2 bg-quantum-900/60 border-b border-quantum-border/40 overflow-x-auto flex space-x-1.5 no-scrollbar" id="qai-quick-prompts-bar">
+      <!-- Quick prompts injected dynamically according to language -->
+    </div>
+
+    <!-- Chat Messages Scroll Area -->
+    <div id="qai-messages" class="flex-1 p-3.5 overflow-y-auto space-y-3.5 text-xs">
+      <!-- Welcome Message injected dynamically -->
+    </div>
+
+    <!-- Chat Input Area -->
+    <div class="p-3 bg-quantum-950 border-t border-quantum-border flex flex-col space-y-2">
+      
+      <!-- Context Selector Pill -->
+      <div class="flex items-center justify-between text-[11px] text-slate-400">
+        <label class="flex items-center space-x-1.5 cursor-pointer hover:text-cyan-300 select-none">
+          <input type="checkbox" id="attach-qasm-check" checked class="rounded bg-quantum-800 border-quantum-border text-cyan-500 focus:ring-0">
+          <span data-i18n="qai.checkbox_context">Attach current QASM circuit as context</span>
+        </label>
+        <span class="text-[10px] font-mono text-slate-500" data-i18n="qai.enter_hint">Enter to send</span>
+      </div>
+
+      <!-- Textarea and Send Button -->
+      <div class="flex items-end space-x-2">
+        <div class="flex-1 relative">
+          <textarea id="qai-input" rows="2" placeholder="Ask QAI about quantum physics, circuits, or algorithms..." class="w-full bg-quantum-900 border border-quantum-border rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition resize-none"></textarea>
+        </div>
+        <button id="qai-send-btn" onclick="sendQaiUserMessage()" class="h-10 px-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold transition shadow-lg shadow-cyan-500/30 flex items-center justify-center flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Logic & Controller Script -->
+  <script>
+    const SERVER_URL = ''; // Same-origin relative URLs
+    const QAI_API = '/api/qai/chat'; // Reliable Same-Origin Streaming Proxy
+    
+    let currentLang = localStorage.getItem('quantum_dashboard_lang') || 'en';
+    let quantumChart = null;
+    let isQaiChatOpen = false;
+    let isGeneratingResponse = false;
+    let lastSimulationResults = null;
+
+    // ==============================================================
+    // INTERNATIONALIZATION (i18n) DICTIONARY: EN / ES / PT
+    // ==============================================================
+    const TRANSLATIONS = {
+      en: {
+        page_title: "IBM Quantum QPU Dashboard & Mission Control | QAI",
+        nav: {
+          processor_label: "Emulated Processor:",
+          qai_pill_sub: "Ubuntu L4 GPU • Online",
+          sim_label: "Simulator:",
+          refresh_btn: "Refresh"
+        },
+        kpi: {
+          temp_title: "Cryogenic Temp.",
+          temp_sub: "Stable (-273.13 °C)",
+          t1_title: "Avg. T₁ Relaxation",
+          t1_sub: "Quantum lifetime",
+          t2_title: "Avg. T₂ Dephasing",
+          t2_sub: "Phase preservation",
+          fidelity1_title: "1-Qubit Fidelity",
+          fidelity1_sub: "SX, X, Rz gates",
+          fidelity2_title: "2-Qubit Fidelity",
+          fidelity2_sub: "ECR / CNOT gates",
+          readout_title: "Readout Error",
+          readout_sub: "Discriminator measurement"
+        },
+        lab: {
+          title: "Circuit Laboratory",
+          presets_label: "Preset Algorithms:",
+          preset_bell: "Bell State",
+          preset_ghz: "GHZ (3 Qubits)",
+          preset_grover: "Grover Search",
+          copilot_explain: "Explain",
+          copilot_optimize: "Optimize",
+          copilot_chat: "Chat",
+          code_label: "Circuit Code:",
+          code_sub: "Executable QASM 2.0",
+          shots_label: "Shots:",
+          shots_512: "512 shots",
+          shots_1024: "1,024 shots",
+          shots_4096: "4,096 shots",
+          shots_8192: "8,192 shots",
+          noise_label: "Noise Model:",
+          noise_none: "Ideal (No noise)",
+          run_btn: "EXECUTE QUANTUM SIMULATION"
+        },
+        results: {
+          title: "Quantum Probability Distribution",
+          exec_time_label: "Execution Time:",
+          loader_text: "Collapsing wave function via Qiskit Aer...",
+          chart_dataset_label: "Measurement Probability",
+          qai_trigger_text: "Want a physical explanation of these results?",
+          qai_interpret_btn: "Interpret Results with QAI"
+        },
+        jobs: {
+          title: "Activity Queue & Job History",
+          scheduler_status: "Scheduler Active (Qiskit Runtime)",
+          th_job_id: "Job ID",
+          th_algo: "Algorithm",
+          th_qubits: "Qubits",
+          th_shots: "Shots",
+          th_backend: "Backend",
+          th_latency: "Latency",
+          th_status: "Status"
+        },
+        lattice: {
+          title: "Physical Processor Topology (IBM Brisbane - 127 Qubits)",
+          freq_label: "Mean frequency:",
+          type_label: "Superconducting transmons"
+        },
+        footer: {
+          sim_info: "Qiskit Aer simulator isolated at <code class='text-cyan-400 font-mono'>10.1.0.65:8090</code>",
+          ai_info: "QAI (IBM Granite 8B) accelerated on Ubuntu GPU <code class='text-purple-400 font-mono'>192.168.173.22:3000</code>",
+          copyright: "IBM Quantum Dashboard &copy; 2026 • NVIDIA L4 Tensor Core Powered"
+        },
+        qai: {
+          gpu_info: "NVIDIA L4 GPU • Ubuntu 192.168.173.22",
+          clear_title: "Clear conversation",
+          close_title: "Close / Minimize",
+          checkbox_context: "Attach current QASM circuit as context",
+          enter_hint: "Enter to send",
+          input_placeholder: "Ask QAI about quantum physics, circuits, or algorithms...",
+          you_label: "You",
+          qai_label: "QAI (Quantinho)",
+          qai_sub: "IBM Granite 8B",
+          gpu_accel: "GPU Accelerated",
+          copy_btn: "Copy",
+          copied_btn: "Copied!",
+          to_editor_btn: "To Editor",
+          simulate_btn: "Simulate",
+          welcome_html: `
+            <p>Hello! I am <strong>QAI</strong> (affectionately known as <strong>Quantinho</strong>), your native Quantum Artificial Intelligence accelerated on the <strong>NVIDIA L4</strong> GPU of the Ubuntu server! ⚛️🚀</p>
+            <p>I am ready to help you:</p>
+            <ul>
+              <li>Design circuits in <code>OpenQASM 2.0</code> (Grover, GHZ, Teleportation, QAOA).</li>
+              <li>Analyze entangled states and complex quantum phases.</li>
+              <li>Examine noise and \(T_1 / T_2\) relaxation on the <strong>IBM Brisbane</strong> 127-qubit chip.</li>
+              <li>Insert generated circuits directly into your lab editor with 1 click!</li>
+            </ul>
+            <p>How can I assist your quantum computing experiments today?</p>
+          `,
+          chat_cleared_html: `
+            <p>Chat history cleared! <strong>QAI</strong> is ready for your new quantum algorithms and questions. What shall we explore?</p>
+          `,
+          quick_chips: [
+            { label: "Explain editor", icon: "sparkles", prompt: "Explain in detail the OpenQASM circuit currently in the editor, describing every gate, superpositions, and expected probabilities." },
+            { label: "Teleportation", icon: "send", prompt: "Create a complete Quantum Teleportation protocol in OpenQASM 2.0 with concise step-by-step physical explanation." },
+            { label: "Grover |101>", icon: "search", prompt: "Create a 3-qubit Grover search algorithm with an oracle marking the state |101> in valid OpenQASM 2.0." },
+            { label: "GHZ State", icon: "git-branch", prompt: "Generate a 3-qubit maximally entangled GHZ state (|000> + |111>)/sqrt(2) in OpenQASM 2.0." },
+            { label: "Error Mitigation", icon: "shield-check", prompt: "How does readout error mitigation and zero-noise extrapolation (ZNE) work on the IBM Brisbane 127-qubit heavy-hex chip?" }
+          ],
+          system_prompt: `You are QAI (affectionately known as Quantinho), the official Quantum AI Copilot of IBM Quantum QPU Dashboard & Mission Control.
+You are powered by the IBM Granite 8B model (granite-4.2-8b-Q8_0) accelerated by an NVIDIA L4 GPU on the Ubuntu server (192.168.173.22).
+The attached quantum simulator is IBM Qiskit Aer isolated at 10.1.0.65:8090, which supports ideal matrix calculations as well as realistic noise models for chips like IBM Brisbane (127 qubits Heavy-Hex), IBM Torino (133 qubits Heron), FakeKyiv, and FakeSherbrooke.
+
+Your mission:
+1. Provide enthusiastic, rigorous, and highly didactic guidance in quantum physics and quantum computing.
+2. Provide strictly valid OpenQASM 2.0 circuits, beginning with:
+   OPENQASM 2.0;
+   include "qelib1.inc";
+   and containing standard declarations (qreg q[n]; creg c[n];) and final measurements (measure q -> c;).
+3. Clearly explain quantum gates (Hadamard, CX/CNOT, Pauli X/Y/Z, SX, Rz, Toffoli/CCX) and physical concepts (superposition, entanglement, Bell states, decoherence T1, dephasing T2, readout error).
+4. Whenever you generate an OpenQASM circuit, wrap it in a markdown block with language tag 'qasm' so that the dashboard's 'To Editor' button can transfer it immediately into the simulator lab.
+5. ALWAYS answer in ENGLISH.`
+        }
+      },
+
+      es: {
+        page_title: "IBM Quantum QPU Dashboard & Centro de Control | QAI",
+        nav: {
+          processor_label: "Procesador Emulado:",
+          qai_pill_sub: "GPU Ubuntu L4 • En línea",
+          sim_label: "Simulador:",
+          refresh_btn: "Actualizar"
+        },
+        kpi: {
+          temp_title: "Temp. Criogénica",
+          temp_sub: "Estable (-273.13 °C)",
+          t1_title: "Relajación T₁ Media",
+          t1_sub: "Tiempo de vida cuántico",
+          t2_title: "Desfasamiento T₂ Medio",
+          t2_sub: "Preservación de fase",
+          fidelity1_title: "Fidelidad 1-Qubit",
+          fidelity1_sub: "Puertas SX, X, Rz",
+          fidelity2_title: "Fidelidad 2-Qubits",
+          fidelity2_sub: "Puertas ECR / CNOT",
+          readout_title: "Error de Lectura",
+          readout_sub: "Medición discriminador"
+        },
+        lab: {
+          title: "Laboratorio de Circuitos",
+          presets_label: "Algoritmos Predefinidos:",
+          preset_bell: "Estado de Bell",
+          preset_ghz: "GHZ (3 Qubits)",
+          preset_grover: "Búsqueda Grover",
+          copilot_explain: "Explicar",
+          copilot_optimize: "Optimizar",
+          copilot_chat: "Chat",
+          code_label: "Código del Circuito:",
+          code_sub: "OpenQASM 2.0 ejecutable",
+          shots_label: "Disparos (Shots):",
+          shots_512: "512 disparos",
+          shots_1024: "1.024 disparos",
+          shots_4096: "4.096 disparos",
+          shots_8192: "8.192 disparos",
+          noise_label: "Modelo de Ruido:",
+          noise_none: "Ideal (Sin ruido)",
+          run_btn: "EJECUTAR SIMULACIÓN CUÁNTICA"
+        },
+        results: {
+          title: "Distribución de Probabilidad Cuántica",
+          exec_time_label: "Tiempo de Ejecución:",
+          loader_text: "Colapsando función de onda vía Qiskit Aer...",
+          chart_dataset_label: "Probabilidad de Medición",
+          qai_trigger_text: "¿Deseas una explicación física de estos resultados?",
+          qai_interpret_btn: "Interpretar Resultados con QAI"
+        },
+        jobs: {
+          title: "Cola de Actividades e Historial de Jobs",
+          scheduler_status: "Planificador Activo (Qiskit Runtime)",
+          th_job_id: "Job ID",
+          th_algo: "Algoritmo",
+          th_qubits: "Qubits",
+          th_shots: "Disparos",
+          th_backend: "Backend",
+          th_latency: "Latencia",
+          th_status: "Estado"
+        },
+        lattice: {
+          title: "Topología Física del Procesador (IBM Brisbane - 127 Qubits)",
+          freq_label: "Frecuencia media:",
+          type_label: "Trasmones superconductores"
+        },
+        footer: {
+          sim_info: "Simulador Qiskit Aer aislado en <code class='text-cyan-400 font-mono'>10.1.0.65:8090</code>",
+          ai_info: "QAI (IBM Granite 8B) acelerada en la GPU Ubuntu <code class='text-purple-400 font-mono'>192.168.173.22:3000</code>",
+          copyright: "IBM Quantum Dashboard &copy; 2026 • Desarrollado con NVIDIA L4 Tensor Core"
+        },
+        qai: {
+          gpu_info: "GPU NVIDIA L4 • Ubuntu 192.168.173.22",
+          clear_title: "Limpiar conversación",
+          close_title: "Cerrar / Minimizar",
+          checkbox_context: "Adjuntar circuito QASM actual como contexto",
+          enter_hint: "Enter para enviar",
+          input_placeholder: "Pregunta a QAI sobre física cuántica, circuitos o algoritmos...",
+          you_label: "Tú",
+          qai_label: "QAI (Quantinho)",
+          qai_sub: "IBM Granite 8B",
+          gpu_accel: "GPU Acelerada",
+          copy_btn: "Copiar",
+          copied_btn: "¡Copiado!",
+          to_editor_btn: "Al Editor",
+          simulate_btn: "Simular",
+          welcome_html: `
+            <p>¡Hola! Soy <strong>QAI</strong> (cariñosamente conocido como <strong>Quantinho</strong>), tu Inteligencia Artificial Cuántica nativa acelerada en la GPU <strong>NVIDIA L4</strong> del servidor Ubuntu! ⚛️🚀</p>
+            <p>Estoy listo para ayudarte a:</p>
+            <ul>
+              <li>Diseñar circuitos en <code>OpenQASM 2.0</code> (Grover, GHZ, Teletransportación, QAOA).</li>
+              <li>Analizar estados entrelazados y fases cuánticas.</li>
+              <li>Analizar ruido y tiempos de relajación \(T_1 / T_2\) del chip <strong>IBM Brisbane</strong> de 127 qubits.</li>
+              <li>¡Insertar circuitos directamente en tu laboratorio con 1 clic!</li>
+            </ul>
+            <p>¿Cómo puedo ayudarte con tus experimentos cuánticos hoy?</p>
+          `,
+          chat_cleared_html: `
+            <p>¡Historial borrado! El asistente <strong>QAI</strong> está listo para nuevas simulaciones y algoritmos cuánticos. ¿Qué deseas explorar?</p>
+          `,
+          quick_chips: [
+            { label: "Explicar editor", icon: "sparkles", prompt: "Explica detalladamente el circuito OpenQASM que está actualmente en el editor, describiendo cada puerta y las probabilidades esperadas." },
+            { label: "Teletransporte", icon: "send", prompt: "Crea un circuito completo de Teletransportación Cuántica en OpenQASM 2.0 con explicación física paso a paso." },
+            { label: "Grover |101>", icon: "search", prompt: "Crea un algoritmo de Grover para 3 qubits con un oráculo para el estado |101> en OpenQASM 2.0." },
+            { label: "Estado GHZ", icon: "git-branch", prompt: "Genera un circuito para el estado GHZ de 3 qubits (|000> + |111>)/sqrt(2) en OpenQASM 2.0." },
+            { label: "Mitigación de Error", icon: "shield-check", prompt: "¿Cómo funciona la mitigación de errores de lectura y ZNE en el chip IBM Brisbane de 127 qubits?" }
+          ],
+          system_prompt: `Eres QAI (cariñosamente conocido como Quantinho), el Copiloto e Inteligencia Artificial Cuántica oficial de IBM Quantum QPU Dashboard & Centro de Control.
+Estás impulsado por el modelo IBM Granite 8B (granite-4.2-8b-Q8_0) acelerado por hardware en una GPU NVIDIA L4 en el servidor Ubuntu (192.168.173.22).
+El simulador oficial acoplado es IBM Qiskit Aer aislado en 10.1.0.65:8090, que soporta cálculos ideales y modelos de ruido reales de chips como IBM Brisbane (127 qubits Heavy-Hex) e IBM Torino.
+
+Tu misión:
+1. Brindar orientación pedagógica, rigurosa y entusiasta sobre computación y física cuántica.
+2. Generar códigos estrictamente válidos en OpenQASM 2.0, comenzando con:
+   OPENQASM 2.0;
+   include "qelib1.inc";
+   y conteniendo las declaraciones estándar (qreg q[n]; creg c[n];) y mediciones finales (measure q -> c;).
+3. Explicar claramente el funcionamiento de compuertas cuánticas (Hadamard, CX/CNOT, Pauli X/Y/Z, SX, Rz, CCX) y conceptos físicos (superposición, entrelazamiento, estados de Bell, decoherencia T1, defasamiento T2).
+4. Siempre que generes un circuito cuántico, envuélvelo en un bloque de código markdown con el identificador 'qasm' para que el botón 'Al Editor' del dashboard pueda transferir el código directamente.
+5. RESPONDE SIEMPRE EN ESPAÑOL.`
+        }
+      },
+
+      pt: {
+        page_title: "IBM Quantum QPU Dashboard & Painel de Missão | QAI",
+        nav: {
+          processor_label: "Processador Emulado:",
+          qai_pill_sub: "GPU Ubuntu L4 • Online",
+          sim_label: "Simulador:",
+          refresh_btn: "Atualizar"
+        },
+        kpi: {
+          temp_title: "Temp. Criogênica",
+          temp_sub: "Estável (-273.13 °C)",
+          t1_title: "Relaxação T₁ Médio",
+          t1_sub: "Tempo de vida quântica",
+          t2_title: "Defasagem T₂ Médio",
+          t2_sub: "Preservação de fase",
+          fidelity1_title: "Fidelidade 1-Qubit",
+          fidelity1_sub: "Portas SX, X, Rz",
+          fidelity2_title: "Fidelidade 2-Qubits",
+          fidelity2_sub: "Portas ECR / CNOT",
+          readout_title: "Erro de Leitura",
+          readout_sub: "Medição discriminador"
+        },
+        lab: {
+          title: "Laboratório de Circuitos",
+          presets_label: "Algoritmos Predefinidos:",
+          preset_bell: "Estado de Bell",
+          preset_ghz: "GHZ (3 Qubits)",
+          preset_grover: "Busca Grover",
+          copilot_explain: "Explicar",
+          copilot_optimize: "Otimizar",
+          copilot_chat: "Chat",
+          code_label: "Código do Circuito:",
+          code_sub: "OpenQASM 2.0 executável",
+          shots_label: "Disparos (Shots):",
+          shots_512: "512 disparos",
+          shots_1024: "1.024 disparos",
+          shots_4096: "4.096 disparos",
+          shots_8192: "8.192 disparos",
+          noise_label: "Modelo de Ruído:",
+          noise_none: "Ideal (Sem ruído)",
+          run_btn: "EXECUTAR SIMULAÇÃO QUÂNTICA"
+        },
+        results: {
+          title: "Distribuição de Probabilidade Quântica",
+          exec_time_label: "Tempo de Execução:",
+          loader_text: "Colapsando função de onda via Qiskit Aer...",
+          chart_dataset_label: "Probabilidade de Medição",
+          qai_trigger_text: "Deseja uma explicação física destes resultados?",
+          qai_interpret_btn: "Interpretar Resultados com QAI"
+        },
+        jobs: {
+          title: "Fila de Atividades e Histórico de Jobs",
+          scheduler_status: "Escalonador Ativo (Qiskit Runtime)",
+          th_job_id: "Job ID",
+          th_algo: "Algoritmo",
+          th_qubits: "Qubits",
+          th_shots: "Disparos",
+          th_backend: "Backend",
+          th_latency: "Latência",
+          th_status: "Status"
+        },
+        lattice: {
+          title: "Topologia Física do Processador (IBM Brisbane - 127 Qubits)",
+          freq_label: "Frequência média:",
+          type_label: "Transmons supercondutores"
+        },
+        footer: {
+          sim_info: "Simulador Qiskit Aer isolado em <code class='text-cyan-400 font-mono'>10.1.0.65:8090</code>",
+          ai_info: "QAI (IBM Granite 8B) acelerada na GPU Ubuntu <code class='text-purple-400 font-mono'>192.168.173.22:3000</code>",
+          copyright: "IBM Quantum Dashboard &copy; 2026 • NVIDIA L4 Tensor Core Powered"
+        },
+        qai: {
+          gpu_info: "GPU NVIDIA L4 • Ubuntu 192.168.173.22",
+          clear_title: "Limpar conversa",
+          close_title: "Fechar / Minimizar",
+          checkbox_context: "Anexar circuito QASM atual como contexto",
+          enter_hint: "Enter para enviar",
+          input_placeholder: "Pergunte ao QAI sobre física quântica, circuitos ou algoritmos...",
+          you_label: "Você",
+          qai_label: "QAI (Quantinho)",
+          qai_sub: "IBM Granite 8B",
+          gpu_accel: "GPU Acelerada",
+          copy_btn: "Copiar",
+          copied_btn: "Copiado!",
+          to_editor_btn: "No Editor",
+          simulate_btn: "Simular",
+          welcome_html: `
+            <p>Olá! Eu sou o <strong>QAI</strong> (carinhosamente conhecido como <strong>Quantinho</strong>), sua Inteligência Artificial Quântica nativa acelerada na GPU <strong>NVIDIA L4</strong> do servidor Ubuntu! ⚛️🚀</p>
+            <p>Estou pronto para te ajudar a:</p>
+            <ul>
+              <li>Criar circuitos em <code>OpenQASM 2.0</code> (Grover, GHZ, Teletransporte, QAOA).</li>
+              <li>Dissecar estados entrelaçados e fases quânticas.</li>
+              <li>Analisar ruído e tempos de relaxação \(T_1 / T_2\) do chip <strong>IBM Brisbane</strong> de 127 qubits.</li>
+              <li>Inserir circuitos diretamente no seu laboratório com 1 clique!</li>
+            </ul>
+            <p>Como posso te ajudar agora nos seus experimentos quânticos?</p>
+          `,
+          chat_cleared_html: `
+            <p>Histórico limpo! O assistente <strong>QAI</strong> está pronto para novas simulações e algoritmos quânticos. O que deseja explorar?</p>
+          `,
+          quick_chips: [
+            { label: "Explicar editor", icon: "sparkles", prompt: "Explique detalhadamente o circuito OpenQASM que está atualmente no editor, detalhando as portas, superposições e resultados probabilísticos esperados." },
+            { label: "Teletransporte", icon: "send", prompt: "Crie um circuito completo de Teletransporte Quântico em OpenQASM 2.0 com explicação passo a passo da física envolvida." },
+            { label: "Grover |101>", icon: "search", prompt: "Crie um algoritmo de Grover para 3 qubits com oráculo para o estado |101> em OpenQASM 2.0." },
+            { label: "Estado GHZ", icon: "git-branch", prompt: "Gere um circuito para o estado GHZ com 3 qubits (|000> + |111>)/sqrt(2) em OpenQASM 2.0." },
+            { label: "Mitigação de Erro", icon: "shield-check", prompt: "Como funciona a mitigação de erros (Mitiq, Readout Mitigation, ZNE) no chip IBM Brisbane de 127 qubits Heavy-Hex?" }
+          ],
+          system_prompt: `Você é o QAI (carinhosamente conhecido como Quantinho), o Copiloto e Inteligência Artificial Quântica oficial do IBM Quantum QPU Dashboard & Painel de Missão.
+Você é alimentado pelo modelo IBM Granite 8B (granite-4.2-8b-Q8_0) acelerado em hardware real por uma GPU NVIDIA L4 no servidor Ubuntu (192.168.173.22).
+O simulador oficial acoplado é o IBM Qiskit Aer isolado em 10.1.0.65:8090, que suporta simulações ideais e réplicas com ruído de chips como IBM Brisbane (127 qubits Heavy-Hex), IBM Torino (133 qubits Heron), FakeKyiv e FakeSherbrooke.
+
+Sua missão:
+1. Auxiliar no design, depuração e interpretação de algoritmos de computação quântica.
+2. Fornecer códigos em OpenQASM 2.0 estritamente válidos, iniciando com:
+   OPENQASM 2.0;
+   include "qelib1.inc";
+   e contendo as declarações qreg q[n]; e creg c[n]; além das medições finais measure q -> c;.
+3. Explicar com clareza o efeito de portas quânticas (Hadamard, CNOT/CX, Pauli-X/Y/Z, SX, Rz, Toffoli/CCX).
+4. Explicar física quântica: superposição, amplitudes complexas, entrelaçamento (estados de Bell |Phi+>, |Psi+>, GHZ, W-state), decoerência T1 (relaxação energética), defasagem T2, fidelidade de portas e erro de readout.
+5. Ser entusiasmado, carismático, didático e tecnicamente rigoroso.
+6. Sempre que gerar um circuito quântico, envolva-o em um bloco de código com a tag 'qasm' para que o botão 'No Editor' do dashboard possa transferir o circuito para o laboratório com 1 clique.
+7. RESPONDA SEMPRE EM PORTUGUÊS.`
+        }
+      }
+    };
+
+    // Helper to get nested translation value
+    function getNestedTranslation(obj, path) {
+      return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    }
+
+    // Set Language handler
+    function setLanguage(lang) {
+      if (!TRANSLATIONS[lang]) lang = 'en';
+      currentLang = lang;
+      localStorage.setItem('quantum_dashboard_lang', lang);
+      document.documentElement.lang = (lang === 'pt' ? 'pt-BR' : (lang === 'es' ? 'es' : 'en'));
+
+      // Update switcher active tab styling
+      ['en', 'es', 'pt'].forEach(l => {
+        const btn = document.getElementById(`lang-btn-${l}`);
+        if (btn) {
+          if (l === lang) {
+            btn.className = 'px-2.5 py-1 rounded bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold shadow flex items-center space-x-1 cursor-pointer';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white flex items-center space-x-1 transition cursor-pointer';
+          }
+        }
+      });
+
+      const t = TRANSLATIONS[lang];
+      document.title = t.page_title;
+
+      // Update all elements with data-i18n
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = getNestedTranslation(t, key);
+        if (val) {
+          el.innerHTML = val;
+        }
+      });
+
+      // Update titles/tooltips
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        const val = getNestedTranslation(t, key);
+        if (val) el.setAttribute('title', val);
+      });
+
+      // Update input placeholder
+      const qaiInput = document.getElementById('qai-input');
+      if (qaiInput) {
+        qaiInput.placeholder = t.qai.input_placeholder;
+      }
+
+      // Re-render Quick Prompt Suggestions
+      renderQuickChips();
+
+      // If chat messages has only the initial welcome message, refresh it in the new language
+      const msgBox = document.getElementById('qai-messages');
+      if (msgBox && msgBox.querySelectorAll('.assistant-content').length <= 1 && !isGeneratingResponse) {
+        resetWelcomeMessage();
+      }
+
+      // Update Chart label if present
+      if (quantumChart) {
+        quantumChart.data.datasets[0].label = t.results.chart_dataset_label;
+        quantumChart.update();
+      }
+
+      lucide.createIcons();
+    }
+
+    function renderQuickChips() {
+      const container = document.getElementById('qai-quick-prompts-bar');
+      if (!container) return;
+      container.innerHTML = '';
+      const chips = TRANSLATIONS[currentLang].qai.quick_chips;
+
+      chips.forEach(chip => {
+        const btn = document.createElement('button');
+        btn.className = 'px-2.5 py-1 rounded-lg bg-quantum-800/80 hover:bg-quantum-700 border border-quantum-border hover:border-cyan-400/40 text-[11px] text-cyan-300 font-medium whitespace-nowrap transition flex items-center space-x-1 cursor-pointer';
+        btn.innerHTML = `<i data-lucide="${chip.icon}" class="w-3 h-3 text-cyan-400"></i><span>${chip.label}</span>`;
+        btn.onclick = () => {
+          sendQuickPrompt(chip.prompt);
+        };
+        container.appendChild(btn);
+      });
+
+      lucide.createIcons();
+    }
+
+    function resetWelcomeMessage() {
+      const msgBox = document.getElementById('qai-messages');
+      const t = TRANSLATIONS[currentLang].qai;
+      msgBox.innerHTML = `
+        <div class="flex items-start space-x-2.5">
+          <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-500 to-purple-600 flex-shrink-0 flex items-center justify-center shadow-md shadow-cyan-500/20 mt-0.5">
+            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="flex-1 bg-quantum-900/90 border border-cyan-500/30 rounded-2xl rounded-tl-none p-3 shadow-md">
+            <div class="flex items-center justify-between mb-1 pb-1 border-b border-quantum-border/50 text-[10px] text-slate-400 font-mono">
+              <span class="text-cyan-300 font-bold flex items-center space-x-1">
+                <span>${t.qai_label}</span>
+                <span class="text-[9px] px-1 rounded bg-purple-950 text-purple-200 border border-purple-800 font-semibold">${t.qai_sub}</span>
+              </span>
+              <span>${t.gpu_accel}</span>
+            </div>
+            <div class="prose-qai assistant-content">
+              ${t.welcome_html}
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // Presets definitions
+    const PRESETS = {
+      bell: `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+creg c[2];
+
+// Bell State (|00> + |11>) / sqrt(2)
+h q[0];
+cx q[0], q[1];
+
+measure q[0] -> c[0];
+measure q[1] -> c[1];`,
+
+      ghz: `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+creg c[3];
+
+// GHZ State 3 Qubits (|000> + |111>) / sqrt(2)
+h q[0];
+cx q[0], q[1];
+cx q[1], q[2];
+
+measure q[0] -> c[0];
+measure q[1] -> c[1];
+measure q[2] -> c[2];`,
+
+      grover: `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+creg c[3];
+
+// Grover Algorithm searching bitstring '101'
+h q[0]; h q[1]; h q[2];
+x q[1];
+h q[2]; ccx q[0], q[1], q[2]; h q[2];
+x q[1];
+
+// Diffusion Operator
+h q[0]; x q[0]; h q[1]; x q[1]; h q[2]; x q[2];
+h q[2]; ccx q[0], q[1], q[2]; h q[2];
+x q[0]; h q[0]; x q[1]; h q[1]; x q[2]; h q[2];
+
+measure q[0] -> c[0];
+measure q[1] -> c[1];
+measure q[2] -> c[2];`
+    };
+
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initChart();
+      loadPreset('bell');
+      renderLattice();
+      checkServerHealth();
+      addMockJob("job_q88219x", "Bell State (|Φ+⟩)", 2, 1024, "fake_brisbane", "0.0010s", "COMPLETED");
+      addMockJob("job_q88218a", "Grover Search ('101')", 3, 1024, "Aer Simulator", "0.0011s", "COMPLETED");
+      addMockJob("job_q88217z", "Portfolio QAOA", 4, 2048, "Aer Simulator", "0.0042s", "COMPLETED");
+
+      // Apply initial language
+      setLanguage(currentLang);
+
+      // Setup keyboard shortcuts for QAI input
+      const inputEl = document.getElementById('qai-input');
+      inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendQaiUserMessage();
+        }
+      });
+    });
+
+    function loadPreset(name) {
+      document.getElementById('qasm-editor').value = PRESETS[name] || '';
+    }
+
+    // Server Health Check
+    async function checkServerHealth() {
+      const statusBadge = document.getElementById('server-status');
+      const indicator = document.getElementById('status-indicator');
+      try {
+        const res = await fetch(`/health`, { signal: AbortSignal.timeout(3000) });
+        if (res.ok) {
+          statusBadge.textContent = 'ONLINE';
+          statusBadge.className = 'text-xs px-1.5 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded font-mono';
+          indicator.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 pulse-dot';
+        } else {
+          throw new Error();
+        }
+      } catch (err) {
+        statusBadge.textContent = 'OFFLINE';
+        statusBadge.className = 'text-xs px-1.5 py-0.5 bg-amber-950 text-amber-400 border border-amber-800 rounded font-mono';
+        indicator.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+      }
+    }
+
+    // Chart.js Setup
+    function initChart() {
+      const ctx = document.getElementById('quantumChart').getContext('2d');
+      const t = TRANSLATIONS[currentLang];
+      quantumChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['|00⟩', '|11⟩'],
+          datasets: [{
+            label: t.results.chart_dataset_label,
+            data: [0.50, 0.50],
+            backgroundColor: [
+              'rgba(0, 242, 254, 0.75)',
+              'rgba(138, 43, 226, 0.75)',
+              'rgba(79, 172, 254, 0.75)',
+              'rgba(16, 185, 129, 0.75)'
+            ],
+            borderColor: [
+              'rgba(0, 242, 254, 1)',
+              'rgba(138, 43, 226, 1)',
+              'rgba(79, 172, 254, 1)',
+              'rgba(16, 185, 129, 1)'
+            ],
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#090d16',
+              borderColor: '#1e2942',
+              borderWidth: 1,
+              titleFont: { family: 'Fira Code' },
+              bodyFont: { family: 'Inter' },
+              callbacks: {
+                label: (ctx) => ` ${(ctx.parsed.y * 100).toFixed(2)}%`
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 1.0,
+              grid: { color: 'rgba(30, 41, 66, 0.5)' },
+              ticks: {
+                color: '#94a3b8',
+                callback: (val) => `${(val * 100).toFixed(0)}%`,
+                font: { family: 'Fira Code', size: 10 }
+              }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#cbd5e1', font: { family: 'Fira Code', size: 12, weight: 'bold' } }
+            }
+          }
+        }
+      });
+    }
+
+    // Execute Simulation
+    async function executeQuantumSimulation() {
+      const qasm = document.getElementById('qasm-editor').value;
+      const shots = parseInt(document.getElementById('sim-shots').value);
+      const noise = document.getElementById('sim-noise').value;
+      const loader = document.getElementById('chart-loader');
+      const runBtn = document.getElementById('run-btn');
+
+      loader.classList.remove('hidden');
+      runBtn.disabled = true;
+      runBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      const startTime = performance.now();
+
+      try {
+        let endpoint = `/api/simulate`;
+        let payload = { qasm, shots, method: 'automatic' };
+
+        if (noise !== 'none') {
+          endpoint = `/api/noise`;
+          payload = { qasm, backend_name: noise, shots };
+        }
+
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.detail || 'Simulation error');
+        }
+
+        const data = await res.json();
+        const duration = ((performance.now() - startTime) / 1000).toFixed(4);
+        document.getElementById('exec-time').textContent = `${(duration * 1000).toFixed(1)} ms`;
+
+        lastSimulationResults = {
+          qasm,
+          shots,
+          noise,
+          duration,
+          probabilities: data.probabilities,
+          counts: data.counts
+        };
+
+        updateResults(data.probabilities, data.counts, shots);
+
+        const randomJobId = 'job_' + Math.random().toString(36).substring(2, 9);
+        const algoName = qasm.includes('ccx') ? 'Quantum Search' : (data.total_physical_qubits ? 'Hardware Noisy Sim' : 'Custom Circuit');
+        const qubitsCount = Object.keys(data.probabilities)[0]?.length || 2;
+        addMockJob(randomJobId, algoName, qubitsCount, shots, noise !== 'none' ? noise : 'Aer Simulator', `${duration}s`, 'COMPLETED');
+
+      } catch (err) {
+        alert('Simulation Error: ' + err.message);
+      } finally {
+        loader.classList.add('hidden');
+        runBtn.disabled = false;
+        runBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function updateResults(probs, counts, totalShots) {
+      const labels = Object.keys(probs).map(k => `|${k}⟩`);
+      const values = Object.values(probs);
+
+      quantumChart.data.labels = labels;
+      quantumChart.data.datasets[0].data = values;
+      quantumChart.update();
+
+      const pillsContainer = document.getElementById('measurement-pills');
+      pillsContainer.innerHTML = '';
+
+      Object.entries(probs).forEach(([state, prob]) => {
+        const count = counts[state] || Math.round(prob * totalShots);
+        const pill = document.createElement('div');
+        pill.className = 'bg-quantum-900 border border-quantum-border p-2 rounded-lg';
+        pill.innerHTML = `
+          <div class="font-mono text-cyan-300 font-bold text-xs">|${state}⟩</div>
+          <div class="text-[11px] text-slate-200">${(prob * 100).toFixed(2)}%</div>
+          <div class="text-[10px] text-slate-500">${count} shots</div>
+        `;
+        pillsContainer.appendChild(pill);
+      });
+    }
+
+    function addMockJob(id, name, qubits, shots, backend, latency, status) {
+      const tbody = document.getElementById('job-history-table');
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-quantum-900/40 transition';
+      tr.innerHTML = `
+        <td class="py-2.5 font-bold text-cyan-400">${id}</td>
+        <td class="py-2.5 text-slate-200">${name}</td>
+        <td class="py-2.5">${qubits} Q</td>
+        <td class="py-2.5">${shots}</td>
+        <td class="py-2.5 text-purple-300">${backend}</td>
+        <td class="py-2.5 text-slate-400">${latency}</td>
+        <td class="py-2.5 text-right"><span class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px]">${status}</span></td>
+      `;
+      tbody.prepend(tr);
+    }
+
+    function renderLattice() {
+      const lattice = document.getElementById('qubit-lattice');
+      lattice.innerHTML = '';
+      for (let i = 0; i < 127; i++) {
+        const q = document.createElement('div');
+        const isOptimal = i % 7 !== 0;
+        q.className = `w-4 h-4 rounded-sm flex items-center justify-center text-[9px] font-mono cursor-pointer transition ${
+          isOptimal ? 'bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 hover:bg-cyan-500 hover:text-black' : 'bg-purple-950/80 border border-purple-800/60 text-purple-300'
+        }`;
+        q.title = `Qubit Q${i} • Fidelity: ${isOptimal ? '99.9%' : '98.8%'} • Freq: ${(5.0 + (i * 0.01) % 0.4).toFixed(2)} GHz`;
+        q.textContent = i;
+        lattice.appendChild(q);
+      }
+    }
+
+    // ==============================================================
+    // FLOATING QAI CONTROLLER (CRM-I / ERP-I STYLE)
+    // ==============================================================
+
+    function toggleQaiChat(forceOpen = null) {
+      const drawer = document.getElementById('qai-drawer');
+      
+      if (forceOpen !== null) {
+        isQaiChatOpen = forceOpen;
+      } else {
+        isQaiChatOpen = !isQaiChatOpen;
+      }
+
+      if (isQaiChatOpen) {
+        drawer.classList.remove('opacity-0', 'translate-y-6', 'pointer-events-none', 'scale-95');
+        drawer.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto', 'scale-100');
+        document.getElementById('qai-input').focus();
+      } else {
+        drawer.classList.add('opacity-0', 'translate-y-6', 'pointer-events-none', 'scale-95');
+        drawer.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto', 'scale-100');
+      }
+    }
+
+    function clearQaiChat() {
+      const messagesContainer = document.getElementById('qai-messages');
+      const t = TRANSLATIONS[currentLang].qai;
+      messagesContainer.innerHTML = `
+        <div class="flex items-start space-x-2.5">
+          <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-500 to-purple-600 flex-shrink-0 flex items-center justify-center shadow-md shadow-cyan-500/20 mt-0.5">
+            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="flex-1 bg-quantum-900/90 border border-cyan-500/30 rounded-2xl rounded-tl-none p-3 shadow-md">
+            <div class="flex items-center justify-between mb-1 pb-1 border-b border-quantum-border/50 text-[10px] text-slate-400 font-mono">
+              <span class="text-cyan-300 font-bold">${t.qai_label} • ${t.qai_sub}</span>
+              <span>${t.gpu_accel}</span>
+            </div>
+            <div class="prose-qai assistant-content">
+              ${t.chat_cleared_html}
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function sendQuickPrompt(promptText) {
+      toggleQaiChat(true);
+      executeQaiPrompt(promptText);
+    }
+
+    function qaiExplainCircuit() {
+      const qasm = document.getElementById('qasm-editor').value.trim();
+      toggleQaiChat(true);
+      const prompt = currentLang === 'en' 
+        ? `Please analyze and explain the following OpenQASM circuit currently in the lab editor:\n\n\`\`\`qasm\n${qasm}\n\`\`\`\nExplain the role of each gate, superpositions, quantum phases, and expected probabilities.`
+        : (currentLang === 'es'
+          ? `Por favor analiza y explica el siguiente circuito OpenQASM actualmente en el laboratorio:\n\n\`\`\`qasm\n${qasm}\n\`\`\`\nExplica el papel de cada puerta, superposiciones, fases cuánticas y el resultado probabilístico esperado.`
+          : `Por favor, analise e explique o seguinte circuito OpenQASM atualmente no laboratório:\n\n\`\`\`qasm\n${qasm}\n\`\`\`\nExplique o papel de cada porta, superposições, fases quânticas e o resultado probabilístico esperado.`);
+      executeQaiPrompt(prompt);
+    }
+
+    function qaiOptimizeCircuit() {
+      const qasm = document.getElementById('qasm-editor').value.trim();
+      toggleQaiChat(true);
+      const prompt = currentLang === 'en'
+        ? `Analyze the OpenQASM circuit below and suggest optimizations for the IBM Brisbane (127 Qubits Heavy-Hex) processor architecture or reduction of 2-qubit (CX/CNOT) gate counts:\n\n\`\`\`qasm\n${qasm}\n\`\`\`\nProvide an optimized version ready to run.`
+        : (currentLang === 'es'
+          ? `Analiza el circuito OpenQASM a continuación y sugiere optimizaciones para la arquitectura de procesador IBM Brisbane (127 Qubits Heavy-Hex) o reducción del recuento de compuertas de 2 qubits (CX/CNOT):\n\n\`\`\`qasm\n${qasm}\n\`\`\`\nProporciona una versión optimizada lista para ejecutar.`
+          : `Analise o circuito OpenQASM abaixo e sugira otimizações para a arquitetura de processador IBM Brisbane (127 Qubits Heavy-Hex) ou redução do número de portas de 2 qubits (CX/CNOT):\n\n\`\`\`qasm\n${qasm}\n\`\`\`\nForneça uma versão otimizada pronta para executar.`);
+      executeQaiPrompt(prompt);
+    }
+
+    function qaiInterpretResults() {
+      if (!lastSimulationResults) {
+        executeQuantumSimulation().then(() => {
+          triggerResultsAnalysis();
+        });
+      } else {
+        triggerResultsAnalysis();
+      }
+    }
+
+    function triggerResultsAnalysis() {
+      toggleQaiChat(true);
+      if (!lastSimulationResults) {
+        const fallback = currentLang === 'en'
+          ? "QAI, interpret the physics behind the circuit currently loaded in the editor."
+          : (currentLang === 'es'
+            ? "QAI, interpreta la física detrás del circuito actualmente cargado en el editor."
+            : "QAI, interprete a física por trás do circuito atualmente carregado no editor.");
+        executeQaiPrompt(fallback);
+        return;
+      }
+      const probsSummary = Object.entries(lastSimulationResults.probabilities)
+        .map(([k, v]) => `|${k}⟩: ${(v * 100).toFixed(2)}%`)
+        .join(', ');
+
+      const prompt = currentLang === 'en'
+        ? `Analyze the experimental results of the last quantum simulation performed on Qiskit Aer concisely:
+- Backend: ${lastSimulationResults.noise}
+- Shots: ${lastSimulationResults.shots}
+- Measured Probabilities: ${probsSummary}
+- QASM Circuit:
+\`\`\`qasm
+${lastSimulationResults.qasm}
+\`\`\`
+Does this match the ideal mathematical prediction? Is there any noticeable impact from thermal noise or T1/T2 relaxation?`
+        : (currentLang === 'es'
+          ? `Analiza los resultados experimentales de la última simulación cuántica realizada en Qiskit Aer de forma concisa:
+- Backend: ${lastSimulationResults.noise}
+- Disparos (Shots): ${lastSimulationResults.shots}
+- Probabilidades Medidas: ${probsSummary}
+- Circuito QASM:
+\`\`\`qasm
+${lastSimulationResults.qasm}
+\`\`\`
+¿El resultado coincide con la predicción matemática ideal? ¿Existe un impacto perceptible de ruido térmico o relajación T1/T2?`
+          : `Analise os resultados experimentais da última simulação quântica realizada no simulador Qiskit Aer de forma concisa:
+- Backend: ${lastSimulationResults.noise}
+- Shots: ${lastSimulationResults.shots}
+- Probabilidades Medidas: ${probsSummary}
+- Circuito QASM:
+\`\`\`qasm
+${lastSimulationResults.qasm}
+\`\`\`
+O resultado condiz com o esperado matematicamente? Há impacto perceptível de ruído térmico ou relaxação T1/T2?`);
+
+      executeQaiPrompt(prompt);
+    }
+
+    function sendQaiUserMessage() {
+      const inputEl = document.getElementById('qai-input');
+      const text = inputEl.value.trim();
+      if (!text || isGeneratingResponse) return;
+      inputEl.value = '';
+      executeQaiPrompt(text);
+    }
+
+    async function executeQaiPrompt(userText) {
+      if (isGeneratingResponse) return;
+      isGeneratingResponse = true;
+
+      const sendBtn = document.getElementById('qai-send-btn');
+      sendBtn.disabled = true;
+
+      const attachQasm = document.getElementById('attach-qasm-check').checked;
+      const currentQasm = document.getElementById('qasm-editor').value.trim();
+
+      appendMessageToChat('user', userText);
+
+      const assistantMsgContainer = appendMessageToChat('assistant', '', true);
+
+      let fullUserPrompt = userText;
+      if (attachQasm && !userText.includes(currentQasm) && currentQasm.length > 0) {
+        const ctxHeader = currentLang === 'en' 
+          ? "[Current QASM Circuit in Editor]:" 
+          : (currentLang === 'es' ? "[Circuito QASM Actual en el Editor]:" : "[Contexto Atual do Circuito QASM no Editor]:");
+        fullUserPrompt += `\n\n${ctxHeader}\n\`\`\`qasm\n${currentQasm}\n\`\`\``;
+      }
+
+      const activeSystemPrompt = TRANSLATIONS[currentLang].qai.system_prompt;
+
+      const messagesPayload = [
+        { role: 'system', content: activeSystemPrompt },
+        { role: 'user', content: fullUserPrompt }
+      ];
+
+      let accumulatedText = "";
+      const startTime = performance.now();
+
+      try {
+        const response = await fetch(QAI_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'ibm-granite-8b',
+            messages: messagesPayload,
+            stream: true,
+            temperature: 0.3,
+            max_tokens: 600
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API Error (${response.status}): ${await response.text()}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let done = false;
+        let buffer = '';
+
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          done = readerDone;
+          if (value) {
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed || !trimmed.startsWith('data:')) continue;
+              if (trimmed === 'data: [DONE]') continue;
+
+              try {
+                const jsonStr = trimmed.substring(5).trim();
+                const parsed = JSON.parse(jsonStr);
+                const delta = parsed.choices?.[0]?.delta?.content || '';
+                if (delta) {
+                  accumulatedText += delta;
+                  renderAssistantMarkdown(assistantMsgContainer, accumulatedText);
+                }
+              } catch (e) {
+                // partial SSE JSON parse
+              }
+            }
+          }
+        }
+
+        renderAssistantMarkdown(assistantMsgContainer, accumulatedText, true);
+
+        const totalDurationSec = (performance.now() - startTime) / 1000;
+        const estTokens = accumulatedText.length / 4;
+        const speed = (estTokens / totalDurationSec).toFixed(1);
+        document.getElementById('qai-speed-badge').textContent = `~${speed} tok/s (GPU L4)`;
+
+      } catch (err) {
+        assistantMsgContainer.innerHTML = `
+          <div class="text-rose-400 font-mono text-xs">
+            <i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i>
+            GPU communication error: ${err.message}
+          </div>
+        `;
+        lucide.createIcons();
+      } finally {
+        isGeneratingResponse = false;
+        sendBtn.disabled = false;
+        scrollToBottom();
+      }
+    }
+
+    function appendMessageToChat(role, text, isStreaming = false) {
+      const messagesContainer = document.getElementById('qai-messages');
+      const wrapper = document.createElement('div');
+      wrapper.className = `flex items-start space-x-2.5 ${role === 'user' ? 'justify-end' : ''}`;
+      const t = TRANSLATIONS[currentLang].qai;
+
+      if (role === 'user') {
+        wrapper.innerHTML = `
+          <div class="max-w-[85%] bg-gradient-to-r from-cyan-900/80 to-blue-900/80 border border-cyan-500/40 rounded-2xl rounded-tr-none p-3 shadow-md text-slate-100">
+            <div class="text-[10px] text-cyan-300 font-mono mb-1 font-semibold flex items-center justify-end space-x-1">
+              <span>${t.you_label}</span>
+              <i data-lucide="user" class="w-3 h-3 text-cyan-300"></i>
+            </div>
+            <div class="whitespace-pre-wrap">${escapeHtml(text)}</div>
+          </div>
+        `;
+      } else {
+        wrapper.innerHTML = `
+          <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-500 to-purple-600 flex-shrink-0 flex items-center justify-center shadow-md shadow-cyan-500/20 mt-0.5">
+            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="flex-1 bg-quantum-900/90 border border-purple-500/30 rounded-2xl rounded-tl-none p-3 shadow-md max-w-[88%]">
+            <div class="flex items-center justify-between mb-1 pb-1 border-b border-quantum-border/50 text-[10px] text-slate-400 font-mono">
+              <span class="text-purple-300 font-bold flex items-center space-x-1.5">
+                <span>${t.qai_label}</span>
+                <span class="text-[9px] px-1 rounded bg-purple-950 text-purple-200 border border-purple-800 font-semibold">${t.qai_sub}</span>
+              </span>
+              <span class="flex items-center space-x-1 text-cyan-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 pulse-dot"></span>
+                <span>${t.gpu_accel}</span>
+              </span>
+            </div>
+            <div class="prose-qai assistant-content">
+              ${isStreaming ? '<span class="inline-block w-2 h-4 bg-cyan-400 animate-pulse"></span>' : marked.parse(text)}
+            </div>
+          </div>
+        `;
+      }
+
+      messagesContainer.appendChild(wrapper);
+      lucide.createIcons();
+      scrollToBottom();
+
+      if (role === 'assistant') {
+        return wrapper.querySelector('.assistant-content');
+      }
+      return null;
+    }
+
+    function renderAssistantMarkdown(container, rawMarkdown, finalize = false) {
+      if (!container) return;
+      container.innerHTML = marked.parse(rawMarkdown);
+
+      if (finalize) {
+        const t = TRANSLATIONS[currentLang].qai;
+        const preElements = container.querySelectorAll('pre');
+        preElements.forEach((pre) => {
+          const codeEl = pre.querySelector('code');
+          if (!codeEl) return;
+          const rawCode = codeEl.innerText.trim();
+
+          const isQasm = rawCode.includes('OPENQASM') || rawCode.includes('qreg') || rawCode.includes('include "qelib1.inc"');
+
+          const headerDiv = document.createElement('div');
+          headerDiv.className = 'flex items-center justify-between bg-quantum-950 px-3 py-1.5 rounded-t-lg border-b border-quantum-border text-[11px] font-mono text-slate-400 select-none';
+          
+          headerDiv.innerHTML = `
+            <div class="flex items-center space-x-1.5 text-cyan-400">
+              <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+              <span>${isQasm ? 'OpenQASM 2.0' : 'Code'}</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <button class="copy-code-btn px-2 py-0.5 rounded bg-quantum-800 hover:bg-quantum-700 text-slate-300 hover:text-white transition flex items-center space-x-1 text-[10px] cursor-pointer" title="Copy code">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>${t.copy_btn}</span>
+              </button>
+              ${isQasm ? `
+                <button class="apply-editor-btn px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 border border-cyan-700/60 text-cyan-300 hover:text-white transition flex items-center space-x-1 text-[10px] cursor-pointer" title="Send to editor">
+                  <i data-lucide="arrow-down-left" class="w-3 h-3"></i>
+                  <span>${t.to_editor_btn}</span>
+                </button>
+                <button class="run-sim-btn px-2 py-0.5 rounded bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold transition flex items-center space-x-1 text-[10px] cursor-pointer" title="Apply and simulate immediately">
+                  <i data-lucide="play" class="w-3 h-3"></i>
+                  <span>${t.simulate_btn}</span>
+                </button>
+              ` : ''}
+            </div>
+          `;
+
+          headerDiv.querySelector('.copy-code-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(rawCode).then(() => {
+              const span = headerDiv.querySelector('.copy-code-btn span');
+              span.textContent = t.copied_btn;
+              setTimeout(() => { span.textContent = t.copy_btn; }, 2000);
+            });
+          });
+
+          if (isQasm) {
+            headerDiv.querySelector('.apply-editor-btn').addEventListener('click', () => {
+              applyCodeToEditor(rawCode, false);
+            });
+            headerDiv.querySelector('.run-sim-btn').addEventListener('click', () => {
+              applyCodeToEditor(rawCode, true);
+            });
+          }
+
+          pre.classList.add('bg-quantum-950', 'rounded-b-lg', 'p-3', 'overflow-x-auto', 'border', 'border-quantum-border', 'border-t-0', 'my-2');
+          pre.parentNode.insertBefore(headerDiv, pre);
+        });
+
+        lucide.createIcons();
+      }
+
+      scrollToBottom();
+    }
+
+    function applyCodeToEditor(code, autoRun = false) {
+      const editor = document.getElementById('qasm-editor');
+      editor.value = code;
+
+      editor.classList.add('flash-editor');
+      setTimeout(() => {
+        editor.classList.remove('flash-editor');
+      }, 1600);
+
+      editor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      if (autoRun) {
+        setTimeout(() => {
+          executeQuantumSimulation();
+        }, 400);
+      }
+    }
+
+    function scrollToBottom() {
+      const messagesContainer = document.getElementById('qai-messages');
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f5f5f7] p-8 flex flex-col gap-6 items-start font-sans">
+
+  <!-- Variant A: watsonx Icon (Larger, High Contrast) -->
+  <div class="flex items-center space-x-3 px-4 sm:px-5 py-3 rounded-full bg-white text-[#1d1d1f] border border-[#d2d2d7] shadow-xl hover:shadow-2xl hover:border-[#0f62fe] transition-all cursor-pointer">
+    <div class="relative flex-shrink-0">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0f62fe] via-[#8a3ffc] to-[#ff7eb6] p-[2px] shadow-sm flex items-center justify-center">
+        <div class="w-full h-full bg-[#12161f] rounded-full p-1.5 flex items-center justify-center">
+          <svg class="w-full h-full text-white" viewBox="0 0 32 32" fill="none">
+            <defs>
+              <linearGradient id="grad-va" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4589ff"/>
+                <stop offset="50%" stop-color="#a56eff"/>
+                <stop offset="100%" stop-color="#ff7eb6"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#grad-va)" d="m29.312,22.9189c1.1042-2.1201,1.688-4.5127,1.688-6.9189C31,7.729,24.271,1,16,1c-3.3738,0-6.5815,1.1191-9.2046,3.1665-.2441-.106-.5125-.1665-.7954-.1665-1.1045,0-2,.8955-2,2s.8955,2,2,2,2-.8955,2-2c0-.0762-.0142-.1489-.0225-.2227,2.2812-1.7964,5.0793-2.7773,8.0225-2.7773.9727,0,1.9172.1157,2.8293.3193-3.3938.9258-5.8994,4.0273-5.8994,7.7109,0,.7891.1167,1.5503.332,2.27-.6985-.2021-1.4285-.3306-2.1919-.3306-3.7039,0-6.8191,2.5342-7.7256,5.957-.218-.9424-.3445-1.9189-.3445-2.9268,0-2.1162.4919-4.1328,1.4619-5.9951l-1.7739-.9238c-1.1042,2.1201-1.688,4.5127-1.688,6.9189,0,8.271,6.729,15,15,15,3.3738,0,6.5815-1.1191,9.2046-3.1665.2441.106.5125.1665.7954.1665,1.1045,0,2-.8955,2-2s-.8955-2-2-2-2,.8955-2,2c0,.0762.0142.1489.0225.2231-1.0796.8496-2.2776,1.5098-3.5493,1.9771.3315-.6641.5269-1.4072.5269-2.2002,0-1.6304-.7959-3.0669-2.0068-3.9805.0457-.3472.0769-.6978.0769-1.0498,0-.7856-.1257-1.54-.3381-2.2573.6995.2012,1.4346.3179,2.198.3179,3.7039,0,6.8191-2.5342,7.7256-5.957.218.9424.3445,1.9189.3445,2.9268,0,2.1162-.4919,4.1328-1.4619,5.9951l1.7739.9238Zm-17.7935,5.2646c-1.8389-.6807-3.49-1.7529-4.8325-3.1338-1.0366-1.1143-1.616-2.5527-1.616-4.0801,0-3.3081,2.6917-6,6-6s6,2.6919,6,6c0,.0498-.0125.0977-.0134.1475-.3413-.0737-.6936-.1172-1.0566-.1172-2.7571,0-5,2.2432-5,5,0,.7861.1924,1.5234.5186,2.1836Zm7.4814-2.1836c0,1.6543-1.3457,3-3,3s-3-1.3457-3-3,1.3457-3,3-3,3,1.3457,3,3Zm1.9299-8.9697c-3.3083,0-6-2.6919-6-6s2.6917-6,6-6c1.4294,0,2.7422.5039,3.7742,1.3418.3027.2739.5918.561.8677.8618.8479,1.0352,1.3582,2.3569,1.3582,3.7964,0,3.3081-2.6917,6-6,6Z"/>
+          </svg>
+        </div>
+      </div>
+      <span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#34c759] border-2 border-white shadow-sm animate-pulse"></span>
+    </div>
+    <div class="text-left">
+      <div class="flex items-center space-x-1.5">
+        <span class="text-sm font-bold block leading-tight text-[#1d1d1f]">Sommelier</span>
+        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#0f62fe]/10 text-[#0f62fe] uppercase tracking-wider">watsonx</span>
+      </div>
+      <span class="text-[11px] text-[#6e6e73] block leading-tight">Consultoria de Vinhos</span>
+    </div>
+  </div>
+
+  <!-- Variant B: watson dynamic sphere icon -->
+  <div class="flex items-center space-x-3 px-4 sm:px-5 py-3 rounded-full bg-white text-[#1d1d1f] border border-[#d2d2d7] shadow-xl hover:shadow-2xl hover:border-[#0f62fe] transition-all cursor-pointer">
+    <div class="relative flex-shrink-0">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0f62fe] via-[#8a3ffc] to-[#ff7eb6] p-[2px] shadow-sm flex items-center justify-center">
+        <div class="w-full h-full bg-[#12161f] rounded-full p-1.5 flex items-center justify-center">
+          <svg class="w-full h-full text-white" viewBox="0 0 32 32" fill="none">
+            <defs>
+              <linearGradient id="grad-vb" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4589ff"/>
+                <stop offset="50%" stop-color="#a56eff"/>
+                <stop offset="100%" stop-color="#ff7eb6"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#grad-vb)" d="M21.74,9.49h0A11.41,11.41,0,0,0,16,8h0a.76.76,0,1,0,0,1.51,10.15,10.15,0,0,1,1.91.21c-2.26,1.08-4.76,3.58-6.73,7a22.48,22.48,0,0,0-2,4.44A9.58,9.58,0,0,1,7,17.22a3.43,3.43,0,0,1,.28-2.66v0h0c.79-1.37,2.44-2.15,4.63-2.2a.76.76,0,0,0,.74-.78.75.75,0,0,0-.78-.74C9.19,10.88,7.1,11.92,6,13.74H6v0s0,0,0,0a4.84,4.84,0,0,0-.44,3.79,12,12,0,0,0,3.2,5.22A11.36,11.36,0,0,0,8.52,26a10,10,0,0,1-2-3.48A.75.75,0,0,0,5.57,22a.76.76,0,0,0-.49,1,11.45,11.45,0,0,0,5.18,6.38h0A11.42,11.42,0,0,0,16,30.92a11.74,11.74,0,0,0,3-.39,11.48,11.48,0,0,0,2.77-21ZM18.58,29.06a9.9,9.9,0,0,1-7.56-1h0c-.86-.49-1.21-2-.94-4a18.85,18.85,0,0,0,2.48,1.72,13.92,13.92,0,0,0,6.93,2,11,11,0,0,0,2.42-.28A9.78,9.78,0,0,1,18.58,29.06Zm6.06-4.66c-2,2-6.66,2.74-11.32.05a17.36,17.36,0,0,1-2.89-2.12,21.08,21.08,0,0,1,2.08-4.91c2.94-5.08,6.83-7.57,8.47-6.62h0A10,10,0,0,1,24.64,24.4Z"/>
+            <path fill="url(#grad-vb)" d="M4.16,11.72,1.14,10a.76.76,0,1,0-.76,1.31L3.4,13a.86.86,0,0,0,.38.1.77.77,0,0,0,.66-.38A.76.76,0,0,0,4.16,11.72Z"/>
+            <path fill="url(#grad-vb)" d="M8.29,7.59A.74.74,0,0,0,8.94,8a.75.75,0,0,0,.38-.1.76.76,0,0,0,.28-1l-1.74-3a.76.76,0,0,0-1-.27.75.75,0,0,0-.28,1Z"/>
+            <path fill="url(#grad-vb)" d="M16,6.08a.76.76,0,0,0,.76-.76V1.83a.76.76,0,0,0-1.52,0V5.32A.76.76,0,0,0,16,6.08Z"/>
+            <path fill="url(#grad-vb)" d="M22.68,7.87a.75.75,0,0,0,1-.28l1.75-3a.75.75,0,0,0-.28-1,.76.76,0,0,0-1,.27l-1.74,3A.76.76,0,0,0,22.68,7.87Z"/>
+            <path fill="url(#grad-vb)" d="M31.9,10.25a.76.76,0,0,0-1-.27l-3,1.74a.76.76,0,0,0-.28,1,.77.77,0,0,0,.66.38.86.86,0,0,0,.38-.1l3-1.75A.76.76,0,0,0,31.9,10.25Z"/>
+          </svg>
+        </div>
+      </div>
+      <span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#34c759] border-2 border-white shadow-sm animate-pulse"></span>
+    </div>
+    <div class="text-left">
+      <div class="flex items-center space-x-1.5">
+        <span class="text-sm font-bold block leading-tight text-[#1d1d1f]">Sommelier</span>
+        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#0f62fe]/10 text-[#0f62fe] uppercase tracking-wider">watsonx</span>
+      </div>
+      <span class="text-[11px] text-[#6e6e73] block leading-tight">Consultoria de Vinhos</span>
+    </div>
+  </div>
+
+</body>
+</html>

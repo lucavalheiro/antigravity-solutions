@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Adega Privé — Loja Oficial Apple Store Style | Projeto Sommelier</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Cormorant Garamond (Haute Winery) + Inter (Apple SF Pro Style) + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Inter', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            wine: {
+              50: '#fdf8f8',
+              100: '#f9eeee',
+              200: '#f2d5d5',
+              600: '#8b1e2d',
+              700: '#721925',
+              800: '#5c141e',
+              900: '#460f17',
+              deep: '#2b0a0e',
+            },
+            gold: {
+              300: '#e5c07b',
+              400: '#d4af37',
+              500: '#c5a059',
+              600: '#a38038',
+            },
+            apple: {
+              bg: '#fbfbfd',
+              card: '#ffffff',
+              border: '#d2d2d7',
+              borderLight: '#e5e5e7',
+              text: '#1d1d1f',
+              subtext: '#6e6e73',
+              grayBadge: '#86868b',
+              blue: '#0071e3',
+              blueHover: '#0077ed',
+              green: '#34c759',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+      background-color: #fbfbfd;
+      color: #1d1d1f;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+      letter-spacing: -0.012em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Apple Glass Navigation Bar */
+    .glass-header {
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(210, 210, 215, 0.6);
+    }
+
+    /* Luxury Editorial Card */
+    .luxury-wine-card {
+      background: #ffffff;
+      border: 1px solid rgba(229, 229, 231, 0.9);
+      border-radius: 28px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .luxury-wine-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+      border-color: rgba(197, 160, 89, 0.4);
+    }
+
+    /* Apple Pill Buttons */
+    .apple-pill-primary {
+      background: #0071e3;
+      color: #ffffff;
+      border-radius: 9999px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+    .apple-pill-primary:hover {
+      background: #0077ed;
+      transform: scale(1.02);
+      box-shadow: 0 4px 14px rgba(0, 113, 227, 0.25);
+    }
+    .apple-pill-primary:active {
+      transform: scale(0.97);
+    }
+
+    .apple-pill-secondary {
+      background: #f5f5f7;
+      color: #1d1d1f;
+      border: 1px solid #d2d2d7;
+      border-radius: 9999px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .apple-pill-secondary:hover {
+      background: #e8e8ed;
+      border-color: #86868b;
+    }
+
+    /* Smooth Image Pedestal */
+    .bottle-glow {
+      background: radial-gradient(circle, rgba(197, 160, 89, 0.06) 0%, rgba(255, 255, 255, 0) 70%);
+    }
+
+    /* Hide Scrollbars while keeping momentum scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Snap Carousel on Mobile */
+    .carousel-snap {
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .carousel-item {
+      scroll-snap-align: center;
+    }
+
+    /* Shimmer effect for spotlight */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .shimmer-badge {
+      background: linear-gradient(90deg, #c5a059 0%, #fae8c8 50%, #c5a059 100%);
+      background-size: 200% auto;
+      animation: shimmer 4s linear infinite;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    /* Apple Squircle Product Frame */
+    .apple-photo-squircle {
+      border-radius: 28px;
+      overflow: hidden;
+      mask-image: -webkit-radial-gradient(white, black);
+      -webkit-mask-image: -webkit-radial-gradient(white, black);
+    }
+
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-[#0071e3] selection:text-white">
+
+  <!-- ========================================== -->
+  <!-- TOP RIBBON: APPLE STATUS STRIP             -->
+  <!-- ========================================== -->
+  <div class="bg-white border-b border-[#e5e5e7] py-2 px-3 sm:px-4 text-[11px] sm:text-xs text-[#6e6e73] text-center leading-snug">
+    <div class="max-w-7xl mx-auto flex items-center justify-between sm:justify-center space-x-2 sm:space-x-3">
+      <div class="flex items-center space-x-1.5 truncate">
+        <span class="w-2 h-2 rounded-full bg-[#34c759] animate-pulse flex-shrink-0"></span>
+        <span class="text-[#1d1d1f] font-semibold truncate">Projeto Sommelier:</span>
+        <span class="truncate hidden xs:inline">Grands Crus com faturamento real no ERPNext corporativo.</span>
+      </div>
+      <a href="/solucoes" target="_blank" class="text-[#0071e3] hover:underline inline-flex items-center space-x-0.5 font-semibold whitespace-nowrap flex-shrink-0">
+        <span>Painel O2C</span>
+        <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- APPLE STORE NAVBAR (CLEAN TRANSLUCENT)     -->
+  <!-- ========================================== -->
+  <header class="sticky top-0 z-40 glass-header">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+      
+      <!-- Brand & Monogram -->
+      <a href="/" class="flex items-center space-x-3 group">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1d1d1f] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+          <i data-lucide="wine" class="w-4 h-4 text-[#c5a059]"></i>
+        </div>
+        <div>
+          <span class="font-serif text-base sm:text-lg font-bold tracking-tight text-[#1d1d1f] block leading-none">
+            Adega Privé
+          </span>
+          <span class="text-[9px] sm:text-[10px] text-[#6e6e73] font-mono tracking-wider uppercase block mt-0.5">
+            TD SYNNEX &bull; Apple Edition
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Categories -->
+      <nav class="hidden md:flex items-center space-x-1 bg-[#f5f5f7] p-1 rounded-full border border-[#e5e5e7] text-xs font-medium text-[#6e6e73]">
+        <button onclick="filterCategory('all')" id="nav-all" class="nav-tab px-4 py-1.5 rounded-full text-[#1d1d1f] bg-white font-semibold shadow-xs transition-all">Todos</button>
+        <button onclick="filterCategory('Borgonha')" id="nav-Borgonha" class="nav-tab px-3.5 py-1.5 rounded-full hover:text-[#1d1d1f] transition-all">Borgonha</button>
+        <button onclick="filterCategory('Bordeaux')" id="nav-Bordeaux" class="nav-tab px-3.5 py-1.5 rounded-full hover:text-[#1d1d1f] transition-all">Bordeaux</button>
+        <button onclick="filterCategory('Champagne')" id="nav-Champagne" class="nav-tab px-3.5 py-1.5 rounded-full hover:text-[#1d1d1f] transition-all">Champagne</button>
+        <button onclick="filterCategory('Toscana')" id="nav-Toscana" class="nav-tab px-3.5 py-1.5 rounded-full hover:text-[#1d1d1f] transition-all">Toscana &amp; Espanha</button>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-2">
+        <button onclick="openCartDrawer()" class="h-8 sm:h-9 px-3 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] text-xs font-medium text-[#1d1d1f] border border-[#d2d2d7] transition-all flex items-center space-x-1.5">
+          <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-[#0071e3]"></i>
+          <span class="hidden xs:inline">Adega</span>
+          <span id="cart-counter-badge" class="w-4 h-4 rounded-full bg-[#0071e3] text-white text-[10px] font-bold flex items-center justify-center">0</span>
+        </button>
+
+        <a href="/solucoes" target="_blank" class="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-sm shadow-blue-500/20" title="Acessar o Painel de Soluções O2C">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Soluções O2C</span>
+          <span class="sm:hidden text-[11px]">O2C</span>
+          <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- MAIN STORE CONTAINER                       -->
+  <!-- ========================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-10 sm:space-y-16 flex-1 pb-28 sm:pb-20">
+    
+    <!-- ======================================================== -->
+    <!-- EDITORIAL HERO: AWWWARDS LUXURY WINE + APPLE STORE       -->
+    <!-- ======================================================== -->
+    <section class="text-center sm:text-left space-y-4 pt-2 sm:pt-4">
+      
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-[#e5e5e7] shadow-2xs text-[11px] font-semibold tracking-wider uppercase text-[#c5a059]">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#c5a059]"></i>
+        <span>Grand Cru Classé &bull; Curadoria de Alta Guarda</span>
+      </div>
+
+      <div class="space-y-2">
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-[#1d1d1f] tracking-tight leading-[1.08]">
+          A Arte dos Terroirs Lendários.
+        </h1>
+        <p class="text-base sm:text-xl text-[#6e6e73] font-normal max-w-3xl leading-relaxed">
+          Os 6 vinhos mais raros e reverenciados do mundo. Compre com a elegância de uma Apple Store e faturamento instantâneo no ERPNext corporativo.
+        </p>
+      </div>
+
+      <!-- Quick Luxury Pillars Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-2">
+        <div class="p-3 rounded-2xl bg-white border border-[#e5e5e7] flex items-center space-x-2.5">
+          <div class="w-7 h-7 rounded-full bg-[#fdf8f0] text-[#c5a059] flex items-center justify-center flex-shrink-0">
+            <i data-lucide="award" class="w-3.5 h-3.5"></i>
+          </div>
+          <div class="text-left truncate">
+            <span class="text-[11px] font-bold text-[#1d1d1f] block truncate">100 Pts Parker</span>
+            <span class="text-[9px] text-[#6e6e73] block truncate">Safras Perfeitas</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-white border border-[#e5e5e7] flex items-center space-x-2.5">
+          <div class="w-7 h-7 rounded-full bg-[#f0f8ff] text-[#0071e3] flex items-center justify-center flex-shrink-0">
+            <i data-lucide="thermometer-snowflake" class="w-3.5 h-3.5"></i>
+          </div>
+          <div class="text-left truncate">
+            <span class="text-[11px] font-bold text-[#1d1d1f] block truncate">Cadeia Fria 14°C</span>
+            <span class="text-[9px] text-[#6e6e73] block truncate">Rota Isotérmica</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-white border border-[#e5e5e7] flex items-center space-x-2.5">
+          <div class="w-7 h-7 rounded-full bg-[#f6edfd] text-[#af52de] flex items-center justify-center flex-shrink-0">
+            <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+          </div>
+          <div class="text-left truncate">
+            <span class="text-[11px] font-bold text-[#1d1d1f] block truncate">Sommelier watsonx</span>
+            <span class="text-[9px] text-[#6e6e73] block truncate">IA Especialista</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-white border border-[#e5e5e7] flex items-center space-x-2.5">
+          <div class="w-7 h-7 rounded-full bg-[#eafaf1] text-[#34c759] flex items-center justify-center flex-shrink-0">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          </div>
+          <div class="text-left truncate">
+            <span class="text-[11px] font-bold text-[#1d1d1f] block truncate">Origem Comprovada</span>
+            <span class="text-[9px] text-[#6e6e73] block truncate">ERPNext &bull; 10.1.0.65</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- JOGADA 1: A OBRA-PRIMA EM DESTAQUE (SPOTLIGHT INTERATIVO) -->
+    <!-- ======================================================== -->
+    <section class="luxury-wine-card p-5 sm:p-8 bg-gradient-to-br from-white via-white to-[#fbf7f0] relative overflow-hidden border border-[#e5e5e7]">
+      
+      <div class="flex items-center justify-between mb-4">
+        <span class="px-3 py-1 rounded-full bg-[#fdf5e6] text-[#b8860b] border border-[#f3e3be] text-[10px] sm:text-xs font-bold font-mono tracking-wider uppercase flex items-center space-x-1.5">
+          <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+          <span>A Obra-Prima da Adega &bull; R$ 118.500</span>
+        </span>
+        <span class="text-xs font-mono font-medium text-[#34c759] bg-[#eafaf1] px-2.5 py-0.5 rounded-full flex items-center space-x-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#34c759] animate-pulse"></span>
+          <span>1 garrafa disponível</span>
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+        
+        <!-- Left: Bottle Stage with Luxury Rounded Frame -->
+        <div class="md:col-span-5 flex items-center justify-center relative p-1 sm:p-3">
+          <div class="w-full h-72 sm:h-96 rounded-[32px] sm:rounded-[40px] bg-gradient-to-b from-white via-[#fcfaf5] to-[#f4ede0] border border-[#e5decb] p-3 sm:p-5 flex items-center justify-center relative overflow-hidden shadow-md group">
+            <div class="absolute inset-0 bg-radial from-amber-100/40 via-transparent to-transparent pointer-events-none"></div>
+            <div class="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md border border-[#e5decb] text-[10px] sm:text-[11px] font-bold text-[#b8860b] shadow-xs flex items-center space-x-1.5 z-10">
+              <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+              <span>Obra-Prima Nº 1</span>
+            </div>
+            <img src="/images/romanee.jpg" alt="Domaine de la Romanée-Conti 2017" class="h-full w-full object-contain rounded-[26px] sm:rounded-[32px] drop-shadow-[0_20px_36px_rgba(0,0,0,0.22)] transform group-hover:scale-105 transition-transform duration-700">
+          </div>
+        </div>
+
+        <!-- Right: Sensory & Interactive Dossier -->
+        <div class="md:col-span-7 space-y-4">
+          <div>
+            <span class="text-xs text-[#b8860b] uppercase tracking-wider font-semibold">Grand Cru Monopole &bull; Vosne-Romanée</span>
+            <h2 class="text-2xl sm:text-4xl font-serif font-bold text-[#1d1d1f] tracking-tight mt-0.5">
+              Domaine de la Romanée-Conti 2017
+            </h2>
+            <p class="text-xs sm:text-sm text-[#6e6e73] mt-1.5 leading-relaxed">
+              O mais sagrado terroir do planeta. Um vinhedo mítico de apenas 1,81 hectare que produz a expressão mais pura e emocionante da Pinot Noir há quase mil anos.
+            </p>
+          </div>
+
+          <!-- Interactive 3-Tab Sensor for Romanée-Conti -->
+          <div class="bg-[#f5f5f7] p-1 rounded-2xl border border-[#e5e5e7]">
+            <div class="grid grid-cols-3 gap-1 text-[11px] sm:text-xs font-semibold">
+              <button onclick="switchSpotlightTab('terroir')" id="tab-btn-terroir" class="spotlight-tab-btn py-1.5 rounded-xl bg-white text-[#1d1d1f] shadow-2xs transition-all">
+                🍇 Terroir
+              </button>
+              <button onclick="switchSpotlightTab('aromas')" id="tab-btn-aromas" class="spotlight-tab-btn py-1.5 rounded-xl text-[#6e6e73] hover:text-[#1d1d1f] transition-all">
+                👃 Sensorial
+              </button>
+              <button onclick="switchSpotlightTab('guarda')" id="tab-btn-guarda" class="spotlight-tab-btn py-1.5 rounded-xl text-[#6e6e73] hover:text-[#1d1d1f] transition-all">
+                ⏳ Guarda (50a)
+              </button>
+            </div>
+            
+            <div id="spotlight-tab-content" class="p-3 text-xs text-[#1d1d1f] leading-relaxed min-h-[58px]">
+              Solo calcário jurássico puro em encosta oriental. Vinhas orgânicas centenárias com rendimento ultra-baixo de apenas 22 hectolitros por hectare.
+            </div>
+          </div>
+
+          <!-- Price & Actions -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[#e5e5e7]">
+            <div>
+              <span class="text-[10px] text-[#6e6e73] uppercase tracking-wider block">Preço de Tabela Privé</span>
+              <span class="text-2xl sm:text-3xl font-bold text-[#1d1d1f] tracking-tight">R$ 118.500</span>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <button onclick="buyWine('romanee')" class="apple-pill-primary px-6 py-3 text-xs sm:text-sm font-semibold flex items-center justify-center space-x-2 flex-1 sm:flex-none">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                <span>Comprar Safra 2017</span>
+              </button>
+              <button onclick="openWineDetails('romanee')" class="apple-pill-secondary px-4 py-3 text-xs sm:text-sm font-medium flex items-center justify-center space-x-1">
+                <span>Ficha Completa</span>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- JOGADA 2: FILTROS POR OCASIÃO & HARMONIZAÇÃO             -->
+    <!-- ======================================================== -->
+    <section class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+        <div>
+          <span class="text-[11px] font-bold text-[#0071e3] uppercase tracking-wider">Curadoria Inteligente</span>
+          <h2 class="text-2xl sm:text-3xl font-serif font-bold text-[#1d1d1f]">
+            Encontre o Vinho por Ocasião
+          </h2>
+        </div>
+        <p class="text-xs text-[#6e6e73]">
+          Toque para filtrar por estilo gastronômico e perfil de degustação
+        </p>
+      </div>
+
+      <!-- Ocasion Selector Pills -->
+      <div class="flex items-center space-x-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 text-xs font-medium no-scrollbar">
+        <button onclick="filterByOccasion('all')" id="occ-all" class="occ-pill px-4 py-2.5 rounded-full bg-[#1d1d1f] text-white shadow-sm flex items-center space-x-1.5 flex-shrink-0 transition-all">
+          <i data-lucide="wine" class="w-3.5 h-3.5"></i>
+          <span>Todos os 6 Vinhos</span>
+        </button>
+        <button onclick="filterByOccasion('carnes')" id="occ-carnes" class="occ-pill px-4 py-2.5 rounded-full bg-white hover:bg-[#e8e8ed] text-[#1d1d1f] border border-[#d2d2d7] flex items-center space-x-1.5 flex-shrink-0 transition-all">
+          <span>🥩 Carnes Nobres &amp; Caça</span>
+        </button>
+        <button onclick="filterByOccasion('guarda')" id="occ-guarda" class="occ-pill px-4 py-2.5 rounded-full bg-white hover:bg-[#e8e8ed] text-[#1d1d1f] border border-[#d2d2d7] flex items-center space-x-1.5 flex-shrink-0 transition-all">
+          <span>👑 Alta Guarda &amp; Coleção</span>
+        </button>
+        <button onclick="filterByOccasion('celebracao')" id="occ-celebracao" class="occ-pill px-4 py-2.5 rounded-full bg-white hover:bg-[#e8e8ed] text-[#1d1d1f] border border-[#d2d2d7] flex items-center space-x-1.5 flex-shrink-0 transition-all">
+          <span>🥂 Grandes Celebrações</span>
+        </button>
+        <button onclick="filterByOccasion('toscana')" id="occ-toscana" class="occ-pill px-4 py-2.5 rounded-full bg-white hover:bg-[#e8e8ed] text-[#1d1d1f] border border-[#d2d2d7] flex items-center space-x-1.5 flex-shrink-0 transition-all">
+          <span>🍝 Culinária Italiana &amp; Trufas</span>
+        </button>
+      </div>
+
+      <!-- Feedback Banner on filter -->
+      <div id="occasion-feedback" class="hidden p-3 rounded-2xl bg-[#f5f5f7] border border-[#e5e5e7] text-xs text-[#1d1d1f] flex items-center justify-between">
+        <span id="occasion-feedback-text"></span>
+        <button onclick="filterByOccasion('all')" class="text-[#0071e3] font-semibold hover:underline text-[11px] ml-2">Ver todos</button>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- JOGADA 3: CARROSSEL SNAPPING NO CELULAR + GRID NO DESKTOP-->
+    <!-- Apple Store style horizontal swipe on mobile, 3-col desk -->
+    <!-- ======================================================== -->
+    <section class="space-y-3">
+      
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl sm:text-2xl font-serif font-bold text-[#1d1d1f]">
+          Catálogo Oficial da Adega
+        </h3>
+        <span class="text-xs text-[#6e6e73] hidden sm:inline">
+          6 garrafas acondicionadas em adega climatizada
+        </span>
+      </div>
+
+      <!-- Hint for mobile users -->
+      <div class="flex items-center justify-between text-[11px] text-[#86868b] sm:hidden pb-1">
+        <span>← Deslize para explorar a linha →</span>
+        <span id="carousel-indicator" class="font-mono text-[#0071e3] font-semibold">1 de 6</span>
+      </div>
+
+      <!-- Carousel Container: Horizontal Snap on Mobile, Responsive Grid on Desktop -->
+      <div id="wine-cards-container" class="carousel-snap flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
+
+        <!-- CARD 1: Romanée-Conti 2017 -->
+        <div data-category="Borgonha" data-occasion="guarda" class="carousel-item flex-shrink-0 w-[82vw] sm:w-auto luxury-wine-card p-5 sm:p-6 flex flex-col justify-between group relative">
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span class="font-semibold uppercase tracking-wider text-[#b8860b] text-[10px] sm:text-xs">Borgonha Monopole</span>
+              <span class="bg-[#f0f9ff] text-[#0071e3] border border-[#b8d8ff] text-[10px] px-2 py-0.5 rounded-full font-mono font-medium">100 pts RP</span>
+            </div>
+            <h4 class="font-serif font-bold text-lg sm:text-xl text-[#1d1d1f] tracking-tight group-hover:text-[#0071e3] transition-colors leading-snug">
+              Domaine de la Romanée-Conti 2017
+            </h4>
+            <p class="text-[11px] text-[#6e6e73] mt-0.5">Vosne-Romanée &bull; 100% Pinot Noir</p>
+          </div>
+
+          <div class="my-3.5 h-60 sm:h-64 rounded-[26px] sm:rounded-[30px] bg-gradient-to-b from-[#fafafc] via-[#f4f4f7] to-[#ebebf0] border border-[#e5e5e7] p-3 sm:p-4 flex items-center justify-center relative overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.03)] group-hover:border-[#c5a059]/40 group-hover:shadow-md transition-all duration-500">
+            <div class="absolute inset-0 bg-radial from-white/90 via-transparent to-black/[0.02] pointer-events-none"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-md border border-white/70 text-[9px] font-mono font-semibold text-[#1d1d1f] shadow-2xs z-10">
+              Safra 2017
+            </span>
+            <img src="/images/romanee.jpg" alt="Domaine de la Romanée-Conti" class="h-full w-full object-contain rounded-[20px] sm:rounded-[24px] drop-shadow-[0_14px_24px_rgba(0,0,0,0.16)] group-hover:scale-105 transition-transform duration-500 ease-out">
+          </div>
+
+          <div class="space-y-2.5 pt-3 border-t border-[#f5f5f7]">
+            <p class="text-xs text-[#6e6e73] line-clamp-2 leading-relaxed">
+              Aroma de trufas brancas, rosa damascena e estrutura sedosa incomparável.
+            </p>
+
+            <div class="flex items-baseline justify-between pt-0.5">
+              <div>
+                <span class="text-[10px] text-[#6e6e73] block">Preço</span>
+                <span class="text-xl font-bold text-[#1d1d1f]">R$ 118.500</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#34c759] font-medium bg-[#eafaf1] px-2 py-0.5 rounded-full">
+                1 pronta entrega
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="buyWine('romanee')" class="apple-pill-primary py-2.5 text-xs font-semibold flex items-center justify-center space-x-1">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Comprar</span>
+              </button>
+              <button onclick="openWineDetails('romanee')" class="apple-pill-secondary py-2.5 text-xs font-medium flex items-center justify-center space-x-1">
+                <span>Degustação</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: Pétrus Pomerol 2010 -->
+        <div data-category="Bordeaux" data-occasion="carnes" class="carousel-item flex-shrink-0 w-[82vw] sm:w-auto luxury-wine-card p-5 sm:p-6 flex flex-col justify-between group relative">
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span class="font-semibold uppercase tracking-wider text-rose-800 text-[10px] sm:text-xs">Pomerol &bull; Bordeaux</span>
+              <span class="bg-[#f0f9ff] text-[#0071e3] border border-[#b8d8ff] text-[10px] px-2 py-0.5 rounded-full font-mono font-medium">100 pts Parker</span>
+            </div>
+            <h4 class="font-serif font-bold text-lg sm:text-xl text-[#1d1d1f] tracking-tight group-hover:text-[#0071e3] transition-colors leading-snug">
+              Château Pétrus Pomerol 2010
+            </h4>
+            <p class="text-[11px] text-[#6e6e73] mt-0.5">Bordeaux &bull; 100% Merlot Argila Azul</p>
+          </div>
+
+          <div class="my-3.5 h-60 sm:h-64 rounded-[26px] sm:rounded-[30px] bg-gradient-to-b from-[#fafafc] via-[#f4f4f7] to-[#ebebf0] border border-[#e5e5e7] p-3 sm:p-4 flex items-center justify-center relative overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.03)] group-hover:border-[#c5a059]/40 group-hover:shadow-md transition-all duration-500">
+            <div class="absolute inset-0 bg-radial from-white/90 via-transparent to-black/[0.02] pointer-events-none"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-md border border-white/70 text-[9px] font-mono font-semibold text-[#1d1d1f] shadow-2xs z-10">
+              Safra 2010
+            </span>
+            <img src="/images/petrus.jpg" alt="Château Pétrus Pomerol" class="h-full w-full object-contain rounded-[20px] sm:rounded-[24px] drop-shadow-[0_14px_24px_rgba(0,0,0,0.16)] group-hover:scale-105 transition-transform duration-500 ease-out">
+          </div>
+
+          <div class="space-y-2.5 pt-3 border-t border-[#f5f5f7]">
+            <p class="text-xs text-[#6e6e73] line-clamp-2 leading-relaxed">
+              Safra lendária de Merlot na argila azul única. Notas opulentas de cacau e amoras.
+            </p>
+
+            <div class="flex items-baseline justify-between pt-0.5">
+              <div>
+                <span class="text-[10px] text-[#6e6e73] block">Preço</span>
+                <span class="text-xl font-bold text-[#1d1d1f]">R$ 48.500</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#34c759] font-medium bg-[#eafaf1] px-2 py-0.5 rounded-full">
+                2 prontas entrega
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="buyWine('petrus')" class="apple-pill-primary py-2.5 text-xs font-semibold flex items-center justify-center space-x-1">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Comprar</span>
+              </button>
+              <button onclick="openWineDetails('petrus')" class="apple-pill-secondary py-2.5 text-xs font-medium flex items-center justify-center space-x-1">
+                <span>Degustação</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3: Château Margaux 1er Cru 2015 -->
+        <div data-category="Bordeaux" data-occasion="carnes" class="carousel-item flex-shrink-0 w-[82vw] sm:w-auto luxury-wine-card p-5 sm:p-6 flex flex-col justify-between group relative">
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span class="font-semibold uppercase tracking-wider text-rose-800 text-[10px] sm:text-xs">1er Grand Cru Classé</span>
+              <span class="bg-[#f0f9ff] text-[#0071e3] border border-[#b8d8ff] text-[10px] px-2 py-0.5 rounded-full font-mono font-medium">99 pts Suckling</span>
+            </div>
+            <h4 class="font-serif font-bold text-lg sm:text-xl text-[#1d1d1f] tracking-tight group-hover:text-[#0071e3] transition-colors leading-snug">
+              Château Margaux 1er Cru 2015
+            </h4>
+            <p class="text-[11px] text-[#6e6e73] mt-0.5">Margaux &bull; Safra Bicentenário</p>
+          </div>
+
+          <div class="my-3.5 h-60 sm:h-64 rounded-[26px] sm:rounded-[30px] bg-gradient-to-b from-[#fafafc] via-[#f4f4f7] to-[#ebebf0] border border-[#e5e5e7] p-3 sm:p-4 flex items-center justify-center relative overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.03)] group-hover:border-[#c5a059]/40 group-hover:shadow-md transition-all duration-500">
+            <div class="absolute inset-0 bg-radial from-white/90 via-transparent to-black/[0.02] pointer-events-none"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-md border border-white/70 text-[9px] font-mono font-semibold text-[#1d1d1f] shadow-2xs z-10">
+              Safra 2015
+            </span>
+            <img src="/images/margaux.jpg" alt="Château Margaux 1er Cru" class="h-full w-full object-contain rounded-[20px] sm:rounded-[24px] drop-shadow-[0_14px_24px_rgba(0,0,0,0.16)] group-hover:scale-105 transition-transform duration-500 ease-out">
+          </div>
+
+          <div class="space-y-2.5 pt-3 border-t border-[#f5f5f7]">
+            <p class="text-xs text-[#6e6e73] line-clamp-2 leading-relaxed">
+              Elegância aristocrática com notas de violetas maceradas, cassis e cedro refinado.
+            </p>
+
+            <div class="flex items-baseline justify-between pt-0.5">
+              <div>
+                <span class="text-[10px] text-[#6e6e73] block">Preço</span>
+                <span class="text-xl font-bold text-[#1d1d1f]">R$ 14.800</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#34c759] font-medium bg-[#eafaf1] px-2 py-0.5 rounded-full">
+                4 prontas entrega
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="buyWine('margaux')" class="apple-pill-primary py-2.5 text-xs font-semibold flex items-center justify-center space-x-1">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Comprar</span>
+              </button>
+              <button onclick="openWineDetails('margaux')" class="apple-pill-secondary py-2.5 text-xs font-medium flex items-center justify-center space-x-1">
+                <span>Degustação</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4: Tenuta San Guido Sassicaia 2016 -->
+        <div data-category="Toscana" data-occasion="toscana" class="carousel-item flex-shrink-0 w-[82vw] sm:w-auto luxury-wine-card p-5 sm:p-6 flex flex-col justify-between group relative">
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span class="font-semibold uppercase tracking-wider text-emerald-800 text-[10px] sm:text-xs">Supertoscano Ícone</span>
+              <span class="bg-[#f0f9ff] text-[#0071e3] border border-[#b8d8ff] text-[10px] px-2 py-0.5 rounded-full font-mono font-medium">100 pts Parker</span>
+            </div>
+            <h4 class="font-serif font-bold text-lg sm:text-xl text-[#1d1d1f] tracking-tight group-hover:text-[#0071e3] transition-colors leading-snug">
+              Tenuta San Guido Sassicaia 2016
+            </h4>
+            <p class="text-[11px] text-[#6e6e73] mt-0.5">Bolgheri, Toscana &bull; Safra Perfeita</p>
+          </div>
+
+          <div class="my-3.5 h-60 sm:h-64 rounded-[26px] sm:rounded-[30px] bg-gradient-to-b from-[#fafafc] via-[#f4f4f7] to-[#ebebf0] border border-[#e5e5e7] p-3 sm:p-4 flex items-center justify-center relative overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.03)] group-hover:border-[#c5a059]/40 group-hover:shadow-md transition-all duration-500">
+            <div class="absolute inset-0 bg-radial from-white/90 via-transparent to-black/[0.02] pointer-events-none"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-md border border-white/70 text-[9px] font-mono font-semibold text-[#1d1d1f] shadow-2xs z-10">
+              Safra 2016
+            </span>
+            <img src="/images/sassicaia.jpg" alt="Tenuta San Guido Sassicaia" class="h-full w-full object-contain rounded-[20px] sm:rounded-[24px] drop-shadow-[0_14px_24px_rgba(0,0,0,0.16)] group-hover:scale-105 transition-transform duration-500 ease-out">
+          </div>
+
+          <div class="space-y-2.5 pt-3 border-t border-[#f5f5f7]">
+            <p class="text-xs text-[#6e6e73] line-clamp-2 leading-relaxed">
+              O maior ícone italiano moderno. Notas marinhas de Bolgheri, amoras e taninos aveludados.
+            </p>
+
+            <div class="flex items-baseline justify-between pt-0.5">
+              <div>
+                <span class="text-[10px] text-[#6e6e73] block">Preço</span>
+                <span class="text-xl font-bold text-[#1d1d1f]">R$ 4.200</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#34c759] font-medium bg-[#eafaf1] px-2 py-0.5 rounded-full">
+                6 prontas entrega
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="buyWine('sassicaia')" class="apple-pill-primary py-2.5 text-xs font-semibold flex items-center justify-center space-x-1">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Comprar</span>
+              </button>
+              <button onclick="openWineDetails('sassicaia')" class="apple-pill-secondary py-2.5 text-xs font-medium flex items-center justify-center space-x-1">
+                <span>Degustação</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 5: Vega Sicilia Único 2000 -->
+        <div data-category="Toscana" data-occasion="guarda" class="carousel-item flex-shrink-0 w-[82vw] sm:w-auto luxury-wine-card p-5 sm:p-6 flex flex-col justify-between group relative">
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span class="font-semibold uppercase tracking-wider text-amber-800 text-[10px] sm:text-xs">Reserva Especial &bull; Espanha</span>
+              <span class="bg-[#f0f9ff] text-[#0071e3] border border-[#b8d8ff] text-[10px] px-2 py-0.5 rounded-full font-mono font-medium">98 pts Decanter</span>
+            </div>
+            <h4 class="font-serif font-bold text-lg sm:text-xl text-[#1d1d1f] tracking-tight group-hover:text-[#0071e3] transition-colors leading-snug">
+              Vega Sicilia Único Reserva 2000
+            </h4>
+            <p class="text-[11px] text-[#6e6e73] mt-0.5">Ribera del Duero &bull; 10 Anos de Guarda</p>
+          </div>
+
+          <div class="my-3.5 h-60 sm:h-64 rounded-[26px] sm:rounded-[30px] bg-gradient-to-b from-[#fafafc] via-[#f4f4f7] to-[#ebebf0] border border-[#e5e5e7] p-3 sm:p-4 flex items-center justify-center relative overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.03)] group-hover:border-[#c5a059]/40 group-hover:shadow-md transition-all duration-500">
+            <div class="absolute inset-0 bg-radial from-white/90 via-transparent to-black/[0.02] pointer-events-none"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-md border border-white/70 text-[9px] font-mono font-semibold text-[#1d1d1f] shadow-2xs z-10">
+              Safra 2000
+            </span>
+            <img src="/images/vegasicilia.jpg" alt="Vega Sicilia Único Reserva" class="h-full w-full object-contain rounded-[20px] sm:rounded-[24px] drop-shadow-[0_14px_24px_rgba(0,0,0,0.16)] group-hover:scale-105 transition-transform duration-500 ease-out">
+          </div>
+
+          <div class="space-y-2.5 pt-3 border-t border-[#f5f5f7]">
+            <p class="text-xs text-[#6e6e73] line-clamp-2 leading-relaxed">
+              A lenda viva espanhola. Dez anos de maturação com notas de couro nobre e tabaco refinado.
+            </p>
+
+            <div class="flex items-baseline justify-between pt-0.5">
+              <div>
+                <span class="text-[10px] text-[#6e6e73] block">Preço</span>
+                <span class="text-xl font-bold text-[#1d1d1f]">R$ 6.800</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#34c759] font-medium bg-[#eafaf1] px-2 py-0.5 rounded-full">
+                3 prontas entrega
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="buyWine('vegasicilia')" class="apple-pill-primary py-2.5 text-xs font-semibold flex items-center justify-center space-x-1">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Comprar</span>
+              </button>
+              <button onclick="openWineDetails('vegasicilia')" class="apple-pill-secondary py-2.5 text-xs font-medium flex items-center justify-center space-x-1">
+                <span>Degustação</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 6: Dom Pérignon P2 Brut 2004 -->
+        <div data-category="Champagne" data-occasion="celebracao" class="carousel-item flex-shrink-0 w-[82vw] sm:w-auto luxury-wine-card p-5 sm:p-6 flex flex-col justify-between group relative">
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span class="font-semibold uppercase tracking-wider text-yellow-700 text-[10px] sm:text-xs">Deuxième Plénitude</span>
+              <span class="bg-[#f0f9ff] text-[#0071e3] border border-[#b8d8ff] text-[10px] px-2 py-0.5 rounded-full font-mono font-medium">98 pts Galloni</span>
+            </div>
+            <h4 class="font-serif font-bold text-lg sm:text-xl text-[#1d1d1f] tracking-tight group-hover:text-[#0071e3] transition-colors leading-snug">
+              Dom Pérignon P2 Brut 2004
+            </h4>
+            <p class="text-[11px] text-[#6e6e73] mt-0.5">Épernay, Champagne &bull; 16 Anos Sur Lie</p>
+          </div>
+
+          <div class="my-3.5 h-60 sm:h-64 rounded-[26px] sm:rounded-[30px] bg-gradient-to-b from-[#fafafc] via-[#f4f4f7] to-[#ebebf0] border border-[#e5e5e7] p-3 sm:p-4 flex items-center justify-center relative overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.03)] group-hover:border-[#c5a059]/40 group-hover:shadow-md transition-all duration-500">
+            <div class="absolute inset-0 bg-radial from-white/90 via-transparent to-black/[0.02] pointer-events-none"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-md border border-white/70 text-[9px] font-mono font-semibold text-[#1d1d1f] shadow-2xs z-10">
+              Safra 2004
+            </span>
+            <img src="/images/perignon.jpg" alt="Dom Pérignon P2 Brut" class="h-full w-full object-contain rounded-[20px] sm:rounded-[24px] drop-shadow-[0_14px_24px_rgba(0,0,0,0.16)] group-hover:scale-105 transition-transform duration-500 ease-out">
+          </div>
+
+          <div class="space-y-2.5 pt-3 border-t border-[#f5f5f7]">
+            <p class="text-xs text-[#6e6e73] line-clamp-2 leading-relaxed">
+              16 anos de maturação sobre as leveduras. Complexidade mineral sublime e brioche dourado.
+            </p>
+
+            <div class="flex items-baseline justify-between pt-0.5">
+              <div>
+                <span class="text-[10px] text-[#6e6e73] block">Preço</span>
+                <span class="text-xl font-bold text-[#1d1d1f]">R$ 8.950</span>
+              </div>
+              <span class="text-[10px] font-mono text-[#34c759] font-medium bg-[#eafaf1] px-2 py-0.5 rounded-full">
+                6 prontas entrega
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="buyWine('perignon')" class="apple-pill-primary py-2.5 text-xs font-semibold flex items-center justify-center space-x-1">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Comprar</span>
+              </button>
+              <button onclick="openWineDetails('perignon')" class="apple-pill-secondary py-2.5 text-xs font-medium flex items-center justify-center space-x-1">
+                <span>Degustação</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- JOGADA 4: EXPERIÊNCIA DE DEGUSTAÇÃO & ADEGA CLIMATIZADA   -->
+    <!-- ======================================================== -->
+    <section class="rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-[#1d1d1f] to-[#2c2c2e] text-white space-y-6 relative overflow-hidden shadow-xl">
+      <div class="relative z-10 max-w-2xl space-y-3">
+        <span class="text-xs font-bold font-mono tracking-widest uppercase text-[#c5a059] flex items-center space-x-1.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-[#c5a059]"></i>
+          <span>Protocolo de Alta Guarda &bull; TD SYNNEX</span>
+        </span>
+        <h3 class="text-2xl sm:text-4xl font-serif font-bold tracking-tight">
+          Cadeia de Frio &amp; Rota Isotérmica Quântica.
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          Cada garrafa desta adega repousa a <strong>14.5°C com umidade relativa de 72%</strong>. Quando seu pedido é emitido no ERPNext corporativo, o algoritmo quântico traça o trajeto viário urbano com menor insolação térmica e aceleração &lt; 0.02g para proteger os sedimentos milenares.
+        </p>
+
+        <div class="pt-2 flex flex-wrap gap-3">
+          <a href="/solucoes" target="_blank" class="apple-pill-primary px-6 py-3 text-xs sm:text-sm font-semibold flex items-center space-x-2">
+            <span>Ver Rota Quântica &amp; APM</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+          </a>
+          <button onclick="toggleSommelierChat()" class="px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5">
+            <i data-lucide="message-square" class="w-4 h-4 text-[#c5a059]"></i>
+            <span>Consultar Sommelier IA</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- APPLE FOOTER                               -->
+  <!-- ========================================== -->
+  <footer class="border-t border-[#d2d2d7] bg-white py-8 text-xs text-[#6e6e73]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 space-y-4">
+      <div class="space-y-1 text-[11px] leading-relaxed text-[#86868b]">
+        <p>1. Transação real com integração nativa REST API no ERPNext corporativo (10.1.0.65:8080) da empresa Sommelier Privé Vinhos Finos Ltda.</p>
+        <p>2. IBM, watsonx, Instana e Turbonomic são marcas registradas da International Business Machines Corporation.</p>
+        <p>3. Demonstração interativa desenvolvida para a TD SYNNEX demonstrando cenários de Order-to-Cash ponta a ponta.</p>
+      </div>
+      <div class="pt-4 border-t border-[#e5e5e7] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-center sm:text-left">
+        <span>Copyright &copy; 2026 Sommelier Privé &bull; TD SYNNEX. Todos os direitos reservados.</span>
+        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2 font-medium">
+          <a href="/solucoes" target="_blank" class="text-[#0071e3] hover:underline">Painel de Soluções O2C ↗</a>
+          <a href="/erpnext" target="_blank" class="hover:text-[#1d1d1f]">ERPNext</a>
+          <a href="/glpi" target="_blank" class="hover:text-[#1d1d1f]">GLPI (192.168.173.22)</a>
+          <a href="/quantum" target="_blank" class="hover:text-[#1d1d1f]">IBM Quantum (10.1.0.65)</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: FICHA TÉCNICA DE DEGUSTAÇÃO (AWWWARDS DOSSIER)    -->
+  <!-- ======================================================== -->
+  <div id="wine-dossier-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all">
+    <div class="bg-white rounded-t-[32px] sm:rounded-3xl max-w-xl w-full max-h-[88vh] overflow-y-auto p-5 sm:p-8 shadow-2xl border border-[#e5e5e7] space-y-5 animate-in slide-in-from-bottom duration-300">
+      
+      <!-- Grab Bar for Mobile -->
+      <div class="w-10 h-1 bg-[#d2d2d7] rounded-full mx-auto -mt-1 sm:hidden"></div>
+
+      <!-- Dossier Header with Rounded Bottle Capsule -->
+      <div class="flex items-start justify-between border-b border-[#e5e5e7] pb-4">
+        <div class="flex items-center space-x-3.5 min-w-0">
+          <div class="w-16 h-22 sm:w-20 sm:h-28 rounded-[20px] sm:rounded-[24px] bg-gradient-to-b from-[#fafafc] to-[#ebebf0] border border-[#e5e5e7] p-1.5 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-xs">
+            <img id="dossier-img" src="/images/romanee.jpg" alt="Vinho" class="h-full w-full object-contain rounded-[16px] drop-shadow-sm">
+          </div>
+          <div class="truncate">
+            <span id="dossier-appellation" class="text-[10px] sm:text-[11px] font-bold text-[#b8860b] uppercase tracking-wider block truncate"></span>
+            <h3 id="dossier-title" class="font-serif font-bold text-lg sm:text-2xl text-[#1d1d1f] tracking-tight mt-0.5 truncate"></h3>
+            <span id="dossier-vintage" class="text-xs text-[#6e6e73] block truncate"></span>
+          </div>
+        </div>
+        <button onclick="closeWineDossier()" class="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] flex items-center justify-center text-[#6e6e73] hover:text-[#1d1d1f] flex-shrink-0 ml-2">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Sensory Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="p-3.5 rounded-2xl bg-[#fbfbfd] border border-[#e5e5e7] space-y-1">
+          <span class="font-bold text-[#1d1d1f] flex items-center space-x-1">
+            <span>👁️ Exame Visual</span>
+          </span>
+          <p id="dossier-visual" class="text-[#6e6e73] leading-relaxed"></p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-[#fbfbfd] border border-[#e5e5e7] space-y-1">
+          <span class="font-bold text-[#1d1d1f] flex items-center space-x-1">
+            <span>👃 Exame Olfativo</span>
+          </span>
+          <p id="dossier-olfativo" class="text-[#6e6e73] leading-relaxed"></p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-[#fbfbfd] border border-[#e5e5e7] space-y-1">
+          <span class="font-bold text-[#1d1d1f] flex items-center space-x-1">
+            <span>👄 Exame Gustativo</span>
+          </span>
+          <p id="dossier-gustativo" class="text-[#6e6e73] leading-relaxed"></p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-[#fbfbfd] border border-[#e5e5e7] space-y-1">
+          <span class="font-bold text-[#1d1d1f] flex items-center space-x-1">
+            <span>🌡️ Serviço &amp; Taça</span>
+          </span>
+          <p id="dossier-servico" class="text-[#6e6e73] leading-relaxed"></p>
+        </div>
+      </div>
+
+      <!-- Food Pairing Highlight -->
+      <div class="p-3.5 rounded-2xl bg-[#fdfaf3] border border-[#f3e6cf] space-y-1">
+        <span class="font-bold text-[#b8860b] text-xs flex items-center space-x-1">
+          <i data-lucide="utensils" class="w-3.5 h-3.5"></i>
+          <span>Harmonização Sugerida pelo Sommelier</span>
+        </span>
+        <p id="dossier-pairing" class="text-xs text-[#1d1d1f] leading-relaxed"></p>
+      </div>
+
+      <!-- Action -->
+      <div class="flex items-center justify-between pt-2 border-t border-[#e5e5e7]">
+        <div>
+          <span class="text-[10px] text-[#6e6e73] block uppercase">Preço de Tabela</span>
+          <span id="dossier-price" class="text-xl font-bold text-[#1d1d1f]"></span>
+        </div>
+        <button id="dossier-buy-btn" class="apple-pill-primary px-6 py-3 text-xs sm:text-sm font-semibold flex items-center space-x-1.5 shadow-md">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span>Faturar no ERPNext</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: SUCESSO DE COMPRA COM INTEGRAÇÃO ERPNEXT          -->
+  <!-- ======================================================== -->
+  <div id="buy-success-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-[#e5e5e7] space-y-5 text-center">
+      
+      <div class="w-16 h-16 rounded-full bg-[#eafaf1] text-[#34c759] flex items-center justify-center mx-auto shadow-inner">
+        <i data-lucide="check" class="w-8 h-8"></i>
+      </div>
+
+      <div class="space-y-1.5">
+        <span class="text-xs font-semibold uppercase tracking-wider text-[#34c759]">Pedido Confirmado no ERPNext</span>
+        <h3 id="modal-order-title" class="text-xl sm:text-2xl font-bold text-[#1d1d1f]">
+          Sales Order Emitido!
+        </h3>
+        <p id="modal-order-desc" class="text-xs text-[#6e6e73] leading-relaxed">
+          A Ordem de Venda foi gravada com sucesso no banco de dados corporativo da empresa <strong>Sommelier Privé Vinhos Finos Ltda</strong>.
+        </p>
+      </div>
+
+      <!-- Summary Box -->
+      <div class="bg-[#f5f5f7] rounded-2xl p-4 border border-[#e5e5e7] text-left text-xs space-y-1.5 font-mono">
+        <div class="flex justify-between">
+          <span class="text-[#6e6e73]">Número da Ordem:</span>
+          <span id="modal-order-id" class="font-bold text-[#0071e3]">SAL-ORD-2026-LIVE</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#6e6e73]">Vinho Faturado:</span>
+          <span id="modal-order-wine" class="font-bold text-[#1d1d1f]"></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#6e6e73]">Valor Total:</span>
+          <span id="modal-order-price" class="font-bold text-[#1d1d1f]"></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#6e6e73]">Próxima Etapa:</span>
+          <span class="font-bold text-[#ff9500]">Despacho GLPI (SLA 2h)</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="space-y-2 pt-2">
+        <a id="btn-open-solutions" href="/solucoes" target="_blank" class="w-full py-3.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center space-x-1.5">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>Acompanhar Execução no Painel de Soluções ↗</span>
+        </a>
+
+        <div class="grid grid-cols-2 gap-2">
+          <a id="btn-open-erp-order" href="/erpnext" target="_blank" class="py-2.5 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] text-[#1d1d1f] text-xs font-medium border border-[#d2d2d7] transition-all flex items-center justify-center space-x-1">
+            <span>Ver no ERP</span>
+            <i data-lucide="external-link" class="w-3 h-3"></i>
+          </a>
+          <button onclick="closeSuccessModal()" class="py-2.5 rounded-full bg-white hover:bg-[#f5f5f7] text-[#6e6e73] text-xs font-medium border border-[#e5e5e7] transition-all">
+            Continuar na Loja
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- SOMMELIER AI CHAT: NATIVE IOS BOTTOM SHEET ON MOBILE     -->
+  <!-- ======================================================== -->
+  <div id="sommelier-backdrop" onclick="toggleSommelierChat()" class="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs hidden transition-opacity"></div>
+
+  <div id="sommelier-widget-container" class="fixed z-50 bottom-4 right-4 sm:bottom-6 sm:right-6">
+    
+    <!-- Chat Drawer (iOS Bottom Sheet on Mobile, Floating on Desktop) -->
+    <div id="sommelier-chat-window" class="hidden fixed sm:absolute bottom-0 right-0 left-0 sm:left-auto sm:bottom-16 w-full sm:w-[410px] max-w-full sm:max-w-[420px] h-[82vh] sm:h-[520px] max-h-[580px] bg-white rounded-t-[32px] sm:rounded-3xl shadow-2xl border border-[#d2d2d7] flex-col overflow-hidden transition-all duration-300">
+      
+      <!-- iOS Drag Bar for Mobile -->
+      <div class="w-10 h-1 bg-[#d2d2d7] rounded-full mx-auto my-2 sm:hidden"></div>
+
+      <!-- Chat Header -->
+      <div class="px-4 sm:px-5 py-3 bg-white/95 backdrop-blur-xl border-b border-[#e5e5e7] flex items-center justify-between">
+        <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+          <div class="relative flex-shrink-0">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-[#0f62fe] via-[#8a3ffc] to-[#ff7eb6] p-[2px] shadow-sm flex items-center justify-center">
+              <div class="w-full h-full bg-[#12161f] rounded-full p-1.5 flex items-center justify-center">
+                <svg class="w-full h-full" viewBox="0 0 32 32" fill="none">
+                  <defs>
+                    <linearGradient id="wx-chat-hdr-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#4589ff"/>
+                      <stop offset="50%" stop-color="#a56eff"/>
+                      <stop offset="100%" stop-color="#ff7eb6"/>
+                    </linearGradient>
+                  </defs>
+                  <path fill="url(#wx-chat-hdr-grad)" d="m29.312,22.9189c1.1042-2.1201,1.688-4.5127,1.688-6.9189C31,7.729,24.271,1,16,1c-3.3738,0-6.5815,1.1191-9.2046,3.1665-.2441-.106-.5125-.1665-.7954-.1665-1.1045,0-2,.8955-2,2s.8955,2,2,2,2-.8955,2-2c0-.0762-.0142-.1489-.0225-.2227,2.2812-1.7964,5.0793-2.7773,8.0225-2.7773.9727,0,1.9172.1157,2.8293.3193-3.3938.9258-5.8994,4.0273-5.8994,7.7109,0,.7891.1167,1.5503.332,2.27-.6985-.2021-1.4285-.3306-2.1919-.3306-3.7039,0-6.8191,2.5342-7.7256,5.957-.218-.9424-.3445-1.9189-.3445-2.9268,0-2.1162.4919-4.1328,1.4619-5.9951l-1.7739-.9238c-1.1042,2.1201-1.688,4.5127-1.688,6.9189,0,8.271,6.729,15,15,15,3.3738,0,6.5815-1.1191,9.2046-3.1665.2441.106.5125.1665.7954.1665,1.1045,0,2-.8955,2-2s-.8955-2-2-2-2,.8955-2,2c0,.0762.0142.1489.0225.2231-1.0796.8496-2.2776,1.5098-3.5493,1.9771.3315-.6641.5269-1.4072.5269-2.2002,0-1.6304-.7959-3.0669-2.0068-3.9805.0457-.3472.0769-.6978.0769-1.0498,0-.7856-.1257-1.54-.3381-2.2573.6995.2012,1.4346.3179,2.198.3179,3.7039,0,6.8191-2.5342,7.7256-5.957.218.9424.3445,1.9189.3445,2.9268,0,2.1162-.4919,4.1328-1.4619,5.9951l1.7739.9238Zm-17.7935,5.2646c-1.8389-.6807-3.49-1.7529-4.8325-3.1338-1.0366-1.1143-1.616-2.5527-1.616-4.0801,0-3.3081,2.6917-6,6-6s6,2.6919,6,6c0,.0498-.0125.0977-.0134.1475-.3413-.0737-.6936-.1172-1.0566-.1172-2.7571,0-5,2.2432-5,5,0,.7861.1924,1.5234.5186,2.1836Zm7.4814-2.1836c0,1.6543-1.3457,3-3,3s-3-1.3457-3-3,1.3457-3,3-3,3,1.3457,3,3Zm1.9299-8.9697c-3.3083,0-6-2.6919-6-6s2.6917-6,6-6c1.4294,0,2.7422.5039,3.7742,1.3418.3027.2739.5918.561.8677.8618.8479,1.0352,1.3582,2.3569,1.3582,3.7964,0,3.3081-2.6917,6-6,6Z"/>
+                </svg>
+              </div>
+            </div>
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#34c759] border-2 border-white"></span>
+          </div>
+          <div class="truncate">
+            <h4 class="text-xs sm:text-sm font-bold text-[#1d1d1f] flex items-center space-x-1.5 truncate">
+              <span>Sommelier</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#0f62fe]/10 text-[#0f62fe] uppercase tracking-wider">watsonx</span><span class="text-[9px] font-medium bg-[#f5f5f7] text-[#525252] px-2 py-0.5 rounded-full border border-[#e5e5e7]">IA Especialista</span>
+            </h4>
+            <p class="text-[10px] text-[#6e6e73] truncate">Consultor Privé &bull; Curadoria de Vinhos</p>
+          </div>
+        </div>
+
+        <button onclick="toggleSommelierChat()" class="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] flex items-center justify-center text-[#6e6e73] hover:text-[#1d1d1f] transition-colors" title="Fechar">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Messages Area -->
+      <div id="sommelier-messages" class="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs bg-[#fbfbfd]">
+        <!-- Welcome Bubble -->
+        <div class="flex items-start space-x-2.5">
+          <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-[#0f62fe] via-[#8a3ffc] to-[#ff7eb6] p-[1.5px] flex-shrink-0 shadow-sm mt-0.5 flex items-center justify-center">
+            <div class="w-full h-full bg-[#12161f] rounded-full p-1 flex items-center justify-center">
+              <svg class="w-full h-full" viewBox="0 0 32 32" fill="none">
+                <defs>
+                  <linearGradient id="wx-welc-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#4589ff"/>
+                    <stop offset="50%" stop-color="#a56eff"/>
+                    <stop offset="100%" stop-color="#ff7eb6"/>
+                  </linearGradient>
+                </defs>
+                <path fill="url(#wx-welc-grad)" d="m29.312,22.9189c1.1042-2.1201,1.688-4.5127,1.688-6.9189C31,7.729,24.271,1,16,1c-3.3738,0-6.5815,1.1191-9.2046,3.1665-.2441-.106-.5125-.1665-.7954-.1665-1.1045,0-2,.8955-2,2s.8955,2,2,2,2-.8955,2-2c0-.0762-.0142-.1489-.0225-.2227,2.2812-1.7964,5.0793-2.7773,8.0225-2.7773.9727,0,1.9172.1157,2.8293.3193-3.3938.9258-5.8994,4.0273-5.8994,7.7109,0,.7891.1167,1.5503.332,2.27-.6985-.2021-1.4285-.3306-2.1919-.3306-3.7039,0-6.8191,2.5342-7.7256,5.957-.218-.9424-.3445-1.9189-.3445-2.9268,0-2.1162.4919-4.1328,1.4619-5.9951l-1.7739-.9238c-1.1042,2.1201-1.688,4.5127-1.688,6.9189,0,8.271,6.729,15,15,15,3.3738,0,6.5815-1.1191,9.2046-3.1665.2441.106.5125.1665.7954.1665,1.1045,0,2-.8955,2-2s-.8955-2-2-2-2,.8955-2,2c0,.0762.0142.1489.0225.2231-1.0796.8496-2.2776,1.5098-3.5493,1.9771.3315-.6641.5269-1.4072.5269-2.2002,0-1.6304-.7959-3.0669-2.0068-3.9805.0457-.3472.0769-.6978.0769-1.0498,0-.7856-.1257-1.54-.3381-2.2573.6995.2012,1.4346.3179,2.198.3179,3.7039,0,6.8191-2.5342,7.7256-5.957.218.9424.3445,1.9189.3445,2.9268,0,2.1162-.4919,4.1328-1.4619,5.9951l1.7739.9238Zm-17.7935,5.2646c-1.8389-.6807-3.49-1.7529-4.8325-3.1338-1.0366-1.1143-1.616-2.5527-1.616-4.0801,0-3.3081,2.6917-6,6-6s6,2.6919,6,6c0,.0498-.0125.0977-.0134.1475-.3413-.0737-.6936-.1172-1.0566-.1172-2.7571,0-5,2.2432-5,5,0,.7861.1924,1.5234.5186,2.1836Zm7.4814-2.1836c0,1.6543-1.3457,3-3,3s-3-1.3457-3-3,1.3457-3,3-3,3,1.3457,3,3Zm1.9299-8.9697c-3.3083,0-6-2.6919-6-6s2.6917-6,6-6c1.4294,0,2.7422.5039,3.7742,1.3418.3027.2739.5918.561.8677.8618.8479,1.0352,1.3582,2.3569,1.3582,3.7964,0,3.3081-2.6917,6-6,6Z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="bg-white p-3.5 rounded-2xl rounded-tl-sm border border-[#e5e5e7] shadow-sm max-w-[85%] text-[#1d1d1f] leading-relaxed">
+            <p class="font-medium text-[#1d1d1f] mb-1">Olá! Sou o seu Sommelier Privé.</p>
+            <p class="text-[#6e6e73]">Estou à sua disposição para indicar harmonizações gastronômicas, sugerir as safras mais nobres da adega (Romanée-Conti, Pétrus, Margaux, Sassicaia, Vega Sicilia ou Dom Pérignon) ou orientar sobre temperatura de serviço. Em que posso lhe orientar?</p>
+          </div>
+        </div>
+
+        <!-- Quick Question Chips -->
+        <div class="pt-1 flex flex-wrap gap-1.5 pl-9">
+          <button onclick="sendQuickSommelier('Qual vinho harmoniza com carne nobre?')" class="text-[11px] bg-white hover:bg-[#f0f7ff] text-[#0071e3] border border-[#d2d2d7] px-2.5 py-1 rounded-full transition-colors">
+            🍽️ Carne nobre
+          </button>
+          <button onclick="sendQuickSommelier('Qual a safra mais rara da adega?')" class="text-[11px] bg-white hover:bg-[#f0f7ff] text-[#0071e3] border border-[#d2d2d7] px-2.5 py-1 rounded-full transition-colors">
+            🏆 Safra mais rara
+          </button>
+          <button onclick="sendQuickSommelier('Qual a temperatura de serviço dos vinhos?')" class="text-[11px] bg-white hover:bg-[#f0f7ff] text-[#0071e3] border border-[#d2d2d7] px-2.5 py-1 rounded-full transition-colors">
+            🌡️ Temperatura ideal
+          </button>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="p-3 bg-white border-t border-[#e5e5e7]">
+        <form onsubmit="handleSommelierSubmit(event)" class="flex items-center space-x-2">
+          <input id="sommelier-user-input" type="text" placeholder="Pergunte ao Sommelier sobre vinhos..." class="flex-1 bg-[#f5f5f7] border border-[#d2d2d7] rounded-full px-4 py-2.5 text-xs text-[#1d1d1f] focus:outline-none focus:border-[#0071e3] focus:bg-white transition-all">
+          <button type="submit" class="w-9 h-9 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white flex items-center justify-center flex-shrink-0 transition-transform active:scale-95 shadow-sm">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Floating Trigger Pill Button -->
+    <button onclick="toggleSommelierChat()" id="sommelier-trigger-btn" class="flex items-center space-x-2.5 sm:space-x-3 px-3.5 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-white text-[#1d1d1f] border border-[#d2d2d7] shadow-xl hover:shadow-2xl hover:border-[#0f62fe] hover:scale-105 transition-all group">
+      <div class="relative flex-shrink-0">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-[#0f62fe] via-[#8a3ffc] to-[#ff7eb6] p-[2px] shadow-sm flex items-center justify-center">
+          <div class="w-full h-full bg-[#12161f] rounded-full p-1.5 flex items-center justify-center">
+            <svg class="w-full h-full" viewBox="0 0 32 32" fill="none">
+              <defs>
+                <linearGradient id="wx-trig-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#4589ff"/>
+                  <stop offset="50%" stop-color="#a56eff"/>
+                  <stop offset="100%" stop-color="#ff7eb6"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#wx-trig-grad)" d="m29.312,22.9189c1.1042-2.1201,1.688-4.5127,1.688-6.9189C31,7.729,24.271,1,16,1c-3.3738,0-6.5815,1.1191-9.2046,3.1665-.2441-.106-.5125-.1665-.7954-.1665-1.1045,0-2,.8955-2,2s.8955,2,2,2,2-.8955,2-2c0-.0762-.0142-.1489-.0225-.2227,2.2812-1.7964,5.0793-2.7773,8.0225-2.7773.9727,0,1.9172.1157,2.8293.3193-3.3938.9258-5.8994,4.0273-5.8994,7.7109,0,.7891.1167,1.5503.332,2.27-.6985-.2021-1.4285-.3306-2.1919-.3306-3.7039,0-6.8191,2.5342-7.7256,5.957-.218-.9424-.3445-1.9189-.3445-2.9268,0-2.1162.4919-4.1328,1.4619-5.9951l-1.7739-.9238c-1.1042,2.1201-1.688,4.5127-1.688,6.9189,0,8.271,6.729,15,15,15,3.3738,0,6.5815-1.1191,9.2046-3.1665.2441.106.5125.1665.7954.1665,1.1045,0,2-.8955,2-2s-.8955-2-2-2-2,.8955-2,2c0,.0762.0142.1489.0225.2231-1.0796.8496-2.2776,1.5098-3.5493,1.9771.3315-.6641.5269-1.4072.5269-2.2002,0-1.6304-.7959-3.0669-2.0068-3.9805.0457-.3472.0769-.6978.0769-1.0498,0-.7856-.1257-1.54-.3381-2.2573.6995.2012,1.4346.3179,2.198.3179,3.7039,0,6.8191-2.5342,7.7256-5.957.218.9424.3445,1.9189.3445,2.9268,0,2.1162-.4919,4.1328-1.4619,5.9951l1.7739.9238Zm-17.7935,5.2646c-1.8389-.6807-3.49-1.7529-4.8325-3.1338-1.0366-1.1143-1.616-2.5527-1.616-4.0801,0-3.3081,2.6917-6,6-6s6,2.6919,6,6c0,.0498-.0125.0977-.0134.1475-.3413-.0737-.6936-.1172-1.0566-.1172-2.7571,0-5,2.2432-5,5,0,.7861.1924,1.5234.5186,2.1836Zm7.4814-2.1836c0,1.6543-1.3457,3-3,3s-3-1.3457-3-3,1.3457-3,3-3,3,1.3457,3,3Zm1.9299-8.9697c-3.3083,0-6-2.6919-6-6s2.6917-6,6-6c1.4294,0,2.7422.5039,3.7742,1.3418.3027.2739.5918.561.8677.8618.8479,1.0352,1.3582,2.3569,1.3582,3.7964,0,3.3081-2.6917,6-6,6Z"/>
+            </svg>
+          </div>
+        </div>
+        <span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#34c759] border-2 border-white animate-pulse"></span>
+      </div>
+      <div class="text-left">
+        <div class="flex items-center space-x-1.5">
+          <span class="text-xs sm:text-sm font-bold block leading-tight text-[#1d1d1f]">Sommelier</span>
+          <span class="text-[8px] sm:text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#0f62fe]/10 text-[#0f62fe] uppercase tracking-wider">watsonx</span>
+        </div>
+        <span class="text-[10px] sm:text-[11px] text-[#6e6e73] block leading-tight">Consultoria de Vinhos</span>
+      </div>
+    </button>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT: STORE LOGIC, SENSORY DOSSIER & ERP INTEGRATION-->
+  <!-- ======================================================== -->
+  <script>
+    lucide.createIcons();
+
+    // Wine Catalog with Extended Sensory Dossier Data
+    const wineCatalog = {
+      romanee: {
+        code: 'VIN-ROMANEE-2017',
+        name: 'Domaine de la Romanée-Conti 2017',
+        vintage: 'Safra 2017 &bull; Vosne-Romanée Monopole',
+        price: 'R$ 118.500',
+        rate: 118500.0,
+        image: '/images/romanee.jpg',
+        region: 'Borgonha, França',
+        appellation: 'AOC Grand Cru &bull; Côte de Nuits',
+        temp: '14.5°C constante',
+        visual: 'Rubi granada brilhante e translúcido, revelando reflexos tijolo com lágrimas etéreas.',
+        olfativo: 'Aromas sublimes de trufas brancas, rosa damascena, cassis silvestre, couro antigo e notas terrosas de sub-bosque.',
+        gustativo: 'Ataque aveludado, acidez vibrante com mineralidade calcária e final que persiste por mais de 60 segundos.',
+        servico: 'Servir a 14.5°C na taça Riedel Sommelier Burgundy Grand Cru. Recomenda-se abrir 1 hora antes sem decantação vigorosa.',
+        pairing: 'Cordeiro de leite com crosta de ervas de Provence, risoto trufado e queijos maturados franceses de pasta mole.'
+      },
+      petrus: {
+        code: 'VIN-PETRUS-2010',
+        name: 'Château Pétrus Pomerol 2010',
+        vintage: 'Safra 2010 &bull; Pomerol, Bordeaux',
+        price: 'R$ 48.500',
+        rate: 48500.0,
+        image: '/images/petrus.jpg',
+        region: 'Pomerol, Bordeaux',
+        appellation: 'AOC Pomerol &bull; 100 Pts Robert Parker',
+        temp: '15.0°C constante',
+        visual: 'Púrpura profundo, denso e quase impenetrável com auréola violácea brilhante.',
+        olfativo: 'Explosão de amoras negras maduras, cacau fino, mocha, trufas negras e sutis toques florais de violeta.',
+        gustativo: 'Textura opulenta e untuosa, taninos incrivelmente aveludados e equilíbrio magistral entre fruta e carvalho francês.',
+        servico: 'Servir a 16.0°C na taça Riedel Bordeaux Grand Cru. Decantar por 2 a 3 horas antes da degustação.',
+        pairing: 'Carré de cordeiro assado lentamente, confit de pato ao molho de frutas vermelhas e carnes nobres grelhadas na brasa.'
+      },
+      margaux: {
+        code: 'VIN-MARGAUX-2015',
+        name: 'Château Margaux 1er Cru 2015',
+        vintage: 'Safra 2015 &bull; Margaux, Bordeaux',
+        price: 'R$ 14.800',
+        rate: 14800.0,
+        image: '/images/margaux.jpg',
+        region: 'Margaux, Bordeaux',
+        appellation: '1er Grand Cru Classé 1855 &bull; 99 Pts James Suckling',
+        temp: '15.0°C constante',
+        visual: 'Rubi escuro reluzente com reflexos carmim sofisticados.',
+        olfativo: 'Perfumado e aristocrático: violetas frescas, groselha preta, caixa de charutos e cedro refinado.',
+        gustativo: 'Entrada sedosa, corpo médio para encorpado com taninos perfeitamente polidos e mineralidade marcante.',
+        servico: 'Servir a 15.5°C na taça Bordeaux. Decantar por 90 minutos para expressar plenamente seu buquê aromático.',
+        pairing: 'Chateaubriand com redução de vinho do Porto, risoto de cogumelos selvagens e queijo Comté 36 meses.'
+      },
+      sassicaia: {
+        code: 'VIN-SASSICAIA-2016',
+        name: 'Tenuta San Guido Sassicaia 2016',
+        vintage: 'Safra 2016 &bull; Bolgheri, Toscana',
+        price: 'R$ 4.200',
+        rate: 4200.0,
+        image: '/images/sassicaia.jpg',
+        region: 'Bolgheri, Toscana',
+        appellation: 'DOC Bolgheri Sassicaia &bull; 100 Pts Robert Parker',
+        temp: '15.5°C constante',
+        visual: 'Rubi intenso com reflexos granada límpidos e brilhantes.',
+        olfativo: 'Notas de cassis, alecrim silvestre, grafite, brisa do mar Tirreno e toques balsâmicos envolventes.',
+        gustativo: 'Frescor tenso e elegante, taninos finíssimos com final salino e mineral extremamente gastronômico.',
+        servico: 'Servir a 16.0°C em taça grande estilo Bordeaux. Decantar por 1 a 2 horas.',
+        pairing: 'Bistecca alla Fiorentina ao ponto, pappardelle com ragù de javali e queijo Pecorino toscano de média cura.'
+      },
+      vegasicilia: {
+        code: 'VIN-VEGASICILIA-2000',
+        name: 'Vega Sicilia Único Reserva 2000',
+        vintage: 'Safra 2000 &bull; Ribera del Duero',
+        price: 'R$ 6.800',
+        rate: 6800.0,
+        image: '/images/vegasicilia.jpg',
+        region: 'Ribera del Duero, Espanha',
+        appellation: 'DO Ribera del Duero &bull; 10 Anos de Guarda em Madeira',
+        temp: '16.0°C constante',
+        visual: 'Granada profundo com nuances terrosas elegantes de envelhecimento clássico.',
+        olfativo: 'Complexidade de tabaco inglês, couro antigo, compota de ameixa, noz-moscada e carvalho americano e francês.',
+        gustativo: 'Poderoso e envolvente, taninos perfeitamente fundidos pelo tempo e persistência aromática sem fim.',
+        servico: 'Servir a 16.5°C em taça ampla de tinto maduro. Decantar delicadamente 1 hora antes de servir.',
+        pairing: 'Leitão assado ao estilo segoviano, presunto ibérico de bellota 100% Pata Negra e carnes de caça assadas.'
+      },
+      perignon: {
+        code: 'VIN-PERIGNON-2004',
+        name: 'Dom Pérignon P2 Brut 2004',
+        vintage: 'Safra 2004 &bull; Épernay, Champagne',
+        price: 'R$ 8.950',
+        rate: 8950.0,
+        image: '/images/perignon.jpg',
+        region: 'Épernay, Champagne',
+        appellation: 'AOC Champagne &bull; Deuxième Plénitude (16 anos sur lie)',
+        temp: '11.0°C constante',
+        visual: 'Ouro pálido reluzente com perlage microscópico, ininterrupto e vigoroso.',
+        olfativo: 'Toques tostados de brioche amanteigado, casca de limão siciliano confeitada, fumaça sutil e giz marinho.',
+        gustativo: 'Ataque tenso e elétrico, textura cremosa irresistível com final salino, cítrico e sumptuoso.',
+        servico: 'Servir entre 10°C e 11°C em taça de vinho branco elegante para permitir a respiração aromática (evitar flûtes estreitas).',
+        pairing: 'Caviar Oscietra, ostras frescas de Cancale, vieiras grelhadas na manteiga de trufas e lagosta termidor.'
+      }
+    };
+
+    let selectedWineKey = 'romanee';
+    let cartCount = 0;
+    const erpBaseUrl = window.location.origin.includes('trycloudflare.com')
+      ? window.location.origin
+      : (window.location.port === '8088' ? 'http://10.1.0.65:8080' : window.location.origin);
+
+    // ==========================================
+    // JOGADA 1: INTERACTIVE SPOTLIGHT TABS
+    // ==========================================
+    const spotlightInfo = {
+      terroir: 'Solo calcário jurássico puro em encosta oriental. Vinhas orgânicas centenárias com rendimento ultra-baixo de apenas 22 hectolitros por hectare.',
+      aromas: 'Buquê aromático incomparável de trufas brancas, rosa damascena desidratada, violetas, cassis e toques de especiarias orientais.',
+      guarda: 'Potencial de guarda de 50+ anos em adega com controle térmico a 14.5°C. Atinge seu apogeu pleno entre 2030 e 2055.'
+    };
+
+    function switchSpotlightTab(tab) {
+      document.querySelectorAll('.spotlight-tab-btn').forEach(btn => {
+        btn.className = 'spotlight-tab-btn py-1.5 rounded-xl text-[#6e6e73] hover:text-[#1d1d1f] transition-all';
+      });
+      const activeBtn = document.getElementById('tab-btn-' + tab);
+      if (activeBtn) {
+        activeBtn.className = 'spotlight-tab-btn py-1.5 rounded-xl bg-white text-[#1d1d1f] shadow-2xs transition-all font-bold';
+      }
+      document.getElementById('spotlight-tab-content').innerHTML = spotlightInfo[tab];
+    }
+
+    // ==========================================
+    // JOGADA 2: OCCASION FILTERS
+    // ==========================================
+    const occasionNotes = {
+      carnes: 'Selecionamos os grandes tintos encorpados com taninos perfeitos para cortes nobres: Château Pétrus e Château Margaux.',
+      guarda: 'Os ícones de maior prestígio e valorização patrimonial para adega de guarda: Romanée-Conti e Vega Sicilia Único.',
+      celebracao: 'A Deuxième Plénitude de Dom Pérignon: o ápice do brinde em alta gastronomia.',
+      toscana: 'A expressão marítima de Bolgheri: Sassicaia 2016 com 100 pontos Parker, sublime com culinária toscana e trufas.'
+    };
+
+    function filterByOccasion(occ) {
+      document.querySelectorAll('.occ-pill').forEach(btn => {
+        btn.className = 'occ-pill px-4 py-2.5 rounded-full bg-white hover:bg-[#e8e8ed] text-[#1d1d1f] border border-[#d2d2d7] flex items-center space-x-1.5 flex-shrink-0 transition-all';
+      });
+      const activeBtn = document.getElementById('occ-' + occ);
+      if (activeBtn) {
+        activeBtn.className = 'occ-pill px-4 py-2.5 rounded-full bg-[#1d1d1f] text-white shadow-sm flex items-center space-x-1.5 flex-shrink-0 transition-all';
+      }
+
+      const feedback = document.getElementById('occasion-feedback');
+      const feedbackText = document.getElementById('occasion-feedback-text');
+
+      if (occ === 'all') {
+        feedback.classList.add('hidden');
+      } else {
+        feedback.classList.remove('hidden');
+        feedbackText.textContent = occasionNotes[occ] || '';
+      }
+
+      document.querySelectorAll('.carousel-item').forEach(card => {
+        if (occ === 'all' || card.getAttribute('data-occasion') === occ) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // ==========================================
+    // CATEGORY FILTERS (NAVBAR)
+    // ==========================================
+    function filterCategory(cat) {
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.className = 'nav-tab px-3.5 py-1.5 rounded-full text-[#6e6e73] hover:text-[#1d1d1f] transition-all';
+      });
+      const activeNav = document.getElementById('nav-' + cat);
+      if (activeNav) {
+        activeNav.className = 'nav-tab px-4 py-1.5 rounded-full text-[#1d1d1f] bg-white font-semibold shadow-xs transition-all';
+      }
+
+      document.querySelectorAll('.carousel-item').forEach(card => {
+        if (cat === 'all' || card.getAttribute('data-category') === cat) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // ==========================================
+    // JOGADA 4: WINE DOSSIER (FICHA TÉCNICA AWWWARDS)
+    // ==========================================
+    function openWineDetails(key) {
+      const wine = wineCatalog[key];
+      selectedWineKey = key;
+
+      const dImg = document.getElementById('dossier-img');
+      if (dImg) dImg.src = wine.image;
+      document.getElementById('dossier-appellation').textContent = wine.appellation;
+      document.getElementById('dossier-title').textContent = wine.name;
+      document.getElementById('dossier-vintage').innerHTML = `${wine.vintage} &bull; <span class="font-mono text-[#0071e3]">${wine.code}</span>`;
+      document.getElementById('dossier-visual').textContent = wine.visual;
+      document.getElementById('dossier-olfativo').textContent = wine.olfativo;
+      document.getElementById('dossier-gustativo').textContent = wine.gustativo;
+      document.getElementById('dossier-servico').textContent = wine.servico;
+      document.getElementById('dossier-pairing').textContent = wine.pairing;
+      document.getElementById('dossier-price').textContent = wine.price;
+
+      const buyBtn = document.getElementById('dossier-buy-btn');
+      buyBtn.onclick = () => {
+        closeWineDossier();
+        buyWine(key);
+      };
+
+      const modal = document.getElementById('wine-dossier-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeWineDossier() {
+      const modal = document.getElementById('wine-dossier-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // ==========================================
+    // REAL ERPNEXT PURCHASE INTEGRATION
+    // ==========================================
+    async function buyWine(key) {
+      selectedWineKey = key;
+      const wine = wineCatalog[key];
+
+      cartCount++;
+      document.getElementById('cart-counter-badge').textContent = cartCount;
+
+      let orderId = 'SAL-ORD-2026-' + Math.floor(10000 + Math.random() * 90000);
+      let erpUrl = `/erpnext?order_id=${orderId}`;
+
+      try {
+        const payload = {
+          customer: 'Cliente VIP Sommelier',
+          wine_code: wine.code,
+          qty: 1,
+          rate: wine.rate,
+          notes: 'Compra via Apple Store Sommelier Privé'
+        };
+
+        const res = await fetch(`${erpBaseUrl}/api/method/crm.api.sommelier.create_wine_order`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          orderId = json.message.order_id;
+          erpUrl = `/erpnext?order_id=${orderId}`;
+        }
+      } catch (e) {
+        console.warn('ERP API offline fallback:', e);
+      }
+
+      document.getElementById('modal-order-id').textContent = orderId;
+      document.getElementById('modal-order-wine').textContent = wine.name;
+      document.getElementById('modal-order-price').textContent = wine.price;
+      document.getElementById('btn-open-erp-order').href = erpUrl;
+
+      const modal = document.getElementById('buy-success-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeSuccessModal() {
+      const modal = document.getElementById('buy-success-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openCartDrawer() {
+      if (cartCount === 0) {
+        alert('Sua adega está pronta para receber os melhores Grand Crus. Selecione uma das 6 safras para faturar no ERPNext.');
+      } else {
+        const modal = document.getElementById('buy-success-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    // ==========================================
+    // SOMMELIER IA CHAT (IOS BOTTOM SHEET / DESK)
+    // ==========================================
+    function toggleSommelierChat() {
+      const win = document.getElementById('sommelier-chat-window');
+      const trigger = document.getElementById('sommelier-trigger-btn');
+      const backdrop = document.getElementById('sommelier-backdrop');
+      
+      const isMobile = window.innerWidth < 640;
+
+      if (win.classList.contains('hidden')) {
+        win.classList.remove('hidden');
+        win.classList.add('flex');
+        trigger.classList.add('hidden');
+        if (isMobile) backdrop.classList.remove('hidden');
+        document.getElementById('sommelier-user-input').focus();
+        scrollChatToBottom();
+      } else {
+        win.classList.add('hidden');
+        win.classList.remove('flex');
+        trigger.classList.remove('hidden');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    function scrollChatToBottom() {
+      const container = document.getElementById('sommelier-messages');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendQuickSommelier(text) {
+      processSommelierMessage(text);
+    }
+
+    function handleSommelierSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('sommelier-user-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      processSommelierMessage(text);
+    }
+
+    const WX_AVATAR_HTML = `
+      <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-[#0f62fe] via-[#8a3ffc] to-[#ff7eb6] p-[1.5px] flex-shrink-0 shadow-sm mt-0.5 flex items-center justify-center">
+        <div class="w-full h-full bg-[#12161f] rounded-full p-1 flex items-center justify-center">
+          <svg class="w-full h-full" viewBox="0 0 32 32" fill="none">
+            <defs>
+              <linearGradient id="wx-msg-dyn-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4589ff"/>
+                <stop offset="50%" stop-color="#a56eff"/>
+                <stop offset="100%" stop-color="#ff7eb6"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#wx-msg-dyn-grad)" d="m29.312,22.9189c1.1042-2.1201,1.688-4.5127,1.688-6.9189C31,7.729,24.271,1,16,1c-3.3738,0-6.5815,1.1191-9.2046,3.1665-.2441-.106-.5125-.1665-.7954-.1665-1.1045,0-2,.8955-2,2s.8955,2,2,2,2-.8955,2-2c0-.0762-.0142-.1489-.0225-.2227,2.2812-1.7964,5.0793-2.7773,8.0225-2.7773.9727,0,1.9172.1157,2.8293.3193-3.3938.9258-5.8994,4.0273-5.8994,7.7109,0,.7891.1167,1.5503.332,2.27-.6985-.2021-1.4285-.3306-2.1919-.3306-3.7039,0-6.8191,2.5342-7.7256,5.957-.218-.9424-.3445-1.9189-.3445-2.9268,0-2.1162.4919-4.1328,1.4619-5.9951l-1.7739-.9238c-1.1042,2.1201-1.688,4.5127-1.688,6.9189,0,8.271,6.729,15,15,15,3.3738,0,6.5815-1.1191,9.2046-3.1665.2441.106.5125.1665.7954.1665,1.1045,0,2-.8955,2-2s-.8955-2-2-2-2,.8955-2,2c0,.0762.0142.1489.0225.2231-1.0796.8496-2.2776,1.5098-3.5493,1.9771.3315-.6641.5269-1.4072.5269-2.2002,0-1.6304-.7959-3.0669-2.0068-3.9805.0457-.3472.0769-.6978.0769-1.0498,0-.7856-.1257-1.54-.3381-2.2573.6995.2012,1.4346.3179,2.198.3179,3.7039,0,6.8191-2.5342,7.7256-5.957.218.9424.3445,1.9189.3445,2.9268,0,2.1162-.4919,4.1328-1.4619,5.9951l1.7739.9238Zm-17.7935,5.2646c-1.8389-.6807-3.49-1.7529-4.8325-3.1338-1.0366-1.1143-1.616-2.5527-1.616-4.0801,0-3.3081,2.6917-6,6-6s6,2.6919,6,6c0,.0498-.0125.0977-.0134.1475-.3413-.0737-.6936-.1172-1.0566-.1172-2.7571,0-5,2.2432-5,5,0,.7861.1924,1.5234.5186,2.1836Zm7.4814-2.1836c0,1.6543-1.3457,3-3,3s-3-1.3457-3-3,1.3457-3,3-3,3,1.3457,3,3Zm1.9299-8.9697c-3.3083,0-6-2.6919-6-6s2.6917-6,6-6c1.4294,0,2.7422.5039,3.7742,1.3418.3027.2739.5918.561.8677.8618.8479,1.0352,1.3582,2.3569,1.3582,3.7964,0,3.3081-2.6917,6-6,6Z"/>
+          </svg>
+        </div>
+      </div>
+    `;
+
+    function processSommelierMessage(userText) {
+      const container = document.getElementById('sommelier-messages');
+      
+      // User Bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'flex justify-end';
+      userBubble.innerHTML = `
+        <div class="bg-[#0071e3] text-white p-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%] leading-relaxed text-xs">
+          ${userText}
+        </div>
+      `;
+      container.appendChild(userBubble);
+      scrollChatToBottom();
+
+      // Typing Indicator
+      const typingId = 'typing-' + Date.now();
+      const typingBubble = document.createElement('div');
+      typingBubble.id = typingId;
+      typingBubble.className = 'flex items-start space-x-2.5';
+      typingBubble.innerHTML = `
+        ${WX_AVATAR_HTML}
+        <div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-[#e5e5e7] shadow-sm text-[#6e6e73] text-xs flex items-center space-x-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce [animation-delay:0.2s]"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce [animation-delay:0.4s]"></span>
+          <span class="text-[11px] ml-1 font-medium text-[#86868b]">Sommelier analisando safra...</span>
+        </div>
+      `;
+      container.appendChild(typingBubble);
+      scrollChatToBottom();
+
+      setTimeout(() => {
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+
+        const replyHtml = getSommelierKnowledgeReply(userText);
+        
+        const sommelierBubble = document.createElement('div');
+        sommelierBubble.className = 'flex items-start space-x-2.5';
+        sommelierBubble.innerHTML = `
+          ${WX_AVATAR_HTML}
+          <div class="bg-white p-3.5 rounded-2xl rounded-tl-sm border border-[#e5e5e7] shadow-sm max-w-[85%] text-[#1d1d1f] leading-relaxed text-xs space-y-2">
+            ${replyHtml}
+          </div>
+        `;
+        container.appendChild(sommelierBubble);
+        lucide.createIcons();
+        scrollChatToBottom();
+      }, 500);
+    }
+
+    function getSommelierKnowledgeReply(query) {
+      const q = query.toLowerCase();
+
+      if (q.includes('romanée') || q.includes('romanee') || q.includes('conti') || q.includes('borgonha')) {
+        return `
+          <p><strong>Domaine de la Romanée-Conti 2017:</strong></p>
+          <p class="text-[#6e6e73]">O ápice indiscutível da Borgonha e da uva Pinot Noir. Uma safra de pureza cristalina, com aromas de trufas brancas, rosa damascena e estrutura tânica etérea.</p>
+          <div class="bg-[#f5f5f7] p-2.5 rounded-xl border border-[#e5e5e7] flex items-center justify-between mt-1.5">
+            <div>
+              <span class="font-bold text-[#1d1d1f] block text-xs">Romanée-Conti 2017</span>
+              <span class="text-[11px] text-[#0071e3] font-semibold">R$ 118.500 (1 garrafa pronta)</span>
+            </div>
+            <button onclick="buyWine('romanee')" class="apple-pill-primary px-3 py-1 text-[11px]">Comprar</button>
+          </div>
+        `;
+      }
+
+      if (q.includes('petrus') || q.includes('pétrus') || q.includes('pomerol')) {
+        return `
+          <p><strong>Château Pétrus Pomerol 2010:</strong></p>
+          <p class="text-[#6e6e73]">Safra lendária com <strong>100 pontos Robert Parker</strong>. Produzido a partir de 100% Merlot no solo de argila azul de Pomerol, oferece notas opulentas de amoras silvestres, trufas negras e cacau.</p>
+          <div class="bg-[#f5f5f7] p-2.5 rounded-xl border border-[#e5e5e7] flex items-center justify-between mt-1.5">
+            <div>
+              <span class="font-bold text-[#1d1d1f] block text-xs">Château Pétrus 2010</span>
+              <span class="text-[11px] text-[#0071e3] font-semibold">R$ 48.500 (2 garrafas)</span>
+            </div>
+            <button onclick="buyWine('petrus')" class="apple-pill-primary px-3 py-1 text-[11px]">Comprar</button>
+          </div>
+        `;
+      }
+
+      if (q.includes('margaux') || q.includes('bordeaux')) {
+        return `
+          <p><strong>Château Margaux 1er Cru Classé 2015:</strong></p>
+          <p class="text-[#6e6e73]">A safra do bicentenário (99 pts James Suckling). Um Premier Grand Cru com elegância inigualável, aromas de violetas maceradas, cassis e madeira tostada fina.</p>
+          <div class="bg-[#f5f5f7] p-2.5 rounded-xl border border-[#e5e5e7] flex items-center justify-between mt-1.5">
+            <div>
+              <span class="font-bold text-[#1d1d1f] block text-xs">Château Margaux 2015</span>
+              <span class="text-[11px] text-[#0071e3] font-semibold">R$ 14.800 (4 garrafas)</span>
+            </div>
+            <button onclick="buyWine('margaux')" class="apple-pill-primary px-3 py-1 text-[11px]">Comprar</button>
+          </div>
+        `;
+      }
+
+      if (q.includes('sassicaia') || q.includes('toscana') || q.includes('italia') || q.includes('itália')) {
+        return `
+          <p><strong>Tenuta San Guido Sassicaia 2016:</strong></p>
+          <p class="text-[#6e6e73]">O maior Supertoscano da história (100 pontos Parker). Nascido em Bolgheri sob a influência da brisa marítima tirrena, combina Cabernet Sauvignon e Cabernet Franc com mineralidade e taninos de seda.</p>
+          <div class="bg-[#f5f5f7] p-2.5 rounded-xl border border-[#e5e5e7] flex items-center justify-between mt-1.5">
+            <div>
+              <span class="font-bold text-[#1d1d1f] block text-xs">Sassicaia 2016</span>
+              <span class="text-[11px] text-[#0071e3] font-semibold">R$ 4.200 (6 garrafas)</span>
+            </div>
+            <button onclick="buyWine('sassicaia')" class="apple-pill-primary px-3 py-1 text-[11px]">Comprar</button>
+          </div>
+        `;
+      }
+
+      if (q.includes('vega') || q.includes('sicilia') || q.includes('espanha') || q.includes('duero')) {
+        return `
+          <p><strong>Vega Sicilia Único Reserva Especial 2000:</strong></p>
+          <p class="text-[#6e6e73]">A aristocracia de Ribera del Duero. Envelhecido pacientemente por uma década inteira em barris nobres. Apresenta notas de couro antigo, frutas em compota e tabaco refinado.</p>
+          <div class="bg-[#f5f5f7] p-2.5 rounded-xl border border-[#e5e5e7] flex items-center justify-between mt-1.5">
+            <div>
+              <span class="font-bold text-[#1d1d1f] block text-xs">Vega Sicilia 2000</span>
+              <span class="text-[11px] text-[#0071e3] font-semibold">R$ 6.800 (3 garrafas)</span>
+            </div>
+            <button onclick="buyWine('vegasicilia')" class="apple-pill-primary px-3 py-1 text-[11px]">Comprar</button>
+          </div>
+        `;
+      }
+
+      if (q.includes('dom') || q.includes('perignon') || q.includes('pérignon') || q.includes('champagne') || q.includes('espumante')) {
+        return `
+          <p><strong>Dom Pérignon P2 Brut 2004:</strong></p>
+          <p class="text-[#6e6e73]">A mítica 'Deuxième Plénitude' (segunda vida) do Champagne. Permaneceu 16 anos sobre as leveduras. Revela borbulhas microscópicas, brioche dourado e mineralidade salina.</p>
+          <div class="bg-[#f5f5f7] p-2.5 rounded-xl border border-[#e5e5e7] flex items-center justify-between mt-1.5">
+            <div>
+              <span class="font-bold text-[#1d1d1f] block text-xs">Dom Pérignon P2 2004</span>
+              <span class="text-[11px] text-[#0071e3] font-semibold">R$ 8.950 (6 garrafas)</span>
+            </div>
+            <button onclick="buyWine('perignon')" class="apple-pill-primary px-3 py-1 text-[11px]">Comprar</button>
+          </div>
+        `;
+      }
+
+      if (q.includes('harmoniz') || q.includes('carne') || q.includes('prato') || q.includes('comida') || q.includes('cordeiro') || q.includes('massa')) {
+        return `
+          <p class="font-medium text-[#1d1d1f]">Harmonizações da Alta Gastronomia:</p>
+          <ul class="space-y-1.5 text-[#6e6e73] list-disc pl-4 mt-1">
+            <li><strong>Carnes Nobres &amp; Caça:</strong> Escolha o <em>Château Pétrus 2010</em> ou <em>Vega Sicilia 2000</em>.</li>
+            <li><strong>Cordeiro &amp; Pratos Trufados:</strong> O par sublime é o <em>Romanée-Conti 2017</em>.</li>
+            <li><strong>Bistecca alla Fiorentina:</strong> A escolha toscana perfeita é o <em>Sassicaia 2016</em>.</li>
+            <li><strong>Caviar &amp; Frutos do Mar Nobres:</strong> A pureza do <em>Dom Pérignon P2</em> é insuperável.</li>
+          </ul>
+        `;
+      }
+
+      if (q.includes('temperatura') || q.includes('grau') || q.includes('frio') || q.includes('servir')) {
+        return `
+          <p class="font-medium text-[#1d1d1f]">Protocolo Térmico de Serviço:</p>
+          <ul class="space-y-1 text-[#6e6e73] list-disc pl-4 mt-1">
+            <li><strong>Dom Pérignon P2:</strong> 10°C a 11°C.</li>
+            <li><strong>Romanée-Conti 2017:</strong> 14.5°C a 15°C.</li>
+            <li><strong>Château Margaux:</strong> 15.5°C (decantar 90 min).</li>
+            <li><strong>Château Pétrus:</strong> 16.0°C (decantar 2h a 3h).</li>
+            <li><strong>Sassicaia &amp; Vega Sicilia:</strong> 16.0°C a 16.5°C.</li>
+          </ul>
+        `;
+      }
+
+      return `
+        <p>Como Sommelier Executivo do Projeto Sommelier, posso orientar você sobre safras, notas sensoriais, harmonizações gastronômicas ou detalhar como o faturamento corporativo é emitido no ERPNext.</p>
+        <p class="text-[#6e6e73] mt-1">Gostaria de conhecer mais sobre <strong>Bordeaux</strong>, <strong>Borgonha</strong>, <strong>Toscana</strong> ou <strong>Champagne</strong>?</p>
+      `;
+    }
+
+    // Scroll listener for carousel mobile indicators
+    const carouselContainer = document.getElementById('wine-cards-container');
+    if (carouselContainer) {
+      carouselContainer.addEventListener('scroll', () => {
+        const itemWidth = carouselContainer.offsetWidth * 0.82;
+        const current = Math.min(6, Math.max(1, Math.round(carouselContainer.scrollLeft / itemWidth) + 1));
+        const ind = document.getElementById('carousel-indicator');
+        if (ind) ind.textContent = current + ' de 6';
+      });
+    }
+  </script>
+</body>
+</html>

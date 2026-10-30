@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "luciano-server-ai": {
+      "command": "C:\\Python313\\python.exe",
+      "args": [
+        "C:\\Users\\lucav\\.gemini\\config\\mcp_servers\\luciano_ai_server.py"
+      ]
+    }
+  }
+}

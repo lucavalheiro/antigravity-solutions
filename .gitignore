@@ -1,0 +1,80 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.bob/
+
+# Environment Variables & Secrets
+.env
+*.env
+*.env.*
+!*.env.example
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Binaries, Installers & Large Archives
+*.exe
+*.dll
+*.so
+*.dylib
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.iso
+
+# Large Media Files
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.mkv
+
+# OS & Editor generated
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.bak
+*~
+*.tmp
+*.log
+
+# Documents & PDFs
+*.pdf
+

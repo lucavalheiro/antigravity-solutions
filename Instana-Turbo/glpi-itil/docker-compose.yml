@@ -1,0 +1,77 @@
+services:
+  glpi-db:
+    image: mariadb:10.11
+    container_name: glpi_mariadb
+    restart: unless-stopped
+    command:
+      - mariadbd
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb-file-per-table=1
+      - --wait_timeout=28800
+      - --max_allowed_packet=64M
+    environment:
+      MARIADB_ROOT_PASSWORD: glpi_root_secure_pass_2026
+      MARIADB_DATABASE: glpidb
+      MARIADB_USER: glpi
+      MARIADB_PASSWORD: glpi_secret_pass_2026
+    volumes:
+      - glpi_db_data:/var/lib/mysql
+    networks:
+      - glpi_isolated_net
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u glpi -pglpi_secret_pass_2026 --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 25
+
+  glpi-app:
+    image: diouxx/glpi:latest
+    container_name: glpi_app
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    environment:
+      TIMEZONE: America/Sao_Paulo
+      VERSION_GLPI: 10.0.16
+    volumes:
+      - ./glpi_data:/var/www/html/glpi
+    networks:
+      - glpi_isolated_net
+    depends_on:
+      glpi-db:
+        condition: service_healthy
+
+  instana-glpi-bridge:
+    build:
+      context: ./bridge
+      dockerfile: Dockerfile
+    container_name: instana_glpi_bridge
+    restart: unless-stopped
+    ports:
+      - "8095:8095"
+    volumes:
+      - ./bridge/main.py:/app/main.py
+    environment:
+      GLPI_URL: http://glpi-app
+      GLPI_API_URL: http://glpi-app/apirest.php
+      GLPI_APP_TOKEN: InstanaGLPIToken2026
+      GLPI_USER_TOKEN: InstanaUserToken2026
+      INSTANA_BASE_URL: https://10.1.0.65.nip.io
+      CATEGORY_AIOPS_CRITICAL: "13"
+      CATEGORY_AIOPS_WARNING: "14"
+      GROUP_ASSIGN_N2: "2"
+      DEFAULT_COMPUTER_CI_ID: "1"
+    networks:
+      - glpi_isolated_net
+    depends_on:
+      - glpi-app
+
+networks:
+  glpi_isolated_net:
+    driver: bridge
+    name: glpi_isolated_net
+
+volumes:
+  glpi_db_data:
+    name: glpi_db_data
